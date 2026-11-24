@@ -1091,6 +1091,14 @@ body.light-glass .el-summary-card {
   }
 }
 
+/* Touch-friendly 3D canvas interaction */
+#universe-canvas-wrap canvas,
+#sim-3d-wrap canvas,
+#pt-3d-canvas-wrap canvas,
+#modal-pedestal-wrap canvas {
+  touch-action: none;
+}
+
 /* --- RESPONSIVE --- */
 @media (max-width: 1024px) {
   .simulator-layout {
@@ -1105,8 +1113,26 @@ body.light-glass .el-summary-card {
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    min-height: auto;
+    padding: 36px 14px;
+  }
+  .hero-ctas {
+    width: 100%;
+  }
+  .hero-ctas .btn {
+    flex: 1 1 140px;
+  }
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    padding: 16px 12px;
+  }
+  .stat-value {
+    font-size: 1.8rem;
   }
   .comp-selectors {
     grid-template-columns: 1fr;
@@ -1114,8 +1140,50 @@ body.light-glass .el-summary-card {
   .quiz-options {
     grid-template-columns: 1fr;
   }
+  .simulator-stage,
+  #sim-3d-wrap,
+  #sim-2d-canvas {
+    min-height: 330px;
+    height: 330px;
+  }
+  .simulator-controls {
+    padding: 14px;
+  }
+  .pedestal-atom-wrap {
+    height: 205px;
+  }
+  .lab-stage-wrap {
+    height: 300px;
+  }
+  .lab-item-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .universe-shell {
+    height: calc(100vh - var(--navbar-height) - 60px);
+  }
+  .universe-toolbar {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
   .universe-legend {
-    width: 210px;
-    max-height: 40vh;
+    left: 8px;
+    bottom: 8px;
+    width: 195px;
+    max-height: 34vh;
+    padding: 8px 10px;
+  }
+  .universe-detail-panel {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-height: 62vh;
+  }
+  #pt-3d-canvas-wrap {
+    height: 360px !important;
   }
 }

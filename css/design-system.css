@@ -653,12 +653,67 @@ body.light-glass .modal-backdrop {
   }
   .mobile-bottom-bar {
     display: flex;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
   }
   .app-main {
-    padding-bottom: 68px;
+    padding-bottom: 72px;
   }
   .toast-container {
     bottom: 76px;
     right: 14px;
+    left: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --navbar-height: 58px;
+  }
+  .navbar-inner {
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .brand-svg {
+    width: 30px;
+    height: 30px;
+  }
+  .brand-name {
+    font-size: 1rem;
+  }
+  .brand-sub,
+  .user-avatar-pill,
+  #quick-guide-btn {
+    display: none;
+  }
+  .nav-utilities {
+    gap: 6px;
+    margin-left: auto;
+  }
+  .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+  .page-container {
+    padding: 16px 12px 76px;
+  }
+  .section-header {
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+  .btn {
+    min-height: 40px;
+  }
+  .btn-sm {
+    min-height: 36px;
+    padding: 6px 11px;
+  }
+  .modal-backdrop {
+    padding: 10px;
+  }
+  .element-modal {
+    padding: 16px;
+    max-height: 92vh;
   }
 }

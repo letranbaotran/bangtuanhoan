@@ -668,13 +668,68 @@ body.light-glass .modal-backdrop {
   }
   .mobile-bottom-bar {
     display: flex;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
   }
   .app-main {
-    padding-bottom: 68px;
+    padding-bottom: 72px;
   }
   .toast-container {
     bottom: 76px;
     right: 14px;
+    left: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --navbar-height: 58px;
+  }
+  .navbar-inner {
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .brand-svg {
+    width: 30px;
+    height: 30px;
+  }
+  .brand-name {
+    font-size: 1rem;
+  }
+  .brand-sub,
+  .user-avatar-pill,
+  #quick-guide-btn {
+    display: none;
+  }
+  .nav-utilities {
+    gap: 6px;
+    margin-left: auto;
+  }
+  .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+  .page-container {
+    padding: 16px 12px 76px;
+  }
+  .section-header {
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+  .btn {
+    min-height: 40px;
+  }
+  .btn-sm {
+    min-height: 36px;
+    padding: 6px 11px;
+  }
+  .modal-backdrop {
+    padding: 10px;
+  }
+  .element-modal {
+    padding: 16px;
+    max-height: 92vh;
   }
 }
 
@@ -1771,6 +1826,14 @@ body.light-glass .el-summary-card {
   }
 }
 
+/* Touch-friendly 3D canvas interaction */
+#universe-canvas-wrap canvas,
+#sim-3d-wrap canvas,
+#pt-3d-canvas-wrap canvas,
+#modal-pedestal-wrap canvas {
+  touch-action: none;
+}
+
 /* --- RESPONSIVE --- */
 @media (max-width: 1024px) {
   .simulator-layout {
@@ -1785,8 +1848,26 @@ body.light-glass .el-summary-card {
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    min-height: auto;
+    padding: 36px 14px;
+  }
+  .hero-ctas {
+    width: 100%;
+  }
+  .hero-ctas .btn {
+    flex: 1 1 140px;
+  }
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    padding: 16px 12px;
+  }
+  .stat-value {
+    font-size: 1.8rem;
   }
   .comp-selectors {
     grid-template-columns: 1fr;
@@ -1794,9 +1875,51 @@ body.light-glass .el-summary-card {
   .quiz-options {
     grid-template-columns: 1fr;
   }
+  .simulator-stage,
+  #sim-3d-wrap,
+  #sim-2d-canvas {
+    min-height: 330px;
+    height: 330px;
+  }
+  .simulator-controls {
+    padding: 14px;
+  }
+  .pedestal-atom-wrap {
+    height: 205px;
+  }
+  .lab-stage-wrap {
+    height: 300px;
+  }
+  .lab-item-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .universe-shell {
+    height: calc(100vh - var(--navbar-height) - 60px);
+  }
+  .universe-toolbar {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
   .universe-legend {
-    width: 210px;
-    max-height: 40vh;
+    left: 8px;
+    bottom: 8px;
+    width: 195px;
+    max-height: 34vh;
+    padding: 8px 10px;
+  }
+  .universe-detail-panel {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-height: 62vh;
+  }
+  #pt-3d-canvas-wrap {
+    height: 360px !important;
   }
 }
 
