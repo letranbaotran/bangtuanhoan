@@ -1,0 +1,92 @@
+[
+  {
+    "id": "na-h2o",
+    "reactants": ["Na", "H2O"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "2Na (s) + 2H₂O (l) → 2NaOH (aq) + H₂ (g) ↑",
+    "reactionType": "Phản ứng Oxi hóa – Khử (Tỏa nhiệt mạnh)",
+    "phenomena": { "gas": "H₂ không màu", "heat": "Tỏa nhiệt mạnh", "indicator": "Phenolphtalein hóa hồng" },
+    "explanation": "Natri nhường 1 electron hóa trị cho H₂O tạo kiềm NaOH (pH ≈ 13) và giải phóng khí Hydro."
+  },
+  {
+    "id": "k-h2o",
+    "reactants": ["K", "H2O"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "2K (s) + 2H₂O (l) → 2KOH (aq) + H₂ (g) ↑",
+    "reactionType": "Phản ứng Oxi hóa – Khử (Rất mãnh liệt)",
+    "phenomena": { "gas": "H₂ bùng cháy", "flameColor": "#C084FC", "heat": "Tỏa nhiệt rất mạnh" },
+    "explanation": "Kali hoạt động mạnh hơn Natri, phản ứng tỏa nhiệt làm H₂ tự bốc cháy kèm ngọn lửa màu tím hoa cà."
+  },
+  {
+    "id": "zn-hcl",
+    "reactants": ["Zn", "HCl"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "Zn (s) + 2HCl (aq) → ZnCl₂ (aq) + H₂ (g) ↑",
+    "reactionType": "Phản ứng Thế / Oxi hóa – Khử",
+    "phenomena": { "gas": "H₂ sủi bọt liên tục", "solid": "Kẽm tan dần" },
+    "explanation": "Kẽm đứng trước Hydro trong dãy hoạt động hóa học nên khử ion H⁺ thành khí H₂."
+  },
+  {
+    "id": "cu-hno3",
+    "reactants": ["Cu", "HNO3"],
+    "conditions": "Axit HNO₃ đặc",
+    "balancedEquation": "Cu (s) + 4HNO₃ (đặc) → Cu(NO₃)₂ (aq) + 2NO₂ (g) ↑ + 2H₂O (l)",
+    "reactionType": "Phản ứng Oxi hóa – Khử mạnh",
+    "phenomena": { "liquidColor": "Xanh lam", "gas": "NO₂ màu nâu đỏ" },
+    "explanation": "HNO₃ đặc là chất oxi hóa rất mạnh, oxi hóa được cả Đồng để tạo muối Cu(NO₃)₂ xanh lam và khí độc NO₂ nâu đỏ."
+  },
+  {
+    "id": "fe-cuso4",
+    "reactants": ["Fe", "CuSO4"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "Fe (s) + CuSO₄ (aq) → FeSO₄ (aq) + Cu (s) ↓",
+    "reactionType": "Phản ứng Thế kim loại",
+    "phenomena": { "liquidColor": "Xanh lam nhạt dần sang xanh lục nhạt", "precipitate": "Đồng đỏ bám ngoài đinh sắt" },
+    "explanation": "Sắt có tính khử mạnh hơn Đồng nên đẩy Cu²⁺ ra khỏi dung dịch muối."
+  },
+  {
+    "id": "agno3-nacl",
+    "reactants": ["AgNO3", "NaCl"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "AgNO₃ (aq) + NaCl (aq) → AgCl (s) ↓ + NaNO₃ (aq)",
+    "reactionType": "Phản ứng Trao đổi Ion",
+    "phenomena": { "precipitate": "Kết tủa trắng AgCl" },
+    "explanation": "Ion Ag⁺ kết hợp với Cl⁻ tạo muối AgCl không tan lắng xuống đáy."
+  },
+  {
+    "id": "bacl2-h2so4",
+    "reactants": ["BaCl2", "H2SO4"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "BaCl₂ (aq) + H₂SO₄ (aq) → BaSO₄ (s) ↓ + 2HCl (aq)",
+    "reactionType": "Phản ứng Trao đổi Ion",
+    "phenomena": { "precipitate": "Kết tủa trắng BaSO₄ bền" },
+    "explanation": "Ion Ba²⁺ và SO₄²⁻ tạo kết tủa BaSO₄ không tan ngay cả trong axit mạnh."
+  },
+  {
+    "id": "cuso4-naoh",
+    "reactants": ["CuSO4", "NaOH"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "CuSO₄ (aq) + 2NaOH (aq) → Cu(OH)₂ (s) ↓ + Na₂SO₄ (aq)",
+    "reactionType": "Phản ứng Trao đổi Ion",
+    "phenomena": { "precipitate": "Kết tủa keo xanh lam Cu(OH)₂" },
+    "explanation": "Ion Cu²⁺ kết hợp với OH⁻ tạo hidroxit không tan màu xanh lam."
+  },
+  {
+    "id": "fecl3-naoh",
+    "reactants": ["FeCl3", "NaOH"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "FeCl₃ (aq) + 3NaOH (aq) → Fe(OH)₃ (s) ↓ + 3NaCl (aq)",
+    "reactionType": "Phản ứng Trao đổi Ion",
+    "phenomena": { "precipitate": "Kết tủa nâu đỏ Fe(OH)₃" },
+    "explanation": "Ion Fe³⁺ kết hợp với OH⁻ tạo kết tủa Fe(OH)₃ màu nâu đỏ đặc trưng."
+  },
+  {
+    "id": "caoh2-co2",
+    "reactants": ["Ca(OH)2", "CO2"],
+    "conditions": "Nhiệt độ thường",
+    "balancedEquation": "Ca(OH)₂ (aq) + CO₂ (g) → CaCO₃ (s) ↓ + H₂O (l)",
+    "reactionType": "Phản ứng tạo Kết tủa",
+    "phenomena": { "precipitate": "Vẩn đục trắng CaCO₃" },
+    "explanation": "Khí CO₂ phản ứng với nước vôi trong tạo kết tủa Canxi Cacbonat không tan."
+  }
+]

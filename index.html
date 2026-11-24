@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>CHEMVERSE – Vũ Trụ Nguyên Tố Hóa Học 3D</title>
+  <meta name="description" content="Khám phá 118 nguyên tố hóa học chuẩn IUPAC trong không gian thiên hà 3D tương tác, mô phỏng nguyên tử hệ sao - vệ tinh, bảng tuần hoàn thông minh và ChemQuest." />
+
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/modules.css" />
+
+  <!-- Three.js r147 UMD + OrbitControls (works on both HTTP and file://) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body class="deep-space-bg">
+  <!-- Ambient Nebula Layer -->
+  <div class="ambient-nebula" aria-hidden="true">
+    <div class="nebula-orb nebula-1"></div>
+    <div class="nebula-orb nebula-2"></div>
+    <div class="nebula-orb nebula-3"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-navbar glass-surface" id="top-navbar">
+    <div class="navbar-inner">
+      <a href="#home" class="brand-logo" data-route="home" aria-label="CHEMVERSE Home">
+        <svg class="brand-svg" viewBox="0 0 40 40" width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="cvGrad" x1="0" y1="0" x2="40" y2="40">
+              <stop offset="0%" stop-color="#38BDF8" />
+              <stop offset="50%" stop-color="#818CF8" />
+              <stop offset="100%" stop-color="#C084FC" />
+            </linearGradient>
+          </defs>
+          <ellipse cx="20" cy="20" rx="17" ry="7" transform="rotate(-28 20 20)" stroke="url(#cvGrad)" stroke-width="1.6" stroke-opacity="0.85" />
+          <ellipse cx="20" cy="20" rx="17" ry="7" transform="rotate(28 20 20)" stroke="url(#cvGrad)" stroke-width="1.6" stroke-opacity="0.85" />
+          <ellipse cx="20" cy="20" rx="17" ry="7" transform="rotate(90 20 20)" stroke="#00E5FF" stroke-width="1.2" stroke-opacity="0.55" />
+          <circle cx="20" cy="20" r="4.5" fill="url(#cvGrad)" />
+          <circle cx="33.5" cy="13" r="2.1" fill="#00E5FF" />
+          <circle cx="7" cy="27" r="1.8" fill="#EC4899" />
+        </svg>
+        <div class="brand-text">
+          <span class="brand-name">CHEMVERSE</span>
+          <span class="brand-sub">Vũ Trụ Nguyên Tố</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links (8 modules) -->
+      <nav class="nav-links" id="desktop-nav" aria-label="Điều hướng chính">
+        <a href="#home" class="nav-item active" data-route="home">
+          <span class="nav-icon" aria-hidden="true">🏠</span>
+          <span class="nav-label">Home</span>
+        </a>
+        <a href="#universe" class="nav-item" data-route="universe">
+          <span class="nav-icon" aria-hidden="true">🌌</span>
+          <span class="nav-label">Universe 3D</span>
+        </a>
+        <a href="#explorer" class="nav-item" data-route="explorer">
+          <span class="nav-icon" aria-hidden="true">🔭</span>
+          <span class="nav-label">Element Explorer</span>
+        </a>
+        <a href="#simulator" class="nav-item" data-route="simulator">
+          <span class="nav-icon" aria-hidden="true">⚛️</span>
+          <span class="nav-label">Atom Simulator</span>
+        </a>
+        <a href="#periodic-table" class="nav-item" data-route="periodic-table">
+          <span class="nav-icon" aria-hidden="true">🧪</span>
+          <span class="nav-label">Periodic Table</span>
+        </a>
+        <a href="#comparison" class="nav-item" data-route="comparison">
+          <span class="nav-icon" aria-hidden="true">⚖️</span>
+          <span class="nav-label">Element Comparison</span>
+        </a>
+        <a href="#virtual-lab" class="nav-item" data-route="virtual-lab">
+          <span class="nav-icon" aria-hidden="true">🔬</span>
+          <span class="nav-label">Virtual Lab</span>
+        </a>
+        <a href="#chemquest" class="nav-item" data-route="chemquest">
+          <span class="nav-icon" aria-hidden="true">🚀</span>
+          <span class="nav-label">ChemQuest</span>
+        </a>
+        <a href="#about" class="nav-item" data-route="about">
+          <span class="nav-icon" aria-hidden="true">📘</span>
+          <span class="nav-label">About Project</span>
+        </a>
+      </nav>
+
+      <!-- Right Utilities: Language Toggle, Theme Toggle, Quick Guide & Avatar -->
+      <div class="nav-utilities">
+        <button class="btn btn-sm btn-secondary" id="lang-toggle-btn" title="Chuyển ngôn ngữ Tiếng Việt / English" aria-label="Chuyển ngôn ngữ" style="padding:5px 10px;font-size:0.78rem;">🇻🇳 VI</button>
+        <button class="icon-btn" id="theme-toggle-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển chế độ Sáng / Tối">🌙</button>
+        <button class="icon-btn" id="quick-guide-btn" title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh" onclick="CHEMVERSE.navigate('about')">❔</button>
+        <div class="user-avatar-pill" title="Nhà thám hiểm CHEMVERSE">👨‍🚀</div>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Slide-out Drawer -->
+  <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
+  <aside class="mobile-drawer glass-surface" id="mobile-drawer" aria-label="Menu di động">
+    <div class="mobile-drawer-header">
+      <span class="brand-name">CHEMVERSE</span>
+      <button class="icon-btn" id="mobile-drawer-close" aria-label="Đóng menu">✕</button>
+    </div>
+    <nav class="mobile-nav-list">
+      <a href="#home" class="nav-item" data-route="home"><span>🏠</span> Home</a>
+      <a href="#universe" class="nav-item" data-route="universe"><span>🌌</span> Universe 3D</a>
+      <a href="#explorer" class="nav-item" data-route="explorer"><span>🔭</span> Element Explorer</a>
+      <a href="#simulator" class="nav-item" data-route="simulator"><span>⚛️</span> Atom Simulator</a>
+      <a href="#periodic-table" class="nav-item" data-route="periodic-table"><span>🧪</span> Periodic Table</a>
+      <a href="#comparison" class="nav-item" data-route="comparison"><span>⚖️</span> Element Comparison</a>
+      <a href="#virtual-lab" class="nav-item" data-route="virtual-lab"><span>🔬</span> Virtual Lab</a>
+      <a href="#chemquest" class="nav-item" data-route="chemquest"><span>🚀</span> ChemQuest</a>
+      <a href="#about" class="nav-item" data-route="about"><span>📘</span> About Project</a>
+    </nav>
+  </aside>
+
+  <!-- Main SPA View Container -->
+  <main id="app-main" class="app-main">
+    <section id="view-home" class="spa-view active"></section>
+    <section id="view-universe" class="spa-view"></section>
+    <section id="view-explorer" class="spa-view"></section>
+    <section id="view-simulator" class="spa-view"></section>
+    <section id="view-periodic-table" class="spa-view"></section>
+    <section id="view-comparison" class="spa-view"></section>
+    <section id="view-virtual-lab" class="spa-view"></section>
+    <section id="view-chemquest" class="spa-view"></section>
+    <section id="view-about" class="spa-view"></section>
+  </main>
+
+  <!-- Compact Mobile Bottom Bar -->
+  <nav class="mobile-bottom-bar glass-surface" aria-label="Điều hướng nhanh">
+    <a href="#home" class="bottom-nav-item active" data-route="home"><span>🏠</span><small>Home</small></a>
+    <a href="#universe" class="bottom-nav-item" data-route="universe"><span>🌌</span><small>3D</small></a>
+    <a href="#simulator" class="bottom-nav-item" data-route="simulator"><span>⚛️</span><small>Atom</small></a>
+    <a href="#periodic-table" class="bottom-nav-item" data-route="periodic-table"><span>🧪</span><small>Bảng</small></a>
+    <a href="#chemquest" class="bottom-nav-item" data-route="chemquest"><span>🚀</span><small>Quest</small></a>
+  </nav>
+
+  <!-- Global Extended Element Profile Modal -->
+  <div class="modal-backdrop" id="element-modal-backdrop" aria-hidden="true">
+    <div class="element-modal glass-surface" role="dialog" aria-modal="true" aria-labelledby="modal-el-title">
+      <button class="modal-close-btn icon-btn" id="element-modal-close" aria-label="Đóng hồ sơ nguyên tố">✕</button>
+      <div id="element-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Data & App Scripts -->
+  <script src="data/elements.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/universe3d.js"></script>
+  <script src="js/explorer.js"></script>
+  <script src="js/simulator.js"></script>
+  <script src="js/periodic-table.js"></script>
+  <script src="js/comparison.js"></script>
+  <script src="js/virtual-lab.js"></script>
+  <script src="js/chemquest.js"></script>
+  <script src="js/about.js"></script>
+</body>
+</html>

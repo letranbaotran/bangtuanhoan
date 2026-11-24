@@ -1,0 +1,1121 @@
+/* ==========================================================================
+   CHEMVERSE MODULES STYLESHEET
+   ========================================================================== */
+
+/* --- HOME PAGE --- */
+.hero-section {
+  position: relative;
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 48px 24px;
+}
+
+#home-star-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 860px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.28);
+}
+
+.hero-title {
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #FFFFFF 15%, #38BDF8 55%, #C084FC 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-slogan {
+  font-size: clamp(1.08rem, 2vw, 1.38rem);
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+
+.hero-desc {
+  max-width: 680px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 56px;
+}
+
+.stat-card {
+  padding: 24px 20px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--glass-border-hover);
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  line-height: 1.1;
+}
+
+.stat-label {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 0.96rem;
+}
+
+.stat-sub {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Explore Modules Grid */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-bottom: 56px;
+}
+
+.module-card {
+  padding: 24px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.module-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 16px 40px rgba(0, 229, 255, 0.14);
+}
+
+.module-card-visual {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(168, 85, 247, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.module-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+}
+
+.module-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+/* Overview Grid */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.overview-card {
+  padding: 22px;
+  border-radius: var(--radius-md);
+}
+
+.overview-card h4 {
+  color: var(--accent-blue);
+  margin-bottom: 8px;
+  font-size: 1.02rem;
+}
+
+.overview-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+/* --- MODULE 1: UNIVERSE 3D --- */
+.universe-shell {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0d1538 0%, #050814 75%);
+}
+
+#universe-canvas-wrap {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+}
+
+#universe-canvas-wrap:active {
+  cursor: grabbing;
+}
+
+.universe-toolbar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.universe-legend {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 20;
+  width: 260px;
+  max-height: 60vh;
+  overflow-y: auto;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.universe-legend.collapsed .legend-list {
+  display: none;
+}
+
+.legend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.legend-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--transition);
+}
+
+.legend-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.legend-item.active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.universe-tooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 40;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  display: none;
+}
+
+.universe-detail-panel {
+  position: absolute;
+  top: 86px;
+  right: 16px;
+  bottom: 16px;
+  width: min(390px, calc(100vw - 32px));
+  z-index: 25;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  overflow-y: auto;
+  transform: translateX(calc(100% + 24px));
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.universe-detail-panel.open {
+  transform: translateX(0);
+}
+
+/* --- MODULE 2: ELEMENT EXPLORER --- */
+.filter-bar {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.cat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cat-chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.cat-chip.selected {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--chip-color, var(--accent-cyan));
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
+}
+
+.explorer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.element-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.element-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--el-color, var(--accent-cyan));
+}
+
+.element-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.el-symbol-lg {
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.explorer-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.data-table th, .data-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.data-table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.data-table tr:hover td {
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+}
+
+/* --- MODULE 3: ATOM SIMULATOR --- */
+.simulator-layout {
+  display: grid;
+  grid-template-columns: 1fr 370px;
+  gap: 18px;
+  min-height: calc(100vh - var(--navbar-height) - 56px);
+}
+
+.simulator-stage {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 500px;
+  background: radial-gradient(circle at center, #0d163a 0%, #050814 80%);
+}
+
+#sim-3d-wrap, #sim-2d-canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  display: block;
+}
+
+.simulator-hud {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.simulator-controls {
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.segmented-ctrl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.segmented-ctrl button {
+  padding: 7px 6px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.segmented-ctrl button.active {
+  background: rgba(0, 229, 255, 0.18);
+  color: var(--accent-cyan);
+}
+
+/* --- MODULE 4: SMART PERIODIC TABLE (COSMIC + GLASSMORPHISM UPGRADE) --- */
+.pt-portal-header {
+  text-align: center;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.pt-ribbon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.14), rgba(168, 85, 247, 0.16));
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  box-shadow: 0 0 28px rgba(0, 229, 255, 0.14);
+}
+
+.pt-ribbon h2 {
+  font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+  letter-spacing: 0.04em;
+  background: linear-gradient(90deg, #FFFFFF, #38BDF8, #C084FC);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body.light-glass .pt-ribbon h2 {
+  background: linear-gradient(90deg, #0F172A, #0284C7, #7C3AED);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.pt-pill-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+  padding: 6px 8px 6px 18px;
+  border-radius: 999px;
+}
+
+.pt-pill-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.94rem;
+}
+
+.pt-search-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #00E5FF, #3B82F6);
+  color: #030712;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.45);
+}
+
+.pt-controls {
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 18px;
+}
+
+.pt-legend-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.pt-scroll-wrap {
+  overflow-x: auto;
+  padding-bottom: 14px;
+  position: relative;
+}
+
+/* 19 columns: Col 1 = Period Axis, Cols 2..19 = Groups 1..18 */
+.pt-grid {
+  display: grid;
+  grid-template-columns: 58px repeat(18, minmax(56px, 1fr));
+  gap: 5px;
+  min-width: 1140px;
+  position: relative;
+}
+
+.pt-axis-corner {
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.25;
+}
+
+.pt-group-pill {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  font-size: 0.72rem;
+  line-height: 1.15;
+}
+
+.pt-group-pill small {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.pt-period-pill {
+  grid-column: 1;
+  position: sticky;
+  left: 0;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 999px;
+  background: var(--bg-space-elevated);
+  border: 1px solid var(--glass-border);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.pt-galaxy-gap {
+  grid-row: 2 / span 3;
+  grid-column: 4 / span 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 25% 50%, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.08) 55%, transparent 80%);
+  border: 1px dashed rgba(125, 211, 252, 0.25);
+}
+
+.pt-anatomy-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  z-index: 2;
+}
+
+.pt-anatomy-sample {
+  width: 78px;
+  height: 84px;
+  border-radius: 10px;
+  padding: 6px;
+  border: 1.5px solid #FFC312;
+  background: rgba(255, 195, 18, 0.16);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.pt-anatomy-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+}
+
+.pt-cell {
+  position: relative;
+  aspect-ratio: 1 / 1.1;
+  border-radius: 10px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(15, 23, 42, 0.74);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease, border-color 0.18s ease;
+}
+
+.pt-cell:hover {
+  transform: scale(1.13);
+  z-index: 18;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.45);
+}
+
+.pt-cell.dimmed {
+  opacity: 0.22;
+}
+
+.pt-cell.search-hit {
+  box-shadow: 0 0 0 2px #00E5FF, 0 0 22px rgba(0, 229, 255, 0.7);
+  transform: scale(1.06);
+  z-index: 16;
+}
+
+.pt-cell-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.64rem;
+}
+
+.pt-cell-sym {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+}
+
+.pt-cell-name {
+  font-size: 0.56rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-secondary);
+}
+
+.pt-cell-sub {
+  font-size: 0.52rem;
+  text-align: center;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pt-connector-cell {
+  border-radius: 10px;
+  border: 1px dashed rgba(236, 72, 153, 0.5);
+  background: rgba(236, 72, 153, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.pt-fblock-spacer {
+  grid-column: 1 / -1;
+  height: 10px;
+}
+
+.heatmap-scale-bar {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+}
+
+.heatmap-gradient {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1E3A8A, #06B6D4, #10B981, #F59E0B, #EF4444);
+}
+
+/* --- 2-COLUMN ELEMENT DETAIL MODAL + 3D PEDESTAL ATOM --- */
+.el-modal-2col {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.el-modal-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.el-summary-card {
+  padding: 18px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  color: #F8FAFC;
+}
+
+body.light-glass .el-summary-card {
+  color: #0F172A;
+}
+
+.pedestal-atom-wrap {
+  position: relative;
+  height: 250px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, #111b44 0%, #050814 85%);
+  border: 1px solid var(--glass-border);
+}
+
+.pedestal-glow-ring {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%) rotateX(72deg);
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 229, 255, 0.65);
+  box-shadow: 0 0 28px rgba(0, 229, 255, 0.5), inset 0 0 24px rgba(56, 189, 248, 0.35);
+  pointer-events: none;
+}
+
+.el-modal-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.el-specs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 0.86rem;
+}
+
+.el-spec-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.el-spec-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.el-props-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 820px) {
+  .el-modal-2col {
+    grid-template-columns: 1fr;
+  }
+  .el-props-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- MODULE 5: COMPARISON --- */
+.comp-selectors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.comp-atoms-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.comp-atom-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.comp-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.highlight-max {
+  color: #34D399;
+  font-weight: 700;
+}
+
+.highlight-min {
+  color: #FBBF24;
+  font-weight: 700;
+}
+
+/* --- MODULE 6: CHEMQUEST --- */
+.quest-hub {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.quest-mode-card {
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.quest-arena {
+  padding: 26px;
+  border-radius: var(--radius-lg);
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.quiz-option-btn {
+  padding: 14px 16px;
+  border-radius: 12px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quiz-option-btn:hover:not(:disabled) {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.quiz-option-btn.correct {
+  border-color: #10B981;
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.quiz-option-btn.wrong {
+  border-color: #EF4444;
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* --- MODULE 6: VIRTUAL LAB --- */
+.lab-workbench {
+  display: grid;
+  grid-template-columns: 320px 1fr 330px;
+  gap: 16px;
+  align-items: start;
+}
+
+.lab-shelf, .lab-analysis {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 760px;
+  overflow-y: auto;
+}
+
+.lab-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.lab-tab-btn {
+  padding: 6px 4px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.lab-tab-btn.active {
+  background: rgba(0, 229, 255, 0.18);
+  color: var(--accent-cyan);
+}
+
+.lab-item-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.lab-chem-btn {
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.04);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+}
+
+.lab-chem-btn:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.lab-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: inline-block;
+}
+
+.lab-center {
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lab-stage-wrap {
+  position: relative;
+  height: 410px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #10193d 0%, #050814 85%);
+  border: 1px solid var(--glass-border);
+}
+
+#lab-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lab-hud-top {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  font-size: 0.8rem;
+}
+
+.lab-env-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.lab-presets-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 1180px) {
+  .lab-workbench {
+    grid-template-columns: 1fr;
+  }
+  .lab-shelf, .lab-analysis {
+    max-height: none;
+  }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .simulator-layout {
+    grid-template-columns: 1fr;
+  }
+  .pt-controls {
+    grid-template-columns: 1fr;
+  }
+  .comp-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .comp-selectors {
+    grid-template-columns: 1fr;
+  }
+  .quiz-options {
+    grid-template-columns: 1fr;
+  }
+  .universe-legend {
+    width: 210px;
+    max-height: 40vh;
+  }
+}
