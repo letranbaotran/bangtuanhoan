@@ -700,6 +700,15 @@
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
+  CV.hasWebGL = function () {
+    try {
+      const c = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+    } catch (_) {
+      return false;
+    }
+  };
+
   function setupNavigation() {
     document.querySelectorAll('[data-route]').forEach((link) => {
       link.addEventListener('click', (e) => {

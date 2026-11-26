@@ -19,7 +19,18 @@
 
           <!-- Top Floating Toolbar -->
           <div class="universe-toolbar glass-surface">
-            <input type="text" id="uni-search" class="input-field" style="width:200px;flex:1;min-width:150px;" placeholder="🔍 Tìm nguyên tố (H, Sắt, Fe)..." />
+            <select id="uni-struct-select" class="select-field" style="min-width:220px;">
+              <option value="galaxy">🌌 Thiên hà 118 nguyên tố</option>
+              <option value="H2O">💧 Phân tử H₂O (Bent 104.5°)</option>
+              <option value="CH4">🔥 Phân tử CH₄ (Tetrahedral 109.5°)</option>
+              <option value="CO2">💨 Phân tử CO₂ (Linear 180°)</option>
+              <option value="BF3">🔺 Phân tử BF₃ (Trigonal planar 120°)</option>
+              <option value="NH3">🧪 Phân tử NH₃ (Trigonal pyramidal 107°)</option>
+              <option value="NaCl">🧊 Mạng tinh thể NaCl (Lập phương)</option>
+              <option value="bond-ion">⚡ Liên kết Ion (Na⁺ + Cl⁻)</option>
+              <option value="bond-cov">🔗 Liên kết Cộng hóa trị (H₂O)</option>
+            </select>
+            <input type="text" id="uni-search" class="input-field" style="width:180px;flex:1;min-width:140px;" placeholder="🔍 Tìm nguyên tố (H, Sắt, Fe)..." />
             <select id="uni-period-filter" class="select-field">
               <option value="all">Chu kỳ: Tất cả (1–7)</option>
               ${[1, 2, 3, 4, 5, 6, 7].map((p) => `<option value="${p}">Chu kỳ ${p}</option>`).join('')}
@@ -30,6 +41,7 @@
             </div>
             <button class="btn btn-sm btn-secondary" id="uni-reset-view">⟲ Reset View</button>
           </div>
+          <div id="uni-struct-info" class="glass-surface" style="display:none;position:absolute;bottom:20px;left:20px;z-index:20;padding:14px 18px;border-radius:14px;max-width:420px;"></div>
 
           <!-- Collapsible 11-Category Legend -->
           <div class="universe-legend glass-surface" id="uni-legend">
@@ -273,11 +285,133 @@
           }
         }
 
+        if (this.three.structureGroup && this.three.structureGroup.visible) {
+          this.three.structureGroup.rotation.y += 0.006;
+          if (this.three.bondElectron && this.three.bondMode === 'ion') {
+            const p = (Math.sin(performance.now() * 0.0022) + 1) / 2;
+            this.three.bondElectron.position.set(-5.5 + p * 11, Math.sin(p * Math.PI) * 2.4, 0);
+          }
+        }
         starsMesh.rotation.y += 0.00025;
         controls.update();
         renderer.render(scene, camera);
       };
       animate();
+    },
+
+    showStructure3D(mode) {
+      const t = this.three;
+      if (!t) return;
+      if (!t.structureGroup) {
+        t.structureGroup = new THREE.Group();
+        t.scene.add(t.structureGroup);
+      }
+      while (t.structureGroup.children.length > 0) t.structureGroup.remove(t.structureGroup.children[0]);
+      t.bondElectron = null;
+      t.bondMode = null;
+
+      const info = document.getElementById('uni-struct-info');
+      const isGalaxy = mode === 'galaxy';
+      t.galaxyGroup.visible = isGalaxy;
+      t.orbitRingsGroup.visible = isGalaxy && this.state.layout === 'spiral';
+      t.structureGroup.visible = !isGalaxy;
+
+      if (isGalaxy) {
+        if (info) info.style.display = 'none';
+        t.flyTarget = new THREE.Vector3(0, 0, 0);
+        t.flyCamPos = new THREE.Vector3(0, 58, 92);
+        return;
+      }
+
+      const addAtom = (x, y, z, r, hex) => {
+        const m = new THREE.Mesh(
+          new THREE.SphereGeometry(r, 24, 24),
+          new THREE.MeshStandardMaterial({ color: hex, emissive: hex, emissiveIntensity: 0.25, roughness: 0.25, metalness: 0.2 })
+        );
+        m.position.set(x, y, z);
+        t.structureGroup.add(m);
+        return m;
+      };
+      const addBond = (p1, p2, rad = 0.22, hex = 0x94a3b8) => {
+        const v1 = new THREE.Vector3(...p1), v2 = new THREE.Vector3(...p2);
+        const dir = new THREE.Vector3().subVectors(v2, v1);
+        const cyl = new THREE.Mesh(
+          new THREE.CylinderGeometry(rad, rad, dir.length(), 14),
+          new THREE.MeshStandardMaterial({ color: hex, roughness: 0.35 })
+        );
+        cyl.position.copy(v1).add(v2).multiplyScalar(0.5);
+        cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
+        t.structureGroup.add(cyl);
+      };
+
+      const meta = {
+        H2O: { name: '💧 H₂O', geom: 'Bent (Gấp khúc)', angle: '104.5°', len: '95.8 pm (O–H)', pol: 'Phân cực', desc: 'Oxy ở tâm gắn với 2 nguyên tử Hydro.' },
+        CH4: { name: '🔥 CH₄', geom: 'Tetrahedral (Tứ diện)', angle: '109.5°', len: '108.7 pm (C–H)', pol: 'Không phân cực', desc: 'Cacbon ở tâm liên kết cộng hóa trị với 4 H.' },
+        CO2: { name: '💨 CO₂', geom: 'Linear (Đường thẳng)', angle: '180°', len: '116.3 pm (C=O)', pol: 'Không phân cực', desc: '2 liên kết đôi O=C=O đối xứng.' },
+        BF3: { name: '🔺 BF₃', geom: 'Trigonal planar (Tam giác phẳng)', angle: '120°', len: '131.3 pm (B–F)', pol: 'Không phân cực', desc: '3 liên kết B–F nằm trên một mặt phẳng.' },
+        NH3: { name: '🧪 NH₃', geom: 'Trigonal pyramidal (Chóp tam giác)', angle: '107°', len: '101.7 pm (N–H)', pol: 'Phân cực', desc: 'Cặp e tự do trên N đẩy 3 liên kết N–H.' },
+        NaCl: { name: '🧊 Tinh thể NaCl', geom: 'Lập phương tâm diện', angle: '90°', len: '282 pm (Na–Cl)', pol: 'Ion', desc: 'Các ion Na⁺ và Cl⁻ sắp xếp xen kẽ hút tĩnh điện.' },
+        'bond-ion': { name: '⚡ Liên kết Ion (Na⁺Cl⁻)', geom: 'Chuyển electron', angle: '—', len: '236 pm', pol: 'Ion', desc: 'Na nhường 1 electron lớp ngoài cùng cho Cl.' },
+        'bond-cov': { name: '🔗 Cộng hóa trị (H₂O)', geom: 'Dùng chung e', angle: '104.5°', len: '95.8 pm', pol: 'Phân cực', desc: 'O và H góp chung cặp electron (hạt vàng).' }
+      };
+
+      if (mode === 'H2O') {
+        addAtom(0, 0.8, 0, 1.8, 0xef4444);
+        const rad = (104.5 / 2) * (Math.PI / 180), d = 4.2;
+        const h1 = [-Math.sin(rad) * d, 0.8 - Math.cos(rad) * d, 0], h2 = [Math.sin(rad) * d, 0.8 - Math.cos(rad) * d, 0];
+        addAtom(...h1, 1.05, 0xf8fafc); addAtom(...h2, 1.05, 0xf8fafc);
+        addBond([0, 0.8, 0], h1); addBond([0, 0.8, 0], h2);
+      } else if (mode === 'CH4') {
+        addAtom(0, 0, 0, 1.7, 0x475569);
+        [[0, 4.2, 0], [3.9, -1.4, 0], [-2.0, -1.4, 3.4], [-2.0, -1.4, -3.4]].forEach((p) => { addAtom(...p, 1.0, 0xf8fafc); addBond([0, 0, 0], p); });
+      } else if (mode === 'CO2') {
+        addAtom(0, 0, 0, 1.65, 0x475569);
+        addAtom(-4.6, 0, 0, 1.45, 0xef4444); addAtom(4.6, 0, 0, 1.45, 0xef4444);
+        addBond([-4.6, 0.35, 0], [4.6, 0.35, 0], 0.16); addBond([-4.6, -0.35, 0], [4.6, -0.35, 0], 0.16);
+      } else if (mode === 'BF3') {
+        addAtom(0, 0, 0, 1.5, 0xf472b6);
+        for (let k = 0; k < 3; k++) {
+          const ang = (k * 2 * Math.PI) / 3;
+          const p = [Math.cos(ang) * 4.4, Math.sin(ang) * 4.4, 0];
+          addAtom(...p, 1.3, 0x34d399); addBond([0, 0, 0], p);
+        }
+      } else if (mode === 'NH3') {
+        addAtom(0, 1.2, 0, 1.65, 0x3b82f6);
+        for (let k = 0; k < 3; k++) {
+          const ang = (k * 2 * Math.PI) / 3;
+          const p = [Math.cos(ang) * 3.8, -1.2, Math.sin(ang) * 3.8];
+          addAtom(...p, 1.0, 0xf8fafc); addBond([0, 1.2, 0], p);
+        }
+      } else if (mode === 'NaCl') {
+        const sp = 3.2;
+        for (let ix = -1; ix <= 1; ix++) for (let iy = -1; iy <= 1; iy++) for (let iz = -1; iz <= 1; iz++) {
+          const isNa = (ix + iy + iz + 6) % 2 === 0;
+          addAtom(ix * sp, iy * sp, iz * sp, isNa ? 0.72 : 1.08, isNa ? 0xa855f7 : 0x22c55e);
+        }
+      } else if (mode === 'bond-ion') {
+        addAtom(-5.5, 0, 0, 1.8, 0xa855f7); addAtom(5.5, 0, 0, 2.2, 0x22c55e);
+        t.bondElectron = addAtom(-5.5, 0, 0, 0.48, 0xfbbf24); t.bondMode = 'ion';
+      } else if (mode === 'bond-cov') {
+        addAtom(0, 0, 0, 1.8, 0x3b82f6); addAtom(-4.8, 0, 0, 1.1, 0x00e5ff); addAtom(4.8, 0, 0, 1.1, 0x00e5ff);
+        addAtom(-2.4, 0.4, 0, 0.38, 0xfbbf24); addAtom(-2.4, -0.4, 0, 0.38, 0xfbbf24);
+        addAtom(2.4, 0.4, 0, 0.38, 0xfbbf24); addAtom(2.4, -0.4, 0, 0.38, 0xfbbf24);
+      }
+
+      const m = meta[mode];
+      if (info && m) {
+        const cmpKey = mode === 'H2O' ? 'CO2' : 'H2O';
+        const c = meta[cmpKey];
+        info.style.display = 'block';
+        info.innerHTML = `
+          <strong style="color:var(--accent-cyan);font-size:0.96rem;">${m.name} • ${m.geom}</strong>
+          <div class="mono" style="font-size:0.78rem;margin-top:4px;">Góc: ${m.angle} • Độ dài: ${m.len} • ${m.pol}</div>
+          <p style="font-size:0.8rem;color:var(--text-secondary);margin:6px 0;">${m.desc}</p>
+          <div style="border-top:1px solid rgba(255,255,255,0.12);padding-top:6px;font-size:0.74rem;color:var(--text-muted);">
+            <strong>⚖️ Đối chiếu với ${c.name}:</strong> ${c.geom} (${c.angle}, ${c.len}, ${c.pol})
+          </div>`;
+      }
+      t.flyTarget = new THREE.Vector3(0, 0, 0);
+      t.flyCamPos = new THREE.Vector3(0, 5, 18);
     },
 
     createLabelSprite(symbol, number, color) {
@@ -379,6 +513,11 @@
         t.orbitRingsGroup.visible = false;
         t.planets.forEach((p) => p.userData.targetPos.copy(p.userData.clusterPos));
       });
+
+      const structSel = document.getElementById('uni-struct-select');
+      if (structSel) {
+        structSel.addEventListener('change', (e) => this.showStructure3D(e.target.value));
+      }
 
       // Reset View
       document.getElementById('uni-reset-view').addEventListener('click', () => {

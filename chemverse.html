@@ -3460,6 +3460,15 @@ window.CHEMVERSE.REACTIONS = [
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
+  CV.hasWebGL = function () {
+    try {
+      const c = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+    } catch (_) {
+      return false;
+    }
+  };
+
   function setupNavigation() {
     document.querySelectorAll('[data-route]').forEach((link) => {
       link.addEventListener('click', (e) => {
@@ -4361,7 +4370,18 @@ window.CHEMVERSE.REACTIONS = [
 
           <!-- Top Floating Toolbar -->
           <div class="universe-toolbar glass-surface">
-            <input type="text" id="uni-search" class="input-field" style="width:200px;flex:1;min-width:150px;" placeholder="🔍 Tìm nguyên tố (H, Sắt, Fe)..." />
+            <select id="uni-struct-select" class="select-field" style="min-width:220px;">
+              <option value="galaxy">🌌 Thiên hà 118 nguyên tố</option>
+              <option value="H2O">💧 Phân tử H₂O (Bent 104.5°)</option>
+              <option value="CH4">🔥 Phân tử CH₄ (Tetrahedral 109.5°)</option>
+              <option value="CO2">💨 Phân tử CO₂ (Linear 180°)</option>
+              <option value="BF3">🔺 Phân tử BF₃ (Trigonal planar 120°)</option>
+              <option value="NH3">🧪 Phân tử NH₃ (Trigonal pyramidal 107°)</option>
+              <option value="NaCl">🧊 Mạng tinh thể NaCl (Lập phương)</option>
+              <option value="bond-ion">⚡ Liên kết Ion (Na⁺ + Cl⁻)</option>
+              <option value="bond-cov">🔗 Liên kết Cộng hóa trị (H₂O)</option>
+            </select>
+            <input type="text" id="uni-search" class="input-field" style="width:180px;flex:1;min-width:140px;" placeholder="🔍 Tìm nguyên tố (H, Sắt, Fe)..." />
             <select id="uni-period-filter" class="select-field">
               <option value="all">Chu kỳ: Tất cả (1–7)</option>
               ${[1, 2, 3, 4, 5, 6, 7].map((p) => `<option value="${p}">Chu kỳ ${p}</option>`).join('')}
@@ -4372,6 +4392,7 @@ window.CHEMVERSE.REACTIONS = [
             </div>
             <button class="btn btn-sm btn-secondary" id="uni-reset-view">⟲ Reset View</button>
           </div>
+          <div id="uni-struct-info" class="glass-surface" style="display:none;position:absolute;bottom:20px;left:20px;z-index:20;padding:14px 18px;border-radius:14px;max-width:420px;"></div>
 
           <!-- Collapsible 11-Category Legend -->
           <div class="universe-legend glass-surface" id="uni-legend">
@@ -4615,11 +4636,133 @@ window.CHEMVERSE.REACTIONS = [
           }
         }
 
+        if (this.three.structureGroup && this.three.structureGroup.visible) {
+          this.three.structureGroup.rotation.y += 0.006;
+          if (this.three.bondElectron && this.three.bondMode === 'ion') {
+            const p = (Math.sin(performance.now() * 0.0022) + 1) / 2;
+            this.three.bondElectron.position.set(-5.5 + p * 11, Math.sin(p * Math.PI) * 2.4, 0);
+          }
+        }
         starsMesh.rotation.y += 0.00025;
         controls.update();
         renderer.render(scene, camera);
       };
       animate();
+    },
+
+    showStructure3D(mode) {
+      const t = this.three;
+      if (!t) return;
+      if (!t.structureGroup) {
+        t.structureGroup = new THREE.Group();
+        t.scene.add(t.structureGroup);
+      }
+      while (t.structureGroup.children.length > 0) t.structureGroup.remove(t.structureGroup.children[0]);
+      t.bondElectron = null;
+      t.bondMode = null;
+
+      const info = document.getElementById('uni-struct-info');
+      const isGalaxy = mode === 'galaxy';
+      t.galaxyGroup.visible = isGalaxy;
+      t.orbitRingsGroup.visible = isGalaxy && this.state.layout === 'spiral';
+      t.structureGroup.visible = !isGalaxy;
+
+      if (isGalaxy) {
+        if (info) info.style.display = 'none';
+        t.flyTarget = new THREE.Vector3(0, 0, 0);
+        t.flyCamPos = new THREE.Vector3(0, 58, 92);
+        return;
+      }
+
+      const addAtom = (x, y, z, r, hex) => {
+        const m = new THREE.Mesh(
+          new THREE.SphereGeometry(r, 24, 24),
+          new THREE.MeshStandardMaterial({ color: hex, emissive: hex, emissiveIntensity: 0.25, roughness: 0.25, metalness: 0.2 })
+        );
+        m.position.set(x, y, z);
+        t.structureGroup.add(m);
+        return m;
+      };
+      const addBond = (p1, p2, rad = 0.22, hex = 0x94a3b8) => {
+        const v1 = new THREE.Vector3(...p1), v2 = new THREE.Vector3(...p2);
+        const dir = new THREE.Vector3().subVectors(v2, v1);
+        const cyl = new THREE.Mesh(
+          new THREE.CylinderGeometry(rad, rad, dir.length(), 14),
+          new THREE.MeshStandardMaterial({ color: hex, roughness: 0.35 })
+        );
+        cyl.position.copy(v1).add(v2).multiplyScalar(0.5);
+        cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
+        t.structureGroup.add(cyl);
+      };
+
+      const meta = {
+        H2O: { name: '💧 H₂O', geom: 'Bent (Gấp khúc)', angle: '104.5°', len: '95.8 pm (O–H)', pol: 'Phân cực', desc: 'Oxy ở tâm gắn với 2 nguyên tử Hydro.' },
+        CH4: { name: '🔥 CH₄', geom: 'Tetrahedral (Tứ diện)', angle: '109.5°', len: '108.7 pm (C–H)', pol: 'Không phân cực', desc: 'Cacbon ở tâm liên kết cộng hóa trị với 4 H.' },
+        CO2: { name: '💨 CO₂', geom: 'Linear (Đường thẳng)', angle: '180°', len: '116.3 pm (C=O)', pol: 'Không phân cực', desc: '2 liên kết đôi O=C=O đối xứng.' },
+        BF3: { name: '🔺 BF₃', geom: 'Trigonal planar (Tam giác phẳng)', angle: '120°', len: '131.3 pm (B–F)', pol: 'Không phân cực', desc: '3 liên kết B–F nằm trên một mặt phẳng.' },
+        NH3: { name: '🧪 NH₃', geom: 'Trigonal pyramidal (Chóp tam giác)', angle: '107°', len: '101.7 pm (N–H)', pol: 'Phân cực', desc: 'Cặp e tự do trên N đẩy 3 liên kết N–H.' },
+        NaCl: { name: '🧊 Tinh thể NaCl', geom: 'Lập phương tâm diện', angle: '90°', len: '282 pm (Na–Cl)', pol: 'Ion', desc: 'Các ion Na⁺ và Cl⁻ sắp xếp xen kẽ hút tĩnh điện.' },
+        'bond-ion': { name: '⚡ Liên kết Ion (Na⁺Cl⁻)', geom: 'Chuyển electron', angle: '—', len: '236 pm', pol: 'Ion', desc: 'Na nhường 1 electron lớp ngoài cùng cho Cl.' },
+        'bond-cov': { name: '🔗 Cộng hóa trị (H₂O)', geom: 'Dùng chung e', angle: '104.5°', len: '95.8 pm', pol: 'Phân cực', desc: 'O và H góp chung cặp electron (hạt vàng).' }
+      };
+
+      if (mode === 'H2O') {
+        addAtom(0, 0.8, 0, 1.8, 0xef4444);
+        const rad = (104.5 / 2) * (Math.PI / 180), d = 4.2;
+        const h1 = [-Math.sin(rad) * d, 0.8 - Math.cos(rad) * d, 0], h2 = [Math.sin(rad) * d, 0.8 - Math.cos(rad) * d, 0];
+        addAtom(...h1, 1.05, 0xf8fafc); addAtom(...h2, 1.05, 0xf8fafc);
+        addBond([0, 0.8, 0], h1); addBond([0, 0.8, 0], h2);
+      } else if (mode === 'CH4') {
+        addAtom(0, 0, 0, 1.7, 0x475569);
+        [[0, 4.2, 0], [3.9, -1.4, 0], [-2.0, -1.4, 3.4], [-2.0, -1.4, -3.4]].forEach((p) => { addAtom(...p, 1.0, 0xf8fafc); addBond([0, 0, 0], p); });
+      } else if (mode === 'CO2') {
+        addAtom(0, 0, 0, 1.65, 0x475569);
+        addAtom(-4.6, 0, 0, 1.45, 0xef4444); addAtom(4.6, 0, 0, 1.45, 0xef4444);
+        addBond([-4.6, 0.35, 0], [4.6, 0.35, 0], 0.16); addBond([-4.6, -0.35, 0], [4.6, -0.35, 0], 0.16);
+      } else if (mode === 'BF3') {
+        addAtom(0, 0, 0, 1.5, 0xf472b6);
+        for (let k = 0; k < 3; k++) {
+          const ang = (k * 2 * Math.PI) / 3;
+          const p = [Math.cos(ang) * 4.4, Math.sin(ang) * 4.4, 0];
+          addAtom(...p, 1.3, 0x34d399); addBond([0, 0, 0], p);
+        }
+      } else if (mode === 'NH3') {
+        addAtom(0, 1.2, 0, 1.65, 0x3b82f6);
+        for (let k = 0; k < 3; k++) {
+          const ang = (k * 2 * Math.PI) / 3;
+          const p = [Math.cos(ang) * 3.8, -1.2, Math.sin(ang) * 3.8];
+          addAtom(...p, 1.0, 0xf8fafc); addBond([0, 1.2, 0], p);
+        }
+      } else if (mode === 'NaCl') {
+        const sp = 3.2;
+        for (let ix = -1; ix <= 1; ix++) for (let iy = -1; iy <= 1; iy++) for (let iz = -1; iz <= 1; iz++) {
+          const isNa = (ix + iy + iz + 6) % 2 === 0;
+          addAtom(ix * sp, iy * sp, iz * sp, isNa ? 0.72 : 1.08, isNa ? 0xa855f7 : 0x22c55e);
+        }
+      } else if (mode === 'bond-ion') {
+        addAtom(-5.5, 0, 0, 1.8, 0xa855f7); addAtom(5.5, 0, 0, 2.2, 0x22c55e);
+        t.bondElectron = addAtom(-5.5, 0, 0, 0.48, 0xfbbf24); t.bondMode = 'ion';
+      } else if (mode === 'bond-cov') {
+        addAtom(0, 0, 0, 1.8, 0x3b82f6); addAtom(-4.8, 0, 0, 1.1, 0x00e5ff); addAtom(4.8, 0, 0, 1.1, 0x00e5ff);
+        addAtom(-2.4, 0.4, 0, 0.38, 0xfbbf24); addAtom(-2.4, -0.4, 0, 0.38, 0xfbbf24);
+        addAtom(2.4, 0.4, 0, 0.38, 0xfbbf24); addAtom(2.4, -0.4, 0, 0.38, 0xfbbf24);
+      }
+
+      const m = meta[mode];
+      if (info && m) {
+        const cmpKey = mode === 'H2O' ? 'CO2' : 'H2O';
+        const c = meta[cmpKey];
+        info.style.display = 'block';
+        info.innerHTML = `
+          <strong style="color:var(--accent-cyan);font-size:0.96rem;">${m.name} • ${m.geom}</strong>
+          <div class="mono" style="font-size:0.78rem;margin-top:4px;">Góc: ${m.angle} • Độ dài: ${m.len} • ${m.pol}</div>
+          <p style="font-size:0.8rem;color:var(--text-secondary);margin:6px 0;">${m.desc}</p>
+          <div style="border-top:1px solid rgba(255,255,255,0.12);padding-top:6px;font-size:0.74rem;color:var(--text-muted);">
+            <strong>⚖️ Đối chiếu với ${c.name}:</strong> ${c.geom} (${c.angle}, ${c.len}, ${c.pol})
+          </div>`;
+      }
+      t.flyTarget = new THREE.Vector3(0, 0, 0);
+      t.flyCamPos = new THREE.Vector3(0, 5, 18);
     },
 
     createLabelSprite(symbol, number, color) {
@@ -4721,6 +4864,11 @@ window.CHEMVERSE.REACTIONS = [
         t.orbitRingsGroup.visible = false;
         t.planets.forEach((p) => p.userData.targetPos.copy(p.userData.clusterPos));
       });
+
+      const structSel = document.getElementById('uni-struct-select');
+      if (structSel) {
+        structSel.addEventListener('change', (e) => this.showStructure3D(e.target.value));
+      }
 
       // Reset View
       document.getElementById('uni-reset-view').addEventListener('click', () => {
@@ -5398,19 +5546,45 @@ window.CHEMVERSE.REACTIONS = [
         'Gồm 5 định hướng phức tạp (kim loại chuyển tiếp).',
         'Gồm 7 định hướng (họ Lanthanide & Actinide).'
       ];
+      const ms = this.state.qSpin || '+1/2 (↑)';
+      const curEl = CV.getElement(this.state.elementId);
+      const isValidQ = n >= 1 && l >= 0 && l < n && Math.abs(m) <= l;
       document.getElementById('sim-q-inspector').innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <strong style="color:var(--accent-cyan);">Orbital ${n}${SUBSHELL_LETTERS[l] || 'g'} (n=${n}, l=${l}, m=${m})</strong>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <strong style="color:var(--accent-cyan);">Orbital ${n}${SUBSHELL_LETTERS[l] || 'g'} (n=${n}, l=${l}, mₗ=${m}, mₛ=${ms})</strong>
           <strong class="mono" style="color:#34D399;">${energyEV} eV</strong>
         </div>
-        <div style="color:var(--text-secondary);font-size:0.76rem;">💡 ${notes[Math.min(3, l)]}</div>
+        <div style="font-size:0.72rem;color:${isValidQ ? '#34D399' : '#F87171'};margin-bottom:4px;">
+          ${isValidQ ? '✓ Số lượng tử hợp lệ (Aufbau • Pauli • Hund)' : '✗ Số lượng tử không hợp lệ'}
+        </div>
+        <div style="color:var(--text-secondary);font-size:0.75rem;margin-bottom:6px;">💡 ${notes[Math.min(3, l)]}</div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+          <span style="font-size:0.72rem;color:var(--text-muted);">Spin mₛ:</span>
+          <button class="btn btn-sm ${ms.includes('+') ? 'btn-primary' : 'btn-secondary'}" style="padding:2px 8px;font-size:0.72rem;" onclick="CHEMVERSE.modules.simulator.state.qSpin='+1/2 (↑)';CHEMVERSE.modules.simulator.buildQuantumOrbital();">+½ (↑)</button>
+          <button class="btn btn-sm ${ms.includes('-') ? 'btn-primary' : 'btn-secondary'}" style="padding:2px 8px;font-size:0.72rem;" onclick="CHEMVERSE.modules.simulator.state.qSpin='-1/2 (↓)';CHEMVERSE.modules.simulator.buildQuantumOrbital();">-½ (↓)</button>
+        </div>
+        <div style="font-size:0.7rem;color:#FDE68A;background:rgba(245,158,11,0.12);padding:5px 8px;border-radius:6px;">
+          🔬 <strong>Scientific Mode:</strong> Mô hình xác suất |ψ|² (CGI 3D), không phải quỹ đạo cổ điển cố định và không thay thế phép giải lượng tử chính xác.
+        </div>
       `;
 
-      const curEl = CV.getElement(this.state.elementId);
       const qBoxes = document.getElementById('sim-q-boxes');
       if (curEl && qBoxes) {
-        qBoxes.innerHTML = `<div style="font-size:0.74rem;color:var(--accent-cyan);margin-bottom:6px;">Nguyên tố: ${curEl.symbol} – ${curEl.nameVi} (Z=${curEl.number})</div>` +
-          CV.renderOrbitalBoxesHTML(curEl, { interactive: true, showSummary: true });
+        const cmpZ = this.state.qCompareId || 29;
+        const cmpEl = CV.getElement(cmpZ);
+        qBoxes.innerHTML = `<div style="font-size:0.74rem;color:var(--accent-cyan);margin-bottom:6px;">Nguyên tố: ${curEl.symbol} – ${curEl.nameVi} (Z=${curEl.number}) • <span class="mono">${curEl.electronConfig}</span></div>` +
+          CV.renderOrbitalBoxesHTML(curEl, { interactive: true, showSummary: true }) +
+          `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.74rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span style="color:var(--text-muted);">So sánh cấu hình với:</span>
+              <select id="sim-q-cmp-sel" class="select-field" style="padding:2px 6px;font-size:0.74rem;max-width:140px;">
+                ${CV.ELEMENTS.map((e) => `<option value="${e.number}" ${e.number === Number(cmpZ) ? 'selected' : ''}>${e.number}. ${e.symbol}</option>`).join('')}
+              </select>
+            </div>
+            ${cmpEl ? `<div class="mono" style="color:#E879F9;">${cmpEl.symbol} (Z=${cmpEl.number}): ${cmpEl.electronConfig}</div>` : ''}
+          </div>`;
+        const cmpSel = document.getElementById('sim-q-cmp-sel');
+        if (cmpSel) cmpSel.addEventListener('change', (e) => { this.state.qCompareId = Number(e.target.value); this.buildQuantumOrbital(); });
       }
     },
 
@@ -8988,63 +9162,92 @@ window.CHEMVERSE.REACTIONS = [
       body.innerHTML = `
         <div class="glass-surface" style="padding:16px;border-radius:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
           <div>
-            <strong>🤖 Mô Hình Học Máy Dự Đoán Tính Chất Nguyên Tố (Ridge Linear Regression)</strong>
-            <div style="font-size:0.8rem;color:var(--text-muted);">Đặc trưng đầu vào: [1, Chu kỳ, Nhóm, Số lớp e, Số proton Z, Electron hóa trị] • Chia tập Train 80% / Test 20% độc lập</div>
+            <strong>🤖 AI Scientific Discovery: Model Comparison, XAI &amp; Anomaly Discovery</strong>
+            <div style="font-size:0.8rem;color:var(--text-muted);">Đặc trưng: [Chu kỳ, Nhóm, Số lớp e, Z/118, Electron hóa trị] • Tách Train ${res.trainCount} / Test ${res.testCount} (Kiểm soát rò rỉ dữ liệu)</div>
           </div>
-          <select id="res-ml-target" class="select-field">
-            <option value="electronegativity" ${st.mlTarget === 'electronegativity' ? 'selected' : ''}>Dự đoán Độ âm điện (Pauling)</option>
-            <option value="ionizationEnergy" ${st.mlTarget === 'ionizationEnergy' ? 'selected' : ''}>Dự đoán Năng lượng ion hóa I₁ (kJ/mol)</option>
-            <option value="atomicRadius" ${st.mlTarget === 'atomicRadius' ? 'selected' : ''}>Dự đoán Bán kính nguyên tử (pm)</option>
-          </select>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">Tập Train / Test</div>
-            <strong class="mono" style="font-size:1.2rem;color:var(--accent-cyan);">${res.trainCount} / ${res.testCount}</strong>
-          </div>
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">MAE (Sai số tuyệt đối TB)</div>
-            <strong class="mono" style="font-size:1.2rem;color:#34D399;">${res.mae.toFixed(3)}</strong>
-          </div>
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">RMSE (Sai số toàn phương)</div>
-            <strong class="mono" style="font-size:1.2rem;color:#FBBF24;">${res.rmse.toFixed(3)}</strong>
-          </div>
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">Hệ số xác định R² (Test)</div>
-            <strong class="mono" style="font-size:1.2rem;color:#C084FC;">${res.r2.toFixed(3)}</strong>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="res-ml-target" class="select-field">
+              <option value="electronegativity" ${st.mlTarget === 'electronegativity' ? 'selected' : ''}>Độ âm điện (Pauling)</option>
+              <option value="ionizationEnergy" ${st.mlTarget === 'ionizationEnergy' ? 'selected' : ''}>Năng lượng ion hóa I₁ (kJ/mol)</option>
+              <option value="atomicRadius" ${st.mlTarget === 'atomicRadius' ? 'selected' : ''}>Bán kính nguyên tử (pm)</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="res-save-exp">💾 Lưu phiên bản thí nghiệm</button>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:16px;" class="res-2col">
+        <!-- Model Comparison vs Baseline -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;">
+            <div style="font-size:0.74rem;color:var(--text-muted);">Baseline (Mean Predictor)</div>
+            <div class="mono" style="font-size:0.86rem;margin-top:4px;">MAE: ${res.baseline.mae.toFixed(3)} • R²: ${res.baseline.r2.toFixed(3)}</div>
+          </div>
+          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;">
+            <div style="font-size:0.74rem;color:var(--text-muted);">Linear Regression (OLS)</div>
+            <div class="mono" style="font-size:0.86rem;margin-top:4px;color:#38BDF8;">MAE: ${res.linear.mae.toFixed(3)} • R²: ${res.linear.r2.toFixed(3)}</div>
+          </div>
+          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;border-color:#00E5FF;">
+            <div style="font-size:0.74rem;color:var(--accent-cyan);">Ridge Regression (λ=0.1)</div>
+            <div class="mono" style="font-size:0.86rem;margin-top:4px;color:#34D399;">MAE: ${res.mae.toFixed(3)} • RMSE: ${res.rmse.toFixed(3)} • R²: ${res.r2.toFixed(3)}</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-bottom:16px;" class="res-2col">
           <div class="glass-surface" style="padding:16px;border-radius:16px;">
-            <strong style="display:block;margin-bottom:8px;">📉 Biểu Đồ Dự Đoán vs Thực Tế (Tập Kiểm Tra Test)</strong>
-            <canvas id="res-ml-canvas" width="460" height="240" style="width:100%;height:240px;display:block;"></canvas>
-            <div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);font-size:0.78rem;color:#FDE68A;">
-              ⚠️ <strong>Giới hạn &amp; Phạm vi áp dụng:</strong> Mô hình không tuyên bố dự đoán chính xác tuyệt đối. Hồi quy tuyến tính phản ánh xu hướng chung nhưng sai số tăng tại các kim loại chuyển tiếp (khối d) và họ Lanthanide/Actinide (khối f) do hiệu ứng chắn electron phức tạp.
+            <strong style="display:block;margin-bottom:8px;">📉 Dự Đoán vs Thực Tế (Tập Kiểm Tra Test)</strong>
+            <canvas id="res-ml-canvas" width="460" height="220" style="width:100%;height:220px;display:block;"></canvas>
+            <div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);font-size:0.76rem;color:#FDE68A;">
+              ⚠️ <strong>Giới hạn mô hình:</strong> Không tuyên bố dự đoán chính xác tuyệt đối. Dữ liệu ≤118 nguyên tố nhỏ, sai số tăng ở khối d/f do hiệu ứng chắn electron.
             </div>
           </div>
 
-          <div class="glass-surface" style="padding:16px;border-radius:16px;max-height:360px;overflow-y:auto;">
-            <strong style="display:block;margin-bottom:8px;">📋 Đối Chiếu Mẫu Trên Tập Test</strong>
-            <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
-              <thead><tr style="color:var(--accent-cyan);border-bottom:1px solid rgba(255,255,255,0.14);text-align:left;"><th style="padding:6px;">Nguyên tố</th><th>Thực tế</th><th>Dự đoán</th><th>Sai số</th></tr></thead>
-              <tbody>
-                ${res.testRows.slice(0, 14).map((r) => `
-                  <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
-                    <td style="padding:6px;"><strong>${r.el.symbol}</strong> (Z=${r.el.number})</td>
-                    <td class="mono">${r.actual.toFixed(2)}</td>
-                    <td class="mono" style="color:#38BDF8;">${r.pred.toFixed(2)}</td>
-                    <td class="mono" style="color:${Math.abs(r.actual - r.pred) > res.mae * 1.5 ? '#F87171' : '#34D399'};">${(r.pred - r.actual).toFixed(2)}</td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>
+          <div class="glass-surface" style="padding:16px;border-radius:16px;">
+            <strong style="display:block;margin-bottom:10px;">🔎 Explainable AI: Mức Ảnh Hưởng Đặc Trưng (Feature Importance)</strong>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              ${res.importance.map((fi) => `
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span>${fi.name}</span><strong class="mono">${(fi.weight * 100).toFixed(1)}%</strong></div>
+                  <div style="height:7px;background:rgba(255,255,255,0.08);border-radius:999px;margin-top:3px;"><div style="width:${Math.round(fi.weight * 100)}%;height:100%;background:linear-gradient(90deg,#00E5FF,#A855F7);border-radius:999px;"></div></div>
+                </div>`).join('')}
+            </div>
           </div>
+        </div>
+
+        <div class="glass-surface" style="padding:16px;border-radius:16px;max-height:300px;overflow-y:auto;">
+          <strong style="display:block;margin-bottom:8px;">🚨 Anomaly Discovery: Top Sai Số Lớn Nhất &amp; Phân Tích Hóa Học</strong>
+          <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;">Lưu ý: Sai số lớn là bất thường so với mô hình tuyến tính (thường do cấu hình d/f đặc biệt như Cr, Cu, Pd, Au), không tự động coi là phát hiện khoa học mới.</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
+            <thead><tr style="color:var(--accent-cyan);border-bottom:1px solid rgba(255,255,255,0.14);text-align:left;"><th style="padding:6px;">Nguyên tố</th><th>Nhóm / CK</th><th>Thực tế</th><th>Dự đoán</th><th>|Sai số|</th><th>Ghi chú hóa học</th></tr></thead>
+            <tbody>
+              ${res.anomalies.map((r) => `
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                  <td style="padding:6px;"><strong>${r.el.symbol}</strong> (Z=${r.el.number})</td>
+                  <td class="mono">N${r.el.group} / CK${r.el.period}</td>
+                  <td class="mono">${r.actual.toFixed(2)}</td>
+                  <td class="mono" style="color:#38BDF8;">${r.pred.toFixed(2)}</td>
+                  <td class="mono" style="color:#F87171;">${r.absErr.toFixed(2)}</td>
+                  <td style="color:var(--text-secondary);">${r.note}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
         </div>
       `;
 
       document.getElementById('res-ml-target').addEventListener('change', (e) => { st.mlTarget = e.target.value; this.renderML(); });
+      document.getElementById('res-save-exp').addEventListener('click', () => {
+        const list = JSON.parse(localStorage.getItem('chemverse_experiments_v3') || '[]');
+        list.unshift({
+          id: `v3-${list.length + 1}`,
+          time: new Date().toLocaleString('vi-VN'),
+          target: st.mlTarget,
+          algo: 'Ridge Regression (λ=0.1)',
+          trainTest: `${res.trainCount}/${res.testCount}`,
+          mae: res.mae.toFixed(3),
+          rmse: res.rmse.toFixed(3),
+          r2: res.r2.toFixed(3)
+        });
+        localStorage.setItem('chemverse_experiments_v3', JSON.stringify(list.slice(0, 12)));
+        CV.showToast('Đã lưu phiên bản thí nghiệm vào Evidence Center!');
+      });
       this.drawMLScatter(res);
     },
 
@@ -9054,25 +9257,56 @@ window.CHEMVERSE.REACTIONS = [
         const valE = e.shells ? e.shells[e.shells.length - 1] : 1;
         return [1, e.period, e.group, e.shells ? e.shells.length : e.period, e.number / 118, valE];
       };
-      // Deterministic 80/20 split (every 5th element goes to test)
       const train = [], test = [];
       valid.forEach((e, i) => ((i % 5 === 4) ? test : train).push(e));
       const Xtr = train.map(feat), ytr = train.map((e) => e[targetProp]);
-      const w = fitLinearRidge(Xtr, ytr, 0.1);
+      const wRidge = fitLinearRidge(Xtr, ytr, 0.1);
+      const wLin = fitLinearRidge(Xtr, ytr, 1e-6);
+      const meanTr = ytr.reduce((a, b) => a + b, 0) / (ytr.length || 1);
 
-      const testRows = test.map((el) => {
-        const pred = predictRow(w, feat(el));
-        return { el, actual: el[targetProp], pred };
+      const calcMetrics = (preds) => {
+        const n = test.length || 1;
+        const acts = test.map((e) => e[targetProp]);
+        const mae = preds.reduce((s, p, i) => s + Math.abs(p - acts[i]), 0) / n;
+        const rmse = Math.sqrt(preds.reduce((s, p, i) => s + (p - acts[i]) ** 2, 0) / n);
+        const my = acts.reduce((a, b) => a + b, 0) / n;
+        const ssTot = acts.reduce((s, a) => s + (a - my) ** 2, 0) || 1;
+        const ssRes = preds.reduce((s, p, i) => s + (acts[i] - p) ** 2, 0);
+        return { mae, rmse, r2: 1 - ssRes / ssTot };
+      };
+
+      const ridgePreds = test.map((el) => predictRow(wRidge, feat(el)));
+      const linPreds = test.map((el) => predictRow(wLin, feat(el)));
+      const basePreds = test.map(() => meanTr);
+      const mRidge = calcMetrics(ridgePreds);
+      const testRows = test.map((el, i) => ({ el, actual: el[targetProp], pred: ridgePreds[i] }));
+
+      const featNames = ['Chu kỳ (Period)', 'Nhóm (Group)', 'Số lớp e', 'Số hiệu Z/118', 'Electron hóa trị'];
+      const stds = [1, 2, 3, 4, 5].map((idx) => {
+        const col = Xtr.map((r) => r[idx]);
+        const m = col.reduce((a, b) => a + b, 0) / (col.length || 1);
+        return Math.sqrt(col.reduce((s, v) => s + (v - m) ** 2, 0) / (col.length || 1)) || 1;
       });
-      const n = testRows.length || 1;
-      const mae = testRows.reduce((s, r) => s + Math.abs(r.pred - r.actual), 0) / n;
-      const mse = testRows.reduce((s, r) => s + (r.pred - r.actual) ** 2, 0) / n;
-      const rmse = Math.sqrt(mse);
-      const meanY = testRows.reduce((s, r) => s + r.actual, 0) / n;
-      const ssTot = testRows.reduce((s, r) => s + (r.actual - meanY) ** 2, 0) || 1;
-      const ssRes = testRows.reduce((s, r) => s + (r.actual - r.pred) ** 2, 0);
-      const r2 = 1 - ssRes / ssTot;
-      return { trainCount: train.length, testCount: test.length, mae, rmse, r2, testRows };
+      const rawImp = featNames.map((name, i) => ({ name, raw: Math.abs(wRidge[i + 1] * stds[i]) }));
+      const sumImp = rawImp.reduce((s, x) => s + x.raw, 0) || 1;
+      const importance = rawImp.map((x) => ({ name: x.name, weight: x.raw / sumImp })).sort((a, b) => b.weight - a.weight);
+
+      const anomalies = testRows
+        .map((r) => {
+          const absErr = Math.abs(r.pred - r.actual);
+          const note = (r.el.group >= 3 && r.el.group <= 12) ? 'Kim loại chuyển tiếp (phân lớp d)' : r.el.period >= 6 ? 'Chu kỳ lớn (hiệu ứng chắn f)' : 'Biến thiên phi tuyến theo nhóm';
+          return { ...r, absErr, note };
+        })
+        .sort((a, b) => b.absErr - a.absErr)
+        .slice(0, 6);
+
+      return {
+        trainCount: train.length, testCount: test.length,
+        mae: mRidge.mae, rmse: mRidge.rmse, r2: mRidge.r2,
+        baseline: calcMetrics(basePreds),
+        linear: calcMetrics(linPreds),
+        importance, anomalies, testRows
+      };
     },
 
     drawMLScatter(res) {

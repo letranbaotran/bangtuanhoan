@@ -304,63 +304,92 @@
       body.innerHTML = `
         <div class="glass-surface" style="padding:16px;border-radius:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
           <div>
-            <strong>🤖 Mô Hình Học Máy Dự Đoán Tính Chất Nguyên Tố (Ridge Linear Regression)</strong>
-            <div style="font-size:0.8rem;color:var(--text-muted);">Đặc trưng đầu vào: [1, Chu kỳ, Nhóm, Số lớp e, Số proton Z, Electron hóa trị] • Chia tập Train 80% / Test 20% độc lập</div>
+            <strong>🤖 AI Scientific Discovery: Model Comparison, XAI &amp; Anomaly Discovery</strong>
+            <div style="font-size:0.8rem;color:var(--text-muted);">Đặc trưng: [Chu kỳ, Nhóm, Số lớp e, Z/118, Electron hóa trị] • Tách Train ${res.trainCount} / Test ${res.testCount} (Kiểm soát rò rỉ dữ liệu)</div>
           </div>
-          <select id="res-ml-target" class="select-field">
-            <option value="electronegativity" ${st.mlTarget === 'electronegativity' ? 'selected' : ''}>Dự đoán Độ âm điện (Pauling)</option>
-            <option value="ionizationEnergy" ${st.mlTarget === 'ionizationEnergy' ? 'selected' : ''}>Dự đoán Năng lượng ion hóa I₁ (kJ/mol)</option>
-            <option value="atomicRadius" ${st.mlTarget === 'atomicRadius' ? 'selected' : ''}>Dự đoán Bán kính nguyên tử (pm)</option>
-          </select>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">Tập Train / Test</div>
-            <strong class="mono" style="font-size:1.2rem;color:var(--accent-cyan);">${res.trainCount} / ${res.testCount}</strong>
-          </div>
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">MAE (Sai số tuyệt đối TB)</div>
-            <strong class="mono" style="font-size:1.2rem;color:#34D399;">${res.mae.toFixed(3)}</strong>
-          </div>
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">RMSE (Sai số toàn phương)</div>
-            <strong class="mono" style="font-size:1.2rem;color:#FBBF24;">${res.rmse.toFixed(3)}</strong>
-          </div>
-          <div class="glass-surface" style="padding:14px;border-radius:12px;text-align:center;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">Hệ số xác định R² (Test)</div>
-            <strong class="mono" style="font-size:1.2rem;color:#C084FC;">${res.r2.toFixed(3)}</strong>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="res-ml-target" class="select-field">
+              <option value="electronegativity" ${st.mlTarget === 'electronegativity' ? 'selected' : ''}>Độ âm điện (Pauling)</option>
+              <option value="ionizationEnergy" ${st.mlTarget === 'ionizationEnergy' ? 'selected' : ''}>Năng lượng ion hóa I₁ (kJ/mol)</option>
+              <option value="atomicRadius" ${st.mlTarget === 'atomicRadius' ? 'selected' : ''}>Bán kính nguyên tử (pm)</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="res-save-exp">💾 Lưu phiên bản thí nghiệm</button>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:16px;" class="res-2col">
+        <!-- Model Comparison vs Baseline -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;">
+            <div style="font-size:0.74rem;color:var(--text-muted);">Baseline (Mean Predictor)</div>
+            <div class="mono" style="font-size:0.86rem;margin-top:4px;">MAE: ${res.baseline.mae.toFixed(3)} • R²: ${res.baseline.r2.toFixed(3)}</div>
+          </div>
+          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;">
+            <div style="font-size:0.74rem;color:var(--text-muted);">Linear Regression (OLS)</div>
+            <div class="mono" style="font-size:0.86rem;margin-top:4px;color:#38BDF8;">MAE: ${res.linear.mae.toFixed(3)} • R²: ${res.linear.r2.toFixed(3)}</div>
+          </div>
+          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;border-color:#00E5FF;">
+            <div style="font-size:0.74rem;color:var(--accent-cyan);">Ridge Regression (λ=0.1)</div>
+            <div class="mono" style="font-size:0.86rem;margin-top:4px;color:#34D399;">MAE: ${res.mae.toFixed(3)} • RMSE: ${res.rmse.toFixed(3)} • R²: ${res.r2.toFixed(3)}</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-bottom:16px;" class="res-2col">
           <div class="glass-surface" style="padding:16px;border-radius:16px;">
-            <strong style="display:block;margin-bottom:8px;">📉 Biểu Đồ Dự Đoán vs Thực Tế (Tập Kiểm Tra Test)</strong>
-            <canvas id="res-ml-canvas" width="460" height="240" style="width:100%;height:240px;display:block;"></canvas>
-            <div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);font-size:0.78rem;color:#FDE68A;">
-              ⚠️ <strong>Giới hạn &amp; Phạm vi áp dụng:</strong> Mô hình không tuyên bố dự đoán chính xác tuyệt đối. Hồi quy tuyến tính phản ánh xu hướng chung nhưng sai số tăng tại các kim loại chuyển tiếp (khối d) và họ Lanthanide/Actinide (khối f) do hiệu ứng chắn electron phức tạp.
+            <strong style="display:block;margin-bottom:8px;">📉 Dự Đoán vs Thực Tế (Tập Kiểm Tra Test)</strong>
+            <canvas id="res-ml-canvas" width="460" height="220" style="width:100%;height:220px;display:block;"></canvas>
+            <div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);font-size:0.76rem;color:#FDE68A;">
+              ⚠️ <strong>Giới hạn mô hình:</strong> Không tuyên bố dự đoán chính xác tuyệt đối. Dữ liệu ≤118 nguyên tố nhỏ, sai số tăng ở khối d/f do hiệu ứng chắn electron.
             </div>
           </div>
 
-          <div class="glass-surface" style="padding:16px;border-radius:16px;max-height:360px;overflow-y:auto;">
-            <strong style="display:block;margin-bottom:8px;">📋 Đối Chiếu Mẫu Trên Tập Test</strong>
-            <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
-              <thead><tr style="color:var(--accent-cyan);border-bottom:1px solid rgba(255,255,255,0.14);text-align:left;"><th style="padding:6px;">Nguyên tố</th><th>Thực tế</th><th>Dự đoán</th><th>Sai số</th></tr></thead>
-              <tbody>
-                ${res.testRows.slice(0, 14).map((r) => `
-                  <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
-                    <td style="padding:6px;"><strong>${r.el.symbol}</strong> (Z=${r.el.number})</td>
-                    <td class="mono">${r.actual.toFixed(2)}</td>
-                    <td class="mono" style="color:#38BDF8;">${r.pred.toFixed(2)}</td>
-                    <td class="mono" style="color:${Math.abs(r.actual - r.pred) > res.mae * 1.5 ? '#F87171' : '#34D399'};">${(r.pred - r.actual).toFixed(2)}</td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>
+          <div class="glass-surface" style="padding:16px;border-radius:16px;">
+            <strong style="display:block;margin-bottom:10px;">🔎 Explainable AI: Mức Ảnh Hưởng Đặc Trưng (Feature Importance)</strong>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              ${res.importance.map((fi) => `
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.78rem;"><span>${fi.name}</span><strong class="mono">${(fi.weight * 100).toFixed(1)}%</strong></div>
+                  <div style="height:7px;background:rgba(255,255,255,0.08);border-radius:999px;margin-top:3px;"><div style="width:${Math.round(fi.weight * 100)}%;height:100%;background:linear-gradient(90deg,#00E5FF,#A855F7);border-radius:999px;"></div></div>
+                </div>`).join('')}
+            </div>
           </div>
+        </div>
+
+        <div class="glass-surface" style="padding:16px;border-radius:16px;max-height:300px;overflow-y:auto;">
+          <strong style="display:block;margin-bottom:8px;">🚨 Anomaly Discovery: Top Sai Số Lớn Nhất &amp; Phân Tích Hóa Học</strong>
+          <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;">Lưu ý: Sai số lớn là bất thường so với mô hình tuyến tính (thường do cấu hình d/f đặc biệt như Cr, Cu, Pd, Au), không tự động coi là phát hiện khoa học mới.</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
+            <thead><tr style="color:var(--accent-cyan);border-bottom:1px solid rgba(255,255,255,0.14);text-align:left;"><th style="padding:6px;">Nguyên tố</th><th>Nhóm / CK</th><th>Thực tế</th><th>Dự đoán</th><th>|Sai số|</th><th>Ghi chú hóa học</th></tr></thead>
+            <tbody>
+              ${res.anomalies.map((r) => `
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                  <td style="padding:6px;"><strong>${r.el.symbol}</strong> (Z=${r.el.number})</td>
+                  <td class="mono">N${r.el.group} / CK${r.el.period}</td>
+                  <td class="mono">${r.actual.toFixed(2)}</td>
+                  <td class="mono" style="color:#38BDF8;">${r.pred.toFixed(2)}</td>
+                  <td class="mono" style="color:#F87171;">${r.absErr.toFixed(2)}</td>
+                  <td style="color:var(--text-secondary);">${r.note}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
         </div>
       `;
 
       document.getElementById('res-ml-target').addEventListener('change', (e) => { st.mlTarget = e.target.value; this.renderML(); });
+      document.getElementById('res-save-exp').addEventListener('click', () => {
+        const list = JSON.parse(localStorage.getItem('chemverse_experiments_v3') || '[]');
+        list.unshift({
+          id: `v3-${list.length + 1}`,
+          time: new Date().toLocaleString('vi-VN'),
+          target: st.mlTarget,
+          algo: 'Ridge Regression (λ=0.1)',
+          trainTest: `${res.trainCount}/${res.testCount}`,
+          mae: res.mae.toFixed(3),
+          rmse: res.rmse.toFixed(3),
+          r2: res.r2.toFixed(3)
+        });
+        localStorage.setItem('chemverse_experiments_v3', JSON.stringify(list.slice(0, 12)));
+        CV.showToast('Đã lưu phiên bản thí nghiệm vào Evidence Center!');
+      });
       this.drawMLScatter(res);
     },
 
@@ -370,25 +399,56 @@
         const valE = e.shells ? e.shells[e.shells.length - 1] : 1;
         return [1, e.period, e.group, e.shells ? e.shells.length : e.period, e.number / 118, valE];
       };
-      // Deterministic 80/20 split (every 5th element goes to test)
       const train = [], test = [];
       valid.forEach((e, i) => ((i % 5 === 4) ? test : train).push(e));
       const Xtr = train.map(feat), ytr = train.map((e) => e[targetProp]);
-      const w = fitLinearRidge(Xtr, ytr, 0.1);
+      const wRidge = fitLinearRidge(Xtr, ytr, 0.1);
+      const wLin = fitLinearRidge(Xtr, ytr, 1e-6);
+      const meanTr = ytr.reduce((a, b) => a + b, 0) / (ytr.length || 1);
 
-      const testRows = test.map((el) => {
-        const pred = predictRow(w, feat(el));
-        return { el, actual: el[targetProp], pred };
+      const calcMetrics = (preds) => {
+        const n = test.length || 1;
+        const acts = test.map((e) => e[targetProp]);
+        const mae = preds.reduce((s, p, i) => s + Math.abs(p - acts[i]), 0) / n;
+        const rmse = Math.sqrt(preds.reduce((s, p, i) => s + (p - acts[i]) ** 2, 0) / n);
+        const my = acts.reduce((a, b) => a + b, 0) / n;
+        const ssTot = acts.reduce((s, a) => s + (a - my) ** 2, 0) || 1;
+        const ssRes = preds.reduce((s, p, i) => s + (acts[i] - p) ** 2, 0);
+        return { mae, rmse, r2: 1 - ssRes / ssTot };
+      };
+
+      const ridgePreds = test.map((el) => predictRow(wRidge, feat(el)));
+      const linPreds = test.map((el) => predictRow(wLin, feat(el)));
+      const basePreds = test.map(() => meanTr);
+      const mRidge = calcMetrics(ridgePreds);
+      const testRows = test.map((el, i) => ({ el, actual: el[targetProp], pred: ridgePreds[i] }));
+
+      const featNames = ['Chu kỳ (Period)', 'Nhóm (Group)', 'Số lớp e', 'Số hiệu Z/118', 'Electron hóa trị'];
+      const stds = [1, 2, 3, 4, 5].map((idx) => {
+        const col = Xtr.map((r) => r[idx]);
+        const m = col.reduce((a, b) => a + b, 0) / (col.length || 1);
+        return Math.sqrt(col.reduce((s, v) => s + (v - m) ** 2, 0) / (col.length || 1)) || 1;
       });
-      const n = testRows.length || 1;
-      const mae = testRows.reduce((s, r) => s + Math.abs(r.pred - r.actual), 0) / n;
-      const mse = testRows.reduce((s, r) => s + (r.pred - r.actual) ** 2, 0) / n;
-      const rmse = Math.sqrt(mse);
-      const meanY = testRows.reduce((s, r) => s + r.actual, 0) / n;
-      const ssTot = testRows.reduce((s, r) => s + (r.actual - meanY) ** 2, 0) || 1;
-      const ssRes = testRows.reduce((s, r) => s + (r.actual - r.pred) ** 2, 0);
-      const r2 = 1 - ssRes / ssTot;
-      return { trainCount: train.length, testCount: test.length, mae, rmse, r2, testRows };
+      const rawImp = featNames.map((name, i) => ({ name, raw: Math.abs(wRidge[i + 1] * stds[i]) }));
+      const sumImp = rawImp.reduce((s, x) => s + x.raw, 0) || 1;
+      const importance = rawImp.map((x) => ({ name: x.name, weight: x.raw / sumImp })).sort((a, b) => b.weight - a.weight);
+
+      const anomalies = testRows
+        .map((r) => {
+          const absErr = Math.abs(r.pred - r.actual);
+          const note = (r.el.group >= 3 && r.el.group <= 12) ? 'Kim loại chuyển tiếp (phân lớp d)' : r.el.period >= 6 ? 'Chu kỳ lớn (hiệu ứng chắn f)' : 'Biến thiên phi tuyến theo nhóm';
+          return { ...r, absErr, note };
+        })
+        .sort((a, b) => b.absErr - a.absErr)
+        .slice(0, 6);
+
+      return {
+        trainCount: train.length, testCount: test.length,
+        mae: mRidge.mae, rmse: mRidge.rmse, r2: mRidge.r2,
+        baseline: calcMetrics(basePreds),
+        linear: calcMetrics(linPreds),
+        importance, anomalies, testRows
+      };
     },
 
     drawMLScatter(res) {
