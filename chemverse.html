@@ -3063,27 +3063,17 @@ window.CHEMVERSE.REACTIONS = [
               <div style="font-weight:700;color:var(--accent-cyan);margin-bottom:6px;">🧊 Tính chất vật lý</div>
               <div>Trạng thái (298K): <strong>${CV.phaseIcon(el.phase)} ${CV.phaseVi(el.phase)}</strong></div>
               <div>Nóng chảy: <span class="mono">${CV.formatTemp(el.melt)}</span></div>
-              <div>Điểm sôi: <span class="mono">${CV.formatTemp(el.boil)}</span></div>
-              <div>Bán kính: <span class="mono">${el.atomicRadius ?? '—'} pm</span></div>
             </div>
             <div class="glass-surface" style="padding:12px;border-radius:12px;font-size:0.84rem;">
               <div style="font-weight:700;color:var(--accent-purple);margin-bottom:6px;">⚗️ Tính chất hóa học</div>
               <div>Độ âm điện: <span class="mono">${el.electronegativity ?? '—'}</span></div>
               <div>Ion hóa I₁: <span class="mono">${el.ionizationEnergy ?? '—'} kJ/mol</span></div>
-              <div style="margin-top:4px;color:var(--text-secondary);font-size:0.8rem;">${el.summary}</div>
             </div>
           </div>
 
           <div class="glass-surface" style="padding:12px 14px;border-radius:12px;font-size:0.84rem;">
             <div style="font-weight:700;margin-bottom:8px;">📦 Sơ đồ Ô Orbital (Aufbau • Pauli • Hund)</div>
             ${CV.renderOrbitalBoxesHTML(el, { showSummary: true })}
-          </div>
-
-          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;font-size:0.84rem;">
-            <div style="font-weight:700;margin-bottom:6px;">🏭 Ứng dụng thực tế & Nguồn gốc (${el.cosmicOrigin})</div>
-            <ul style="padding-left:18px;color:var(--text-secondary);display:flex;flex-direction:column;gap:3px;">
-              ${el.applications.map((a) => `<li>${a}</li>`).join('')}
-            </ul>
           </div>
         </div>
       </div>
