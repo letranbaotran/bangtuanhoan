@@ -165,7 +165,7 @@
       // Cosmic Galaxy + Legend Anatomy Card in empty space above transition metals (rows 2..4, cols 4..13)
       html += `
         <div class="pt-galaxy-gap" id="pt-galaxy-gap">
-          <svg width="78" height="78" viewBox="0 0 80 80" fill="none" aria-hidden="true" style="flex-shrink:0;">
+          <svg width="120" height="120" viewBox="0 0 80 80" fill="none" aria-hidden="true" style="flex-shrink:0;">
             <circle cx="40" cy="40" r="32" stroke="rgba(56,189,248,0.28)" stroke-dasharray="4 3" />
             <ellipse cx="40" cy="40" rx="34" ry="13" transform="rotate(-24 40 40)" stroke="#38BDF8" stroke-width="1.4" stroke-opacity="0.7" />
             <ellipse cx="40" cy="40" rx="22" ry="9" transform="rotate(28 40 40)" stroke="#C084FC" stroke-width="1.2" stroke-opacity="0.7" />
@@ -175,10 +175,10 @@
           </svg>
           <div class="pt-anatomy-card glass-surface" id="pt-anatomy-card">
             <div class="pt-anatomy-sample">
-              <div style="display:flex;justify-content:space-between;font-size:0.65rem;" class="mono"><span>26</span><span>🧊</span></div>
-              <strong style="font-size:1.25rem;color:#FFC312;font-family:var(--font-display);line-height:1;">Fe</strong>
-              <span style="font-size:0.62rem;font-weight:600;">Sắt</span>
-              <span class="mono" style="font-size:0.55rem;color:var(--text-muted);">55.845 u</span>
+              <div style="display:flex;justify-content:space-between;font-size:0.85rem;" class="mono"><span>26</span><span>🧊</span></div>
+              <strong style="font-size:2rem;color:#FFC312;font-family:var(--font-display);line-height:1;">Fe</strong>
+              <span style="font-size:0.85rem;font-weight:600;">Sắt</span>
+              <span class="mono" style="font-size:0.72rem;color:var(--text-muted);">55.845 u</span>
             </div>
             <div class="pt-anatomy-labels">
               <div>↖ <strong class="mono">26</strong>: Số hiệu nguyên tử (Z)</div>
