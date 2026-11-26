@@ -103,6 +103,25 @@
 
               <!-- Quantum Orbital Controls & Inspector -->
               <div id="sim-quantum-panel" style="display:none;flex-direction:column;gap:12px;">
+                <div class="control-group">
+                  <span class="control-label">Chọn nguyên tố (1–118)</span>
+                  <div style="display:flex;gap:6px;">
+                    <button class="icon-btn" id="sim-q-prev-el" title="Nguyên tố trước">◀</button>
+                    <select id="sim-q-el-select" class="select-field" style="flex:1;"></select>
+                    <button class="icon-btn" id="sim-q-next-el" title="Nguyên tố kế tiếp">▶</button>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <span class="control-label">Nguyên tố hóa học nhanh</span>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px;" id="sim-q-quick-els">
+                    ${[1, 2, 6, 7, 8, 11, 17, 24, 26, 29, 47, 79].map((z) => {
+                      const el = CV.getElement(z);
+                      return `<button class="btn btn-sm ${z === this.state.elementId ? 'btn-primary' : 'btn-secondary'} sim-q-el-btn" data-z="${z}" style="padding:4px 8px;font-size:0.76rem;" title="${el ? el.nameVi : ''}">${el ? el.symbol : z}</button>`;
+                    }).join('')}
+                  </div>
+                </div>
+
                 <div class="control-label" style="margin-top:4px;">Chế độ hiển thị Orbital</div>
                 <div class="segmented-ctrl" id="q-viz-ctrl">
                   <button data-viz="cloud" class="active">Đám mây |ψ|²</button>
@@ -126,9 +145,15 @@
         </div>
       `;
 
+      const optsHtml = CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.nameVi}</option>`).join('');
       const sel = document.getElementById('sim-el-select');
-      sel.innerHTML = CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.nameVi}</option>`).join('');
+      sel.innerHTML = optsHtml;
       sel.value = this.state.elementId;
+      const qSel = document.getElementById('sim-q-el-select');
+      if (qSel) {
+        qSel.innerHTML = optsHtml;
+        qSel.value = this.state.elementId;
+      }
 
       this.initThree();
       this.bindEvents();
@@ -147,8 +172,39 @@
       CV.state.simulatorElement = this.state.elementId;
       const sel = document.getElementById('sim-el-select');
       if (sel) sel.value = this.state.elementId;
+      const qSel = document.getElementById('sim-q-el-select');
+      if (qSel) qSel.value = this.state.elementId;
       if (this.state.mainTab !== 'satellite') this.switchMainTab('satellite');
       else this.buildAtom(this.state.elementId);
+    },
+
+    selectQuantumElement(num) {
+      this.state.elementId = Math.max(1, Math.min(118, Number(num)));
+      CV.state.simulatorElement = this.state.elementId;
+      const sel = document.getElementById('sim-el-select');
+      if (sel) sel.value = this.state.elementId;
+      const qSel = document.getElementById('sim-q-el-select');
+      if (qSel) qSel.value = this.state.elementId;
+
+      document.querySelectorAll('.sim-q-el-btn').forEach((btn) => {
+        const isActive = Number(btn.getAttribute('data-z')) === this.state.elementId;
+        btn.className = `btn btn-sm ${isActive ? 'btn-primary' : 'btn-secondary'} sim-q-el-btn`;
+      });
+
+      const el = CV.getElement(this.state.elementId);
+      if (el) {
+        const { subshells } = CV.getOrbitalBoxes(el);
+        if (subshells.length) {
+          const lastSub = subshells[subshells.length - 1];
+          const activeBox = lastSub.boxes.find((b) => b.spins.length === 1) || lastSub.boxes[0];
+          this.state.qn = lastSub.n;
+          this.state.ql = lastSub.l;
+          this.state.qm = activeBox ? activeBox.m : 0;
+        }
+      }
+      if (this.state.mainTab === 'quantum') {
+        this.buildQuantumOrbital();
+      }
     },
 
     initThree() {
@@ -242,7 +298,7 @@
         wrap3d.style.display = 'block';
         canvas2d.style.display = 'none';
         if (tab === 'satellite') this.buildAtom(this.state.elementId);
-        else this.buildQuantumOrbital();
+        else this.selectQuantumElement(this.state.elementId);
       }
     },
 
@@ -458,6 +514,13 @@
       document.getElementById('sim-el-select').addEventListener('change', (e) => this.selectElement(e.target.value));
       document.getElementById('sim-prev-el').addEventListener('click', () => this.selectElement(this.state.elementId - 1));
       document.getElementById('sim-next-el').addEventListener('click', () => this.selectElement(this.state.elementId + 1));
+
+      document.getElementById('sim-q-el-select').addEventListener('change', (e) => this.selectQuantumElement(e.target.value));
+      document.getElementById('sim-q-prev-el').addEventListener('click', () => this.selectQuantumElement(this.state.elementId - 1));
+      document.getElementById('sim-q-next-el').addEventListener('click', () => this.selectQuantumElement(this.state.elementId + 1));
+      document.querySelectorAll('.sim-q-el-btn').forEach((btn) => {
+        btn.addEventListener('click', () => this.selectQuantumElement(btn.getAttribute('data-z')));
+      });
 
       const sat3d = document.getElementById('sim-sat-3d');
       const sat2d = document.getElementById('sim-sat-2d');
