@@ -5154,9 +5154,9 @@ window.CHEMVERSE.REACTIONS = [
                 <div class="control-group">
                   <span class="control-label">Nguyên tố nhanh</span>
                   <div style="display:flex;flex-wrap:wrap;gap:5px;" id="sim-q-quick-els">
-                    ${[1, 2, 6, 7, 8, 11, 17, 26, 29, 79].map((z) => {
+                    ${[1, 6, 7, 8, 26, 29].map((z) => {
                       const el = CV.getElement(z);
-                      return `<button class="btn btn-sm ${z === this.state.elementId ? 'btn-primary' : 'btn-secondary'} sim-q-el-btn" data-z="${z}" style="padding:4px 8px;font-size:0.76rem;" title="${el ? el.nameVi : ''}">${el ? el.symbol : z}</button>`;
+                      return `<button class="btn btn-sm ${z === this.state.elementId ? 'btn-primary' : 'btn-secondary'} sim-q-el-btn" data-z="${z}" style="padding:3px 8px;font-size:0.74rem;" title="${el ? el.nameVi : ''}">${el ? el.symbol : z}</button>`;
                     }).join('')}
                   </div>
                 </div>
@@ -5551,37 +5551,34 @@ window.CHEMVERSE.REACTIONS = [
       const isValidQ = n >= 1 && l >= 0 && l < n && Math.abs(m) <= l;
       document.getElementById('sim-q-inspector').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <strong style="color:var(--accent-cyan);">Orbital ${n}${SUBSHELL_LETTERS[l] || 'g'} (n=${n}, l=${l}, mₗ=${m}, mₛ=${ms})</strong>
+          <strong style="color:var(--accent-cyan);">Orbital ${n}${SUBSHELL_LETTERS[l] || 'g'} (n=${n}, l=${l}, mₗ=${m})</strong>
           <strong class="mono" style="color:#34D399;">${energyEV} eV</strong>
         </div>
-        <div style="font-size:0.72rem;color:${isValidQ ? '#34D399' : '#F87171'};margin-bottom:4px;">
-          ${isValidQ ? '✓ Số lượng tử hợp lệ (Aufbau • Pauli • Hund)' : '✗ Số lượng tử không hợp lệ'}
+        <div style="color:var(--text-secondary);font-size:0.74rem;margin-bottom:6px;">💡 ${notes[Math.min(3, l)]}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px;">
+          <span style="font-size:0.72rem;color:${isValidQ ? '#34D399' : '#F87171'};">${isValidQ ? '✓ Hợp lệ' : '✗ Không hợp lệ'} • mₛ:</span>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-sm ${ms.includes('+') ? 'btn-primary' : 'btn-secondary'}" style="padding:2px 7px;font-size:0.7rem;" onclick="CHEMVERSE.modules.simulator.state.qSpin='+1/2 (↑)';CHEMVERSE.modules.simulator.buildQuantumOrbital();">+½</button>
+            <button class="btn btn-sm ${ms.includes('-') ? 'btn-primary' : 'btn-secondary'}" style="padding:2px 7px;font-size:0.7rem;" onclick="CHEMVERSE.modules.simulator.state.qSpin='-1/2 (↓)';CHEMVERSE.modules.simulator.buildQuantumOrbital();">-½</button>
+          </div>
         </div>
-        <div style="color:var(--text-secondary);font-size:0.75rem;margin-bottom:6px;">💡 ${notes[Math.min(3, l)]}</div>
-        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
-          <span style="font-size:0.72rem;color:var(--text-muted);">Spin mₛ:</span>
-          <button class="btn btn-sm ${ms.includes('+') ? 'btn-primary' : 'btn-secondary'}" style="padding:2px 8px;font-size:0.72rem;" onclick="CHEMVERSE.modules.simulator.state.qSpin='+1/2 (↑)';CHEMVERSE.modules.simulator.buildQuantumOrbital();">+½ (↑)</button>
-          <button class="btn btn-sm ${ms.includes('-') ? 'btn-primary' : 'btn-secondary'}" style="padding:2px 8px;font-size:0.72rem;" onclick="CHEMVERSE.modules.simulator.state.qSpin='-1/2 (↓)';CHEMVERSE.modules.simulator.buildQuantumOrbital();">-½ (↓)</button>
-        </div>
-        <div style="font-size:0.7rem;color:#FDE68A;background:rgba(245,158,11,0.12);padding:5px 8px;border-radius:6px;">
-          🔬 <strong>Scientific Mode:</strong> Mô hình xác suất |ψ|² (CGI 3D), không phải quỹ đạo cổ điển cố định và không thay thế phép giải lượng tử chính xác.
-        </div>
+        <div style="font-size:0.69rem;color:#FDE68A;opacity:0.9;">🔬 Mô hình xác suất |ψ|² (CGI 3D) — không phải quỹ đạo cố định.</div>
       `;
 
       const qBoxes = document.getElementById('sim-q-boxes');
       if (curEl && qBoxes) {
         const cmpZ = this.state.qCompareId || 29;
         const cmpEl = CV.getElement(cmpZ);
-        qBoxes.innerHTML = `<div style="font-size:0.74rem;color:var(--accent-cyan);margin-bottom:6px;">Nguyên tố: ${curEl.symbol} – ${curEl.nameVi} (Z=${curEl.number}) • <span class="mono">${curEl.electronConfig}</span></div>` +
-          CV.renderOrbitalBoxesHTML(curEl, { interactive: true, showSummary: true }) +
-          `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.74rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-              <span style="color:var(--text-muted);">So sánh cấu hình với:</span>
-              <select id="sim-q-cmp-sel" class="select-field" style="padding:2px 6px;font-size:0.74rem;max-width:140px;">
+        qBoxes.innerHTML = `<div style="font-size:0.74rem;color:var(--accent-cyan);margin-bottom:6px;">${curEl.symbol} (Z=${curEl.number}) • <span class="mono">${curEl.electronConfig}</span></div>` +
+          CV.renderOrbitalBoxesHTML(curEl, { interactive: true, showSummary: true, outerOnly: curEl.number > 18 }) +
+          `<div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.73rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+              <span style="color:var(--text-muted);">So sánh:</span>
+              <select id="sim-q-cmp-sel" class="select-field" style="padding:2px 6px;font-size:0.73rem;max-width:130px;">
                 ${CV.ELEMENTS.map((e) => `<option value="${e.number}" ${e.number === Number(cmpZ) ? 'selected' : ''}>${e.number}. ${e.symbol}</option>`).join('')}
               </select>
             </div>
-            ${cmpEl ? `<div class="mono" style="color:#E879F9;">${cmpEl.symbol} (Z=${cmpEl.number}): ${cmpEl.electronConfig}</div>` : ''}
+            ${cmpEl ? `<div class="mono" style="color:#E879F9;margin-top:3px;">${cmpEl.symbol}: ${cmpEl.electronConfig}</div>` : ''}
           </div>`;
         const cmpSel = document.getElementById('sim-q-cmp-sel');
         if (cmpSel) cmpSel.addEventListener('change', (e) => { this.state.qCompareId = Number(e.target.value); this.buildQuantumOrbital(); });
