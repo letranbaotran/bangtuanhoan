@@ -176,7 +176,13 @@
     { title: '🌋 Than hóa đường đặc', eq: 'C₆H₁₂O₆ + H₂SO₄(đ) → 6C + 6H₂O', chems: ['C6H12O6', 'H2SO4'] },
     { title: '🫧 Xúc tác phân hủy H₂O₂', eq: '2H₂O₂ —(MnO₂)→ 2H₂O + O₂↑', chems: ['H2O2', 'MnO2'] },
     { title: '🔥 Tôi vôi sống tỏa nhiệt', eq: 'CaO + H₂O → Ca(OH)₂ (ΔH < 0)', chems: ['CaO', 'Phenolphthalein'] },
-    { title: '⚔️ Sắt đẩy Đồng khỏi muối', eq: 'Fe + CuSO₄ → FeSO₄ + Cu↓', chems: ['CuSO4', 'Fe'] }
+    { title: '⚔️ Sắt đẩy Đồng khỏi muối', eq: 'Fe + CuSO₄ → FeSO₄ + Cu↓', chems: ['CuSO4', 'Fe'] },
+    { title: '🟣 Thuốc thử Iot + Hồ tinh bột', eq: 'I₂ + Hồ tinh bột → Phức Xanh tím', chems: ['I2', 'Starch'] },
+    { title: '🍷 Thử Cồn bằng K₂Cr₂O₇', eq: 'K₂Cr₂O₇ + C₂H₅OH + H₂SO₄ → Cr³⁺ (Xanh lục)', chems: ['K2Cr2O7', 'C2H5OH', 'H2SO4'] },
+    { title: '💜 Mất màu Thuốc tím KMnO₄', eq: '2KMnO₄ + 10FeSO₄ + 8H₂SO₄ → Mn²⁺', chems: ['KMnO4', 'FeSO4', 'H2SO4'] },
+    { title: '🟤 Đồng + HNO₃ đặc (Khí NO₂)', eq: 'Cu + 4HNO₃ → Cu(NO₃)₂ + 2NO₂↑ + 2H₂O', chems: ['Cu', 'HNO3'] },
+    { title: '🫧 Núi lửa Baking Soda + Giấm', eq: 'NaHCO₃ + CH₃COOH → CH₃COONa + CO₂↑', chems: ['NaHCO3', 'CH3COOH'] },
+    { title: '🛡️ Nhôm tan trong Kiềm NaOH', eq: '2Al + 2NaOH + 2H₂O → 2NaAlO₂ + 3H₂↑', chems: ['Al', 'NaOH'] }
   ];
 
   CV.modules['virtual-lab'] = {
@@ -896,6 +902,35 @@
         this.spawnParticles(top, 0xffffff, 55, 0.026); ls.flags.metalAcid = true; eq = `${chem.id} + 2HCl → ${chem.id}Cl₂ + H₂↑`;
       } else if (c.has('H2O2') && c.has('MnO2')) {
         this.sfx.playFizz(1.5); this.spawnParticles(top, 0xffffff, 70, 0.032); eq = '2H₂O₂ —[MnO₂]→ 2H₂O + O₂↑';
+      } else if (c.has('C6H12O6') && c.has('H2SO4')) {
+        this.sfx.playSparkPop(); ls.targetColor.setHex(0x0f172a); this.setPrecip(0x090d16);
+        this.spawnParticles(top, 0x334155, 65, 0.03); eq = 'C₆H₁₂O₆ + H₂SO₄(đặc) → 6C (Than đen) + 6H₂O';
+      } else if (c.has('I2') && c.has('Starch')) {
+        ls.targetColor.setHex(0x1e1b4b); eq = 'I₂ + Hồ tinh bột → Phức chất màu Xanh tím!';
+      } else if (c.has('KMnO4') && c.has('FeSO4') && c.has('H2SO4')) {
+        ls.targetColor.setHex(0xfef9c3); eq = '2KMnO₄ + 10FeSO₄ + 8H₂SO₄ → 5Fe₂(SO₄)₃ + 2MnSO₄ + K₂SO₄ + 8H₂O';
+      } else if (c.has('K2Cr2O7') && c.has('C2H5OH') && c.has('H2SO4')) {
+        ls.targetColor.setHex(0x059669); eq = '2K₂Cr₂O₇ + 3C₂H₅OH + 8H₂SO₄ → 2Cr₂(SO₄)₃ (Xanh lục) + 3CH₃COOH + 2K₂SO₄ + 11H₂O';
+      } else if (c.has('Cu') && c.has('HNO3')) {
+        this.sfx.playFizz(1.4); ls.targetColor.setHex(0x0284c7);
+        this.spawnParticles(top, 0xb45309, 60, 0.028); eq = 'Cu + 4HNO₃(đặc) → Cu(NO₃)₂ + 2NO₂↑ (Nâu đỏ) + 2H₂O';
+      } else if ((c.has('CaCO3') || c.has('Na2CO3') || c.has('NaHCO3')) && (c.has('HCl') || c.has('H2SO4') || c.has('CH3COOH'))) {
+        this.sfx.playFizz(1.4); this.spawnParticles(top, 0xffffff, 58, 0.025);
+        eq = c.has('NaHCO3') ? 'NaHCO₃ + CH₃COOH → CH₃COONa + H₂O + CO₂↑' : 'CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑';
+      } else if (c.has('CuO') && (c.has('H2SO4') || c.has('HCl'))) {
+        ls.targetColor.setHex(0x0284c7); this.precipitateMesh.visible = false; eq = 'CuO (đen) + H₂SO₄ → CuSO₄ (xanh lam) + H₂O';
+      } else if (c.has('Cu') && c.has('AgNO3')) {
+        ls.targetColor.setHex(0x0284c7); this.setPrecip(0xf1f5f9); eq = 'Cu + 2AgNO₃ → Cu(NO₃)₂ + 2Ag↓';
+      } else if (c.has('Al') && (c.has('NaOH') || c.has('KOH'))) {
+        this.sfx.playFizz(1.4); this.spawnParticles(top, 0xffffff, 60, 0.026); eq = '2Al + 2NaOH + 2H₂O → 2NaAlO₂ + 3H₂↑';
+      } else if (c.has('FeSO4') && (c.has('NaOH') || c.has('KOH'))) {
+        ls.targetColor.setHex(0xdcfce7); this.setPrecip(0x4d7c0f); eq = 'FeSO₄ + 2NaOH → Fe(OH)₂↓ (Trắng xanh) + Na₂SO₄';
+      } else if (c.has('Litmus')) {
+        ls.targetColor.setHex(ls.ph < 6.5 ? 0xef4444 : ls.ph > 7.5 ? 0x2563eb : 0x7c3aed);
+        eq = ls.ph < 6.5 ? 'Quỳ tím → ĐỎ (Axit)' : ls.ph > 7.5 ? 'Quỳ tím → XANH (Bazơ)' : 'Quỳ tím (Trung tính)';
+      } else if (c.has('Bromothymol')) {
+        ls.targetColor.setHex(ls.ph < 6.2 ? 0xfacc15 : ls.ph > 7.6 ? 0x2563eb : 0x10b981);
+        eq = `Bromothymol Blue đổi màu theo pH = ${ls.ph.toFixed(2)}`;
       } else if (c.has('Phenolphthalein')) {
         if (ls.ph > 8.2) { ls.targetColor.setHex(0xec4899); ls.flags.phenolPink = true; eq = 'OH⁻ + Phenolphtalein → Hồng cánh sen'; }
         else { if (ls.flags.phenolPink && ls.ph <= 7.5) ls.flags.neutralized = true; ls.targetColor.setHex(0xf8fafc); }
@@ -1032,7 +1067,7 @@
     renderGuide() {
       const box = document.getElementById('lab3d-guide-drawer');
       box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <strong>📖 Cẩm Nang 8 Phản Ứng Đặc Sắc</strong>
+        <strong>📖 Cẩm Nang 14 Phản Ứng Đặc Sắc</strong>
         <button class="icon-btn" onclick="document.getElementById('lab3d-guide-drawer').style.display='none'">✕</button>
       </div>` + REACTION_RECIPES_GUIDE.map((r, i) => `
         <button class="lab-chem-btn lab3d-recipe-btn" data-ridx="${i}" style="width:100%;margin-bottom:6px;">
