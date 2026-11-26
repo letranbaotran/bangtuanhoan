@@ -354,6 +354,9 @@
     renderSummary(modeTitle) {
       const st = this.state;
       this.saveHighScore();
+      if (CV.Player && st.score > 0) {
+        CV.Player.recordEvent('quest', `Hoàn thành ${modeTitle} (${st.score}đ)`, Math.max(20, Math.round(st.score / 10)));
+      }
       const rank =
         st.score >= 800 ? '🌌 Huyền thoại Vũ trụ Hóa học' :
         st.score >= 400 ? '🚀 Chỉ huy Nguyên tố' : '🛸 Phi hành gia Tập sự';

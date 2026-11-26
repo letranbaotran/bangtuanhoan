@@ -21,7 +21,7 @@
     return CV.state.lang === 'en' ? cat.nameEn : cat.nameVi;
   };
 
-  CV.routes = ['home', 'universe', 'explorer', 'simulator', 'periodic-table', 'comparison', 'virtual-lab', 'chemquest', 'about'];
+  CV.routes = ['home', 'universe', 'explorer', 'simulator', 'periodic-table', 'chempredict', 'comparison', 'virtual-lab', 'chemquest', 'profile', 'about'];
 
   CV.getElement = function (num) {
     return CV.ELEMENTS.find((e) => e.number === Number(num));
@@ -234,9 +234,11 @@
     explorer: { vi: 'Tra cứu', en: 'Element Explorer', shortVi: 'Tra cứu', shortEn: 'Explore' },
     simulator: { vi: 'Mô phỏng', en: 'Atom Simulator', shortVi: 'Nguyên tử', shortEn: 'Atom' },
     'periodic-table': { vi: 'Bảng tuần hoàn', en: 'Periodic Table', shortVi: 'Bảng', shortEn: 'Table' },
+    chempredict: { vi: 'ChemPredict', en: 'ChemPredict', shortVi: 'Dự đoán', shortEn: 'Predict' },
     comparison: { vi: 'So sánh', en: 'Comparison', shortVi: 'So sánh', shortEn: 'Compare' },
     'virtual-lab': { vi: 'Thí nghiệm ảo', en: 'Virtual Lab', shortVi: 'Lab', shortEn: 'Lab' },
     chemquest: { vi: 'ChemQuest', en: 'ChemQuest', shortVi: 'Quest', shortEn: 'Quest' },
+    profile: { vi: 'Hồ sơ', en: 'Profile', shortVi: 'Hồ sơ', shortEn: 'Profile' },
     about: { vi: 'Giới thiệu', en: 'About Project', shortVi: 'Giới thiệu', shortEn: 'About' }
   };
 
@@ -372,6 +374,7 @@
   CV.openElementModal = function (num) {
     const el = CV.getElement(num);
     if (!el) return;
+    if (CV.Player) CV.Player.recordEvent('element', el.number, 10);
     const cat = CV.getCategory(el.category);
     const backdrop = document.getElementById('element-modal-backdrop');
     const body = document.getElementById('element-modal-body');

@@ -88,23 +88,23 @@
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;">
               ${[
-                'Nguyễn Công Tuấn Anh',
-                'Nguyễn Đức Anh',
-                'Trần Mỹ Tâm',
-                'Nguyễn Thu Bình',
-                'Phạm Mỹ Nhung',
-                'Phan Thị Hạnh',
-                'Nguyễn Trung Lương',
-                'Nguyễn Thị Thanh Trúc'
-              ]
-                .map(
-                  (name) => `
+          'Nguyễn Công Tuấn Anh',
+          'Nguyễn Đức Anh',
+          'Trần Mỹ Tâm',
+          'Nguyễn Thu Bình',
+          'Phạm Mỹ Nhung',
+          'Phan Thị Hạnh',
+          'Nguyễn Trung Lương',
+          'Nguyễn Thị Thanh Trúc'
+        ]
+          .map(
+            (name) => `
                 <div class="glass-surface" style="padding:10px 14px;border-radius:10px;font-size:0.9rem;display:flex;align-items:center;gap:8px;">
                   <span style="color:var(--accent-blue);">✦</span>
                   <span>${name}</span>
                 </div>`
-                )
-                .join('')}
+          )
+          .join('')}
             </div>
           </div>
         </div>
