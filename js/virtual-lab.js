@@ -422,15 +422,62 @@
 
     buildLabRoom() {
       const s = this.scene;
-      const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), new THREE.MeshPhysicalMaterial({ color: 0x1e293b, roughness: 0.25, metalness: 0.2 }));
+      s.background = new THREE.Color(0x1e293b);
+      s.fog = new THREE.FogExp2(0x1e293b, 0.036);
+
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(24, 24),
+        new THREE.MeshPhysicalMaterial({ color: 0x334155, roughness: 0.22, metalness: 0.15, clearcoat: 0.45 })
+      );
       floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; s.add(floor);
-      const backWall = new THREE.Mesh(new THREE.BoxGeometry(14, 4.6, 0.25), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 }));
+
+      // Ceiling & LED Light Panels
+      const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), new THREE.MeshBasicMaterial({ color: 0xe2e8f0 }));
+      ceiling.rotation.x = Math.PI / 2; ceiling.position.y = 4.5; s.add(ceiling);
+      [-2.4, 0, 2.4].forEach((lx) => {
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.65, 6.5), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        panel.rotation.x = Math.PI / 2; panel.position.set(lx, 4.48, -1.8); s.add(panel);
+      });
+
+      const backWall = new THREE.Mesh(new THREE.BoxGeometry(14, 4.6, 0.25), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.45 }));
       backWall.position.set(0, 2.3, -6.5); s.add(backWall);
-      const stripe = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.06, 0.28), new THREE.MeshBasicMaterial({ color: 0x00e5ff }));
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.06, 0.28), new THREE.MeshBasicMaterial({ color: 0xf97316 }));
       stripe.position.set(0, 3.25, -6.48); s.add(stripe);
-      const fumeHood = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.3, 0.8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+
+      // Glowing Periodic Table Wall Board
+      const ptCanvas = document.createElement('canvas');
+      ptCanvas.width = 512; ptCanvas.height = 256;
+      const pctx = ptCanvas.getContext('2d');
+      pctx.fillStyle = '#0f172a'; pctx.fillRect(0, 0, 512, 256);
+      pctx.strokeStyle = '#38bdf8'; pctx.lineWidth = 4; pctx.strokeRect(4, 4, 504, 248);
+      pctx.fillStyle = '#38bdf8'; pctx.font = 'bold 16px JetBrains Mono, monospace';
+      pctx.fillText('PERIODIC TABLE OF ELEMENTS — CHEMVERSE NATIONAL LAB', 22, 28);
+      const ptColors = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#10b981', '#a855f7'];
+      for (let r = 0; r < 7; r++) {
+        for (let c = 0; c < 18; c++) {
+          if (r === 0 && c > 0 && c < 17) continue;
+          if ((r === 1 || r === 2) && c > 1 && c < 12) continue;
+          pctx.fillStyle = ptColors[(c + r) % ptColors.length];
+          pctx.fillRect(24 + c * 26, 46 + r * 26, 22, 22);
+        }
+      }
+      const ptBoard = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.3), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(ptCanvas) }));
+      ptBoard.position.set(2.3, 2.45, -6.34); s.add(ptBoard);
+
+      // Glass Partition & Frames
+      const glassPart = new THREE.Mesh(
+        new THREE.PlaneGeometry(11, 3.8),
+        new THREE.MeshPhysicalMaterial({ color: 0xf1f5f9, transparent: true, opacity: 0.18, roughness: 0.06, clearcoat: 1.0 })
+      );
+      glassPart.position.set(0, 1.9, -2.45); s.add(glassPart);
+      [-3.8, -1.2, 1.2, 3.8].forEach((px) => {
+        const frame = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.9, 0.1), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+        frame.position.set(px, 1.95, -2.45); s.add(frame);
+      });
+
+      const fumeHood = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.3, 0.8), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
       fumeHood.position.set(-2.5, 1.15, -4.4); s.add(fumeHood);
-      const fumeWin = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 1.05), new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.28 }));
+      const fumeWin = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 1.05), new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.35 }));
       fumeWin.position.set(-2.5, 1.55, -3.99); s.add(fumeWin);
     },
 
@@ -460,11 +507,30 @@
       this.graphTex = new THREE.CanvasTexture(this.graphCanvas);
       const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.88, 0.58), new THREE.MeshBasicMaterial({ map: this.graphTex }));
       scr.position.z = 0.022; mon.add(scr);
+      const neck = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 0.05), new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.7 }));
+      neck.position.set(0, -0.34, -0.02); mon.add(neck);
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.02, 0.22), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+      foot.position.set(0, -0.41, 0.02); mon.add(foot);
       const hit = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.66, 0.1), new THREE.MeshBasicMaterial({ visible: false }));
       hit.userData = { type: 'view', view: 'graph', title: '📈 Màn Hình Đồ Thị Nhiệt Độ & pH', sub: 'Click để phóng to biểu đồ' };
       mon.add(hit); this.interactiveObjects.push(hit);
       this.scene.add(mon);
       this.drawGraphTex();
+
+      // Side Beaker + Erlenmeyer + Retort Stand on Left
+      const frontB = this.createBeakerMesh(0.072, 0.19);
+      frontB.position.set(-1.12, 1.305, 0.54); this.scene.add(frontB);
+      const erlenmeyer = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.074, 0.18, 24, 1, true), this.glassMat);
+      erlenmeyer.position.set(-0.92, 1.395, 0.48); this.scene.add(erlenmeyer);
+
+      const stand = new THREE.Group(); stand.position.set(-0.66, 1.305, 0.46);
+      const sBase = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.016, 0.24), new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7 }));
+      sBase.position.y = 0.008; stand.add(sBase);
+      const sRod = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.56, 12), new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.9 }));
+      sRod.position.set(0, 0.28, -0.07); stand.add(sRod);
+      const clampArm = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.22, 10), new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8 }));
+      clampArm.rotation.z = Math.PI / 2; clampArm.position.set(0.08, 0.34, -0.07); stand.add(clampArm);
+      this.scene.add(stand);
     },
 
     createBeakerMesh(r, h) {
@@ -475,6 +541,23 @@
       base.position.y = 0.004; g.add(base);
       const rim = new THREE.Mesh(new THREE.TorusGeometry(r, 0.0035, 10, 32), this.glassMat);
       rim.rotation.x = Math.PI / 2; rim.position.y = h; g.add(rim);
+
+      // Printed mL Graduations
+      const scaleCanvas = document.createElement('canvas');
+      scaleCanvas.width = 128; scaleCanvas.height = 256;
+      const ctx = scaleCanvas.getContext('2d');
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.font = 'bold 16px JetBrains Mono, monospace';
+      for (let i = 1; i <= 5; i++) {
+        const y = 230 - i * 38;
+        ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(22, y); ctx.lineTo(54, y); ctx.stroke();
+        ctx.fillText(`${i * 200}`, 60, y + 5);
+      }
+      const scalePlane = new THREE.Mesh(
+        new THREE.CylinderGeometry(r + 0.0008, r * 0.97 + 0.0008, h * 0.85, 24, 1, true, -0.45, 0.9),
+        new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(scaleCanvas), transparent: true, side: THREE.DoubleSide })
+      );
+      scalePlane.position.y = h * 0.48; g.add(scalePlane);
       return g;
     },
 
@@ -486,6 +569,8 @@
         const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.108, 0.018, 32), new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6 }));
         coil.position.set(cx, 0.092, -0.01); hp.add(coil);
         this.hotplateCoils.push(coil);
+        const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.02, 0.022, 20), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 }));
+        knob.rotation.x = Math.PI / 2; knob.position.set(cx, 0.042, 0.168); hp.add(knob);
       });
       this.hotplateLedMesh = new THREE.Mesh(new THREE.SphereGeometry(0.008, 12, 12), new THREE.MeshBasicMaterial({ color: 0x475569 }));
       this.hotplateLedMesh.position.set(0, 0.045, 0.165); hp.add(this.hotplateLedMesh);
@@ -571,11 +656,47 @@
         liq.position.y = 0.05; bg.add(liq);
         const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.024, 0.032, 14), new THREE.MeshStandardMaterial({ color: chem.cat === 'ab' ? 0xdc2626 : 0x2563eb }));
         cap.position.y = 0.158; bg.add(cap);
+
+        // Printed Formula Label on Bottle
+        const lblCanvas = document.createElement('canvas');
+        lblCanvas.width = 128; lblCanvas.height = 64;
+        const ctx = lblCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 128, 64);
+        ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 5; ctx.strokeRect(2, 2, 124, 60);
+        ctx.fillStyle = '#0f172a'; ctx.font = 'bold 24px JetBrains Mono, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(chem.id, 64, 34);
+        const labelMesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.039, 0.039, 0.055, 16, 1, true, -0.7, 1.4),
+          new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(lblCanvas) })
+        );
+        labelMesh.position.y = 0.075; bg.add(labelMesh);
+
         const hit = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.18, 10), new THREE.MeshBasicMaterial({ visible: false }));
         hit.position.y = 0.09; hit.userData = { type: 'bottle', chemId: chem.id, title: `🧪 Lọ ${chem.formula} — ${chem.name}`, sub: 'Click để rót vào cốc!' };
         bg.add(hit); this.interactiveObjects.push(hit);
         this.scene.add(bg);
       });
+
+      // 5-Tube Colored Test Tube Rack on Upper Shelf
+      const rack = new THREE.Group(); rack.position.set(-0.22, 2.02, -0.22);
+      const rackMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7 });
+      const rBase = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.012, 0.075), rackMat); rBase.position.y = 0.006; rack.add(rBase);
+      const rTop = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.01, 0.075), rackMat); rTop.position.y = 0.11; rack.add(rTop);
+      [-0.13, 0.13].forEach((px) => {
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.11, 8), rackMat);
+        post.position.set(px, 0.055, 0); rack.add(post);
+      });
+      [0x0284c7, 0xec4899, 0xfacc15, 0x10b981, 0x8b5cf6].forEach((col, i) => {
+        const tx = -0.09 + i * 0.045;
+        const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.15, 16), this.glassMat);
+        tube.position.set(tx, 0.085, 0); rack.add(tube);
+        const tLiq = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.08, 12), new THREE.MeshBasicMaterial({ color: col }));
+        tLiq.position.set(tx, 0.05, 0); rack.add(tLiq);
+        const tCap = new THREE.Mesh(new THREE.SphereGeometry(0.013, 12, 12), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
+        tCap.position.set(tx, 0.162, 0); rack.add(tCap);
+      });
+      this.scene.add(rack);
     },
 
     buildRigsAndParticles() {
