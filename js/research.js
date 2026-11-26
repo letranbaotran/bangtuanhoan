@@ -559,15 +559,17 @@
     }
   };
 
-  /* --- MODULE 5 (LEARN): GROUNDED AI CHEMISTRY TUTOR --- */
+  /* --- MODULE 5 (LEARN): CONVERSATIONAL AI STUDENT ASSISTANT --- */
   CV.modules.tutor = {
     init(container) {
       this.container = container;
       this.pendingQuiz = null;
+      this.lastElement = null;
+      this.isTyping = false;
       this.messages = [
         {
           role: 'bot',
-          text: 'Xin chào! Tôi là **AI Chemistry Tutor** của CHEMVERSE. Mọi câu trả lời đều truy xuất trực tiếp từ **Cơ sở dữ liệu IUPAC (118 nguyên tố) & Kho phản ứng kiểm chứng**.\n\nBạn có thể hỏi:\n• **Tra cứu nguyên tố:** *"Thông tin Iron"*, *"Z=29"*\n• **Tính khối lượng mol:** *"Tính M(H2SO4)"*, *"M(CaCO3)"*\n• **So sánh 2 nguyên tố:** *"So sánh Na và K"*\n• **Cân bằng & hiện tượng:** *"Na + H2O"*, *"Zn + HCl"*\n• **Lý thuyết & Luyện tập:** *"Quy luật bán kính"*, *"Cho 1 câu hỏi"*'
+          text: 'Chào bạn! Mình là **Trợ lý Học tập CHEMVERSE** 🤖✨\nMình có thể đồng hành cùng bạn như một gia sư Hóa học 24/7:\n• **Giải bài tập & Tính nhanh:** *"Tính số mol 5.6g Fe"*, *"Tính M(H2SO4)"*, *"Công thức tính C%"*\n• **Tra cứu & So sánh 118 nguyên tố:** *"Thông tin Iron"*, *"So sánh Na và K"*, hỏi tiếp *"ứng dụng của nó?"*\n• **Cân bằng & Hiện tượng:** *"Na + H2O"*, *"Dãy hoạt động hóa học"*, *"Mẹo học Hóa"*\n• **Hỏi đáp đời sống & Luyện tập:** *"Tại sao sắt bị gỉ?"*, *"Cho 1 câu hỏi"*'
         }
       ];
       this.render();
@@ -578,7 +580,7 @@
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/`([^`]+)`/g, '<code class="mono" style="color:#00E5FF;background:rgba(0,229,255,0.1);padding:1px 5px;border-radius:4px;">$1</code>');
+        .replace(/`([^`]+)`/g, '<code class="mono" style="color:#00E5FF;background:rgba(0,229,255,0.12);padding:1px 6px;border-radius:4px;">$1</code>');
     },
 
     calcMolarMass(formula) {
@@ -623,7 +625,7 @@
         total += m * counts[sym];
         parts.push(`${sym}: ${m} × ${counts[sym]}`);
       }
-      return { total: total.toFixed(2), parts: parts.join(' + ') };
+      return { total: Number(total.toFixed(2)), parts: parts.join(' + ') };
     },
 
     findElementsInQuery(q) {
@@ -647,17 +649,46 @@
     reply(query) {
       const raw = (query || '').trim();
       const q = raw.toLowerCase();
-      if (!q) return 'Vui lòng nhập câu hỏi hóa học bạn muốn tra cứu.';
+      if (!q) return 'Bạn cứ gõ câu hỏi nhé, mình luôn sẵn sàng hỗ trợ!';
+
+      // 0. Natural greetings, thanks & encouragement
+      if (/^(chào|hello|hi|hey|alo|xin chào|bạn là ai)/.test(q)) {
+        return 'Chào bạn! 👋 Mình là **Trợ lý Học tập CHEMVERSE**.\nHôm nay bạn muốn ôn **Bảng tuần hoàn**, giải **bài tập tính số mol / M**, cân bằng **phương trình**, hay chuẩn bị cho **bài kiểm tra** nào? Cứ hỏi tự nhiên nhé!';
+      }
+      if (q.includes('cảm ơn') || q.includes('thank') || q.includes('tuyệt') || q.includes('ok')) {
+        return 'Không có gì nè! 🌟 Học Hóa sẽ rất nhẹ nhàng khi hiểu bản chất. Cần hỏi thêm bài tập hay công thức gì bạn cứ nhắn mình nhé!';
+      }
+      if (q.includes('mệt') || q.includes('khó quá') || q.includes('chán') || q.includes('mẹo') || q.includes('cách học')) {
+        return 'Đừng nản nha! 💪 **3 mẹo học Hóa siêu nhanh cho học sinh:**\n1. **Nhớ Dãy hoạt động kim loại** bằng câu: *"Khi Nào Bạn Cần May Áo Giáp Sắt Nhìn Sang Phố Hỏi Cửa Hàng Á Phi Âu"* (K, Na, Ba, Ca, Mg, Al, Zn, Fe, Ni, Sn, Pb, H, Cu, Hg, Ag, Pt, Au).\n2. **Thuộc 4 công thức gốc:** `n = m/M`, `n = V/24.79` (đkc), `n = C_M·V`, `C% = (m_ct/m_dd)·100%`.\n3. **Vào Phòng Lab 3D** xem hiện tượng kết tủa, đổi màu sẽ nhớ lâu gấp 3 lần học vẹt!';
+      }
 
       // Check pending practice answer
       if (this.pendingQuiz && !q.includes('câu hỏi') && !q.includes('luyện tập')) {
         const ansEl = this.pendingQuiz;
         this.pendingQuiz = null;
         const ok = q.includes(String(ansEl.period)) || q.includes(ansEl.symbol.toLowerCase()) || q.includes(ansEl.electronConfig.toLowerCase());
-        return `${ok ? '✅ **Chính xác!**' : '📌 **Đáp án chuẩn IUPAC:**'} Nguyên tố **${ansEl.name} (${ansEl.symbol}, Z=${ansEl.number})** ở **Chu kỳ ${ansEl.period}, Nhóm ${CV.groupRoman(ansEl.group)}**, cấu hình \`${ansEl.electronConfig}\`.`;
+        return `${ok ? '🎉 **Chuẩn xác! Giỏi lắm!**' : '📌 **Gần đúng rồi — cùng xem đáp án chuẩn IUPAC nhé:**'}\nNguyên tố **${ansEl.name} (${ansEl.symbol}, Z=${ansEl.number})** ở **Chu kỳ ${ansEl.period}, Nhóm ${CV.groupRoman(ansEl.group)}**, cấu hình \`${ansEl.electronConfig}\`.`;
       }
 
-      // 1. Molar mass calculator
+      // 1. Contextual follow-up on last element
+      if (this.lastElement && (q.includes('của nó') || q.includes('ứng dụng') || q.includes('lớp e') || q.includes('hóa trị') || q.includes('chi tiết'))) {
+        const el = this.lastElement;
+        return `**Thông tin bổ sung về ${el.name} (${el.symbol}):**\n• **Hóa trị / Oxi hóa:** ${CV.commonValence(el)}\n• **Phân bố lớp vỏ:** [${el.shells.join(', ')}]\n• **Ứng dụng thực tiễn:** ${(el.applications || []).join('; ') || el.summary}\n• **Phát hiện:** ${el.discoveredBy || 'Cổ đại'} (${el.discoveryYear || '—'})`;
+      }
+
+      // 2. Stoichiometry: Calculate moles n = m / M
+      const molMatch = raw.match(/(\d+(?:[.,]\d+)?)\s*(?:g|gam)\s+([A-Za-z0-9()\[\]]+)/i);
+      if (molMatch) {
+        const mass = Number(molMatch[1].replace(',', '.'));
+        const f = molMatch[2];
+        const mm = this.calcMolarMass(f);
+        if (mm && mm.total > 0) {
+          const moles = (mass / mm.total).toFixed(4);
+          return `**Giải nhanh bài toán tính số mol của \`${f}\`:**\n• Bước 1: Tính khối lượng mol: \`M(${f}) = ${mm.parts} = ${mm.total} g/mol\`\n• Bước 2: Áp dụng công thức \`n = m / M\`\n• Kết quả: \`n = ${mass} / ${mm.total} ≈ ${moles} mol\` ✅`;
+        }
+      }
+
+      // 3. Molar mass calculator
       const mMatch = raw.match(/(?:M\s*\(\s*|khối lượng mol\s+(?:của\s+)?|molar mass\s+)([A-Za-z0-9()\[\]]+)/i);
       if (mMatch) {
         const res = this.calcMolarMass(mMatch[1]);
@@ -666,14 +697,29 @@
         }
       }
 
-      // 2. Compare 2 elements
+      // 4. Stoichiometry formulas / Chemistry knowledge topics
+      if (q.includes('công thức') || q.includes('số mol') || q.includes('nồng độ') || q.includes('hiệu suất')) {
+        return '**Bộ công thức Hóa học trọng tâm (GDPT 2018):**\n• **Số mol theo khối lượng:** `n = m / M` (mol)\n• **Số mol khí ở ĐKC (25°C, 1 bar):** `n = V / 24.79` (mol)\n• **Nồng độ mol:** `C_M = n / V_dd` (M hoặc mol/L)\n• **Nồng độ phần trăm:** `C% = (m_ct / m_dd) × 100%`\n• **Hiệu suất phản ứng:** `H% = (lượng thực tế / lượng lý thuyết) × 100%`\n👉 Thử gõ *"Tính số mol 5.6g Fe"* để mình tính giúp bạn!';
+      }
+      if (q.includes('dãy hoạt động') || q.includes('kim loại mạnh')) {
+        return '**Dãy hoạt động hóa học của kim loại:**\n`K > Na > Ba > Ca > Mg > Al > Zn > Fe > Ni > Sn > Pb > (H) > Cu > Hg > Ag > Pt > Au`\n• **Ý nghĩa:** Kim loại đứng trước `(H)` đẩy được `H₂` ra khỏi axit `HCl, H₂SO₄ loãng`; kim loại đứng trước (trừ `K, Na, Ba, Ca`) đẩy được kim loại đứng sau ra khỏi dung dịch muối (vd: `Fe + CuSO₄ → FeSO₄ + Cu`).';
+      }
+      if (q.includes('axit') || q.includes('bazơ') || q.includes('ph') || q.includes('quỳ tím') || q.includes('phenolphtalein')) {
+        return '**Thang pH & Chất chỉ thị màu:**\n• **pH < 7:** Môi trường Axit → Quỳ tím hóa **đỏ**, Phenolphtalein **không màu**.\n• **pH = 7:** Trung tính (`H₂O`, `NaCl`) → Quỳ tím không đổi màu.\n• **pH > 7:** Môi trường Bazơ/Kiềm → Quỳ tím hóa **xanh**, Phenolphtalein hóa **hồng**.\n👉 Bạn có thể thử trực tiếp trong **Phòng Lab 3D**!';
+      }
+      if (q.includes('gỉ') || q.includes('tanh cá') || q.includes('nước ngọt') || q.includes('mưa axit') || q.includes('vôi tôi')) {
+        return '**Giải thích hiện tượng Hóa học đời sống:**\n• **Sắt bị gỉ:** `Fe` tác dụng với `O₂` và hơi nước `H₂O` tạo oxit sắt ngậm nước màu nâu đỏ.\n• **Khử mùi tanh cá:** Axit trong chanh/giấm trung hòa các **amin** có tính bazơ gây mùi tanh.\n• **Nước ngọt có gas:** Mở nắp làm giảm áp suất khiến `H₂CO₃ → H₂O + CO₂↑` sủi bọt.\n• **Mưa axit:** Do khí thải `SO₂, NOₓ` tạo `H₂SO₄, HNO₃`.\n👉 Vào **ChemQuiz → Bài tập hằng ngày** để luyện thêm nhé!';
+      }
+
+      // 5. Compare 2 elements
       const foundEls = this.findElementsInQuery(raw);
       if ((q.includes('so sánh') || q.includes('khác nhau') || q.includes('vs')) && foundEls.length >= 2) {
         const [a, b] = foundEls;
+        this.lastElement = a;
         return `**So sánh ${a.name} (${a.symbol}) và ${b.name} (${b.symbol}) [IUPAC]:**\n• **Số hiệu Z:** ${a.symbol} = ${a.number} | ${b.symbol} = ${b.number}\n• **Vị trí:** ${a.symbol} (CK ${a.period}, N ${CV.groupRoman(a.group)}) | ${b.symbol} (CK ${b.period}, N ${CV.groupRoman(b.group)})\n• **Cấu hình e:** \`${a.electronConfig}\` | \`${b.electronConfig}\`\n• **Bán kính nguyên tử:** ${a.atomicRadius ?? '—'} pm | ${b.atomicRadius ?? '—'} pm\n• **Độ âm điện (χ):** ${a.electronegativity ?? '—'} | ${b.electronegativity ?? '—'}`;
       }
 
-      // 3. Reaction / equation lookup
+      // 6. Reaction / equation lookup
       if (CV.REACTIONS) {
         const rx = CV.REACTIONS.find((r) =>
           (r.equation && q.includes(r.equation.split('→')[0].trim().toLowerCase())) ||
@@ -684,13 +730,14 @@
         }
       }
 
-      // 4. Single element lookup
+      // 7. Single element lookup
       if (foundEls.length >= 1) {
         const el = foundEls[0];
-        return `**${el.number}. ${el.symbol} – ${el.name}** [Nguồn: IUPAC]\n• Cấu hình electron: \`${el.electronConfig}\` (Lớp: [${el.shells.join(', ')}])\n• Vị trí: Chu kỳ ${el.period}, Nhóm ${CV.groupRoman(el.group)} • Hóa trị: ${CV.commonValence(el)}\n• Nguyên tử khối: ${el.atomicMass} u • Độ âm điện: ${el.electronegativity ?? '—'} • I₁: ${el.ionizationEnergy ?? '—'} kJ/mol\n• Đặc điểm: ${el.summary}`;
+        this.lastElement = el;
+        return `**${el.number}. ${el.symbol} – ${el.name}** [Nguồn: IUPAC]\n• Cấu hình electron: \`${el.electronConfig}\` (Lớp: [${el.shells.join(', ')}])\n• Vị trí: Chu kỳ ${el.period}, Nhóm ${CV.groupRoman(el.group)} • Hóa trị: ${CV.commonValence(el)}\n• Nguyên tử khối: ${el.atomicMass} u • Độ âm điện: ${el.electronegativity ?? '—'} • I₁: ${el.ionizationEnergy ?? '—'} kJ/mol\n• Đặc điểm: ${el.summary}\n💬 *Bạn có thể hỏi tiếp: "ứng dụng của nó?" hoặc "tính số mol 10g ${el.symbol}"!*`;
       }
 
-      // 5. Theory: Periodic trends / Aufbau / Bonding
+      // 8. Theory: Periodic trends / Aufbau
       if (q.includes('bán kính') || q.includes('độ âm điện') || q.includes('ion hóa') || q.includes('quy luật')) {
         return '**Quy luật tuần hoàn (Đã kiểm chứng trên 118 nguyên tố IUPAC):**\n• **Trong 1 chu kỳ (trái → phải):** Điện tích hạt nhân Z⁺ tăng, số lớp e không đổi → lực hút vỏ mạnh hơn → **Bán kính giảm**, **Độ âm điện & I₁ tăng**.\n• **Trong 1 nhóm A (trên → dưới):** Số lớp electron tăng nhanh → **Bán kính tăng**, **Độ âm điện & I₁ giảm**.';
       }
@@ -698,14 +745,15 @@
         return '**3 Nguyên lý phân bố Electron:**\n• **Aufbau (Vững bền):** Electron điền vào phân lớp có năng lượng từ thấp đến cao (`1s → 2s → 2p → 3s → 3p → 4s → 3d...`).\n• **Pauli:** Mỗi ô orbital chứa tối đa 2 electron có spin ngược dấu (`↑↓`).\n• **Hund:** Trong cùng phân lớp, electron phân bố vào các ô sao cho số electron độc thân là tối đa.';
       }
 
-      // 6. Practice question
+      // 9. Practice question
       if (q.includes('luyện tập') || q.includes('câu hỏi') || q.includes('bài tập')) {
         const sample = CV.ELEMENTS[(new Date().getSeconds() * 3 + this.messages.length) % 30];
         this.pendingQuiz = sample;
-        return `**Câu hỏi luyện tập nhanh (Dữ liệu IUPAC):**\nNguyên tố **${sample.name} (${sample.symbol})** có số hiệu nguyên tử Z = ${sample.number}. Hãy xác định **Chu kỳ, Nhóm** hoặc **cấu hình electron** của ${sample.symbol}? (Nhập câu trả lời của bạn để tôi chấm ngay!)`;
+        return `**Câu hỏi luyện tập nhanh (Dữ liệu IUPAC):**\nNguyên tố **${sample.name} (${sample.symbol})** có số hiệu nguyên tử Z = ${sample.number}. Hãy xác định **Chu kỳ, Nhóm** hoặc **cấu hình electron** của ${sample.symbol}? (Nhập câu trả lời để mình chấm ngay!)`;
       }
 
-      return '⚠️ Nội dung này chưa có trong cơ sở dữ liệu kiểm chứng của CHEMVERSE (tôi không tự suy đoán số liệu). Hãy thử hỏi:\n• *"Thông tin Iron"* hoặc *"Z=29"*\n• *"Tính M(H2SO4)"*\n• *"So sánh Na và K"*\n• *"Na + H2O"*';
+      // Helpful fallback with guidance
+      return 'Mình hiểu bạn đang hỏi về: *"' + raw + '"*.\nHiện mình chuyên sâu hỗ trợ toàn bộ **Hóa học THCS/THPT (GDPT 2018)** từ dữ liệu kiểm chứng:\n• Tra cứu **118 nguyên tố** (vd: *"Thông tin Iron"*, *"Z=17"*)\n• Tính **số mol / khối lượng mol** (vd: *"Tính số mol 5.6g Fe"*, *"M(H2SO4)"*)\n• **Phương trình, Dãy hoạt động, pH, Đời sống, Mẹo học Hóa**\nBạn thử hỏi theo một trong các gợi ý trên nhé! 😊';
     },
 
     render() {
@@ -713,31 +761,32 @@
         <div class="page-container">
           <div class="section-header" style="margin-bottom:16px;">
             <div>
-              <h2 class="section-title">🤖 AI Chemistry Tutor (Trợ Lý Dữ Liệu Kiểm Chứng)</h2>
-              <p class="section-subtitle">Tra cứu nguyên tố IUPAC, tính khối lượng mol, so sánh nguyên tố, cân bằng phương trình &amp; luyện tập tương tác</p>
+              <h2 class="section-title">🤖 Trợ Lý Ảo Học Tập CHEMVERSE</h2>
+              <p class="section-subtitle">Hỏi đáp tự nhiên như gia sư thật: tra cứu IUPAC, giải bài tập mol/M, cân bằng phương trình, mẹo học &amp; luyện tập</p>
             </div>
             <div style="display:flex;gap:8px;">
-              <button class="btn btn-secondary btn-sm" id="tutor-clear-btn">🗑️ Xóa hội thoại</button>
+              <button class="btn btn-secondary btn-sm" id="tutor-clear-btn">🗑️ Hội thoại mới</button>
               <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('learning')">← Về Học tập</button>
             </div>
           </div>
-          <div class="glass-surface" style="padding:18px;border-radius:16px;max-width:880px;margin:0 auto;">
-            <div id="tutor-chat-log" style="display:flex;flex-direction:column;gap:10px;height:380px;overflow-y:auto;margin-bottom:14px;padding-right:4px;">
+          <div class="glass-surface" style="padding:18px;border-radius:16px;max-width:900px;margin:0 auto;">
+            <div id="tutor-chat-log" style="display:flex;flex-direction:column;gap:10px;height:390px;overflow-y:auto;margin-bottom:14px;padding-right:4px;">
               ${this.messages.map((m) => `
-                <div class="glass-surface" style="padding:12px 14px;border-radius:12px;align-self:${m.role === 'user' ? 'flex-end' : 'flex-start'};max-width:88%;background:${m.role === 'user' ? 'rgba(0,229,255,0.16)' : 'rgba(15,23,42,0.75)'};border-color:${m.role === 'user' ? 'rgba(0,229,255,0.45)' : 'rgba(255,255,255,0.1)'};white-space:pre-line;font-size:0.88rem;line-height:1.5;">
+                <div class="glass-surface" style="padding:12px 14px;border-radius:12px;align-self:${m.role === 'user' ? 'flex-end' : 'flex-start'};max-width:88%;background:${m.role === 'user' ? 'rgba(0,229,255,0.16)' : 'rgba(15,23,42,0.78)'};border-color:${m.role === 'user' ? 'rgba(0,229,255,0.45)' : 'rgba(255,255,255,0.1)'};white-space:pre-line;font-size:0.88rem;line-height:1.55;">
                   ${this.formatText(m.text)}
                 </div>`).join('')}
+              ${this.isTyping ? `<div class="glass-surface" style="padding:10px 14px;border-radius:12px;align-self:flex-start;font-size:0.82rem;color:var(--accent-cyan);">🤖 Trợ lý CHEMVERSE đang soạn câu trả lời...</div>` : ''}
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Thông tin Iron">Thông tin Iron (Fe)</button>
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Tính số mol 5.6g Fe">Tính n của 5.6g Fe</button>
               <button class="btn btn-secondary btn-sm tutor-chip" data-q="Tính M(H2SO4)">Tính M(H₂SO₄)</button>
               <button class="btn btn-secondary btn-sm tutor-chip" data-q="So sánh Na và K">So sánh Na &amp; K</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Na + H2O">Cân bằng Na + H₂O</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Quy luật bán kính nguyên tử">Quy luật bán kính</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Cho tôi 1 câu hỏi luyện tập">Câu hỏi luyện tập</button>
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Dãy hoạt động hóa học">Dãy hoạt động KL</button>
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Mẹo học Hóa nhanh">Mẹo học Hóa</button>
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Cho tôi 1 câu hỏi luyện tập">Luyện tập nhanh</button>
             </div>
             <div style="display:flex;gap:8px;">
-              <input id="tutor-input" class="input-field" style="flex:1;" placeholder="Hỏi nguyên tố, tính M(H2SO4), so sánh Na và K, cân bằng Na + H2O..." />
+              <input id="tutor-input" class="input-field" style="flex:1;" placeholder="Nhắn tin với Trợ lý CHEMVERSE (vd: Tính số mol 10g CaCO3, Mẹo học Hóa, Na + H2O)..." />
               <button class="btn btn-primary" id="tutor-send">Gửi</button>
             </div>
           </div>
@@ -749,12 +798,17 @@
       const send = (txt) => {
         const inp = document.getElementById('tutor-input');
         const q = (txt ?? inp.value).trim();
-        if (!q) return;
+        if (!q || this.isTyping) return;
         this.messages.push({ role: 'user', text: q });
-        this.messages.push({ role: 'bot', text: this.reply(q) });
+        this.isTyping = true;
         this.render();
-        const nextInp = document.getElementById('tutor-input');
-        if (nextInp) nextInp.focus();
+        setTimeout(() => {
+          this.isTyping = false;
+          this.messages.push({ role: 'bot', text: this.reply(q) });
+          this.render();
+          const nextInp = document.getElementById('tutor-input');
+          if (nextInp) nextInp.focus();
+        }, 320);
       };
       document.getElementById('tutor-send').addEventListener('click', () => send());
       document.getElementById('tutor-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
