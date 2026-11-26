@@ -18,8 +18,6 @@
     },
 
     init(container) {
-      const isLight = document.body.classList.contains('light-glass');
-
       container.innerHTML = `
         <div class="page-container">
           <!-- Portal Ribbon Title & Pill Search -->
@@ -37,10 +35,6 @@
             <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
               <button class="btn btn-primary btn-sm" id="pt-mode-2d">${CV.t('📊 Bảng 2D Thông Minh', '📊 Smart 2D Table')}</button>
               <button class="btn btn-secondary btn-sm" id="pt-mode-3d">${CV.t('🧊 Bảng 3D Khối & Cột Thuộc Tính', '🧊 3D Block & Property Height-Map')}</button>
-              <button class="btn btn-secondary btn-sm" id="pt-theme-btn" onclick="CHEMVERSE.toggleTheme()">
-                ${isLight ? CV.t('🌙 Chế độ Vũ trụ (Tối)', '🌙 Dark Space Mode') : CV.t('☀️ Chế độ Sáng (Lớp học)', '☀️ Light Glass Mode')}
-              </button>
-              <button class="btn btn-secondary btn-sm" id="pt-toggle-anatomy">${CV.t('🧩 Ẩn/Hiện Ô mẫu', '🧩 Toggle Anatomy Card')}</button>
             </div>
           </div>
 
