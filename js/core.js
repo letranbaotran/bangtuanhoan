@@ -21,7 +21,7 @@
     return CV.state.lang === 'en' ? cat.nameEn : cat.nameVi;
   };
 
-  CV.routes = ['home', 'learning', 'universe', 'simulator', 'periodic-table', 'virtual-lab', 'chemquest', 'profile', 'about'];
+  CV.routes = ['home', 'learning', 'universe', 'simulator', 'periodic-table', 'virtual-lab', 'research', 'tutor', 'chemquest', 'profile', 'about'];
 
   CV.getElement = function (num) {
     return CV.ELEMENTS.find((e) => e.number === Number(num));

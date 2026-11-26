@@ -47,12 +47,13 @@
                 </div>
                 <ul class="dual-branch-list">
                   <li>🧪 <strong>Phòng Lab 3D:</strong> Cốc đong, đèn cồn, tủ hóa chất &amp; hiệu ứng chân thực</li>
-                  <li>🎚️ <strong>3 Mức độ thực hành:</strong> Cơ bản (THCS) • Nâng cao (THPT) • Tự do</li>
-                  <li>📖 <strong>Chuyên đề mẫu:</strong> Vô cơ, Axit-Bazơ, Điện hóa, Ngọn lửa</li>
-                  <li>📈 <strong>Đồ thị &amp; Báo cáo:</strong> Theo dõi nhiệt độ, pH thời gian thực</li>
+                  <li>📊 <strong>Chemical Data &amp; Trends:</strong> Lọc 118 nguyên tố, xuất CSV &amp; phân tích xu hướng</li>
+                  <li>🤖 <strong>AI Prediction (ML):</strong> Dự đoán tính chất (Train/Test, MAE, RMSE, R²)</li>
+                  <li>🧪 <strong>Hypothesis &amp; Report:</strong> Kiểm chứng giả thuyết Pearson r &amp; xuất báo cáo</li>
                 </ul>
-                <div class="dual-branch-actions">
-                  <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.switchBranch('research')">🔬 ${t('Mở Thẳng Phòng Lab 3D →', 'Open Virtual Lab 3D →')}</button>
+                <div class="dual-branch-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;">
+                  <button class="btn btn-primary" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.switchBranch('research')">🔬 Phòng Lab 3D</button>
+                  <button class="btn btn-secondary" onclick="event.stopPropagation();CHEMVERSE.navigate('research')">📊 Research Lab</button>
                 </div>
               </article>
             </div>
@@ -109,6 +110,13 @@
               <h3>4. ChemQuiz</h3>
               <p>${t('Hệ thống câu hỏi trắc nghiệm tương tác, trò chơi đố vui hóa học (cân bằng phương trình, lật thẻ, ghép hợp chất) có chấm điểm.', 'Interactive quizzes, chemistry games (equation balancer, memory cards, compound builder) with scoring.')}</p>
               <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('chemquest')">${t('Vào ChemQuiz →', 'Open ChemQuiz →')}</button>
+            </article>
+
+            <article class="learning-hub-card glass-surface" onclick="CHEMVERSE.navigate('tutor')" role="button" tabindex="0" style="grid-column:1 / -1;">
+              <div class="lh-icon" style="color:#34D399;">🤖</div>
+              <h3>5. AI Chemistry Tutor (Trợ lý Hóa học Kiểm chứng)</h3>
+              <p>${t('Giải thích kiến thức, hướng dẫn cân bằng phương trình từng bước, giải thích hiện tượng và gợi ý bài tập dựa trên dữ liệu IUPAC.', 'Explains concepts, guides equation balancing, and provides verified practice from IUPAC data.')}</p>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('tutor')">${t('Mở AI Tutor →', 'Open AI Tutor →')}</button>
             </article>
           </div>
         </div>
