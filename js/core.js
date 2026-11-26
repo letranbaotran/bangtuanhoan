@@ -21,7 +21,7 @@
     return CV.state.lang === 'en' ? cat.nameEn : cat.nameVi;
   };
 
-  CV.routes = ['home', 'universe', 'simulator', 'periodic-table', 'chempredict', 'virtual-lab', 'chemquest', 'profile', 'about'];
+  CV.routes = ['home', 'universe', 'simulator', 'periodic-table', 'virtual-lab', 'chemquest', 'profile', 'about'];
 
   CV.getElement = function (num) {
     return CV.ELEMENTS.find((e) => e.number === Number(num));
@@ -233,7 +233,6 @@
     universe: { vi: 'Vũ trụ 3D', en: 'Universe 3D', shortVi: '3D', shortEn: '3D' },
     simulator: { vi: 'Mô phỏng', en: 'Atom Simulator', shortVi: 'Nguyên tử', shortEn: 'Atom' },
     'periodic-table': { vi: 'Bảng tuần hoàn', en: 'Periodic Table', shortVi: 'Bảng', shortEn: 'Table' },
-    chempredict: { vi: 'ChemPredict', en: 'ChemPredict', shortVi: 'Dự đoán', shortEn: 'Predict' },
     'virtual-lab': { vi: 'Thí nghiệm ảo', en: 'Virtual Lab', shortVi: 'Lab', shortEn: 'Lab' },
     chemquest: { vi: 'ChemQuest', en: 'ChemQuest', shortVi: 'Quest', shortEn: 'Quest' },
     profile: { vi: 'Hồ sơ', en: 'Profile', shortVi: 'Hồ sơ', shortEn: 'Profile' },
