@@ -559,17 +559,19 @@
     }
   };
 
-  /* --- MODULE 5 (LEARN): CONVERSATIONAL AI STUDENT ASSISTANT --- */
+  /* --- MODULE 5 (LEARN): CHATGPT-STYLE AI CHEMISTRY ASSISTANT --- */
   CV.modules.tutor = {
     init(container) {
       this.container = container;
       this.pendingQuiz = null;
       this.lastElement = null;
+      this.lastTopic = null;
       this.isTyping = false;
+      this.followUps = ['Tính % khối lượng H2SO4', 'Phân biệt liên kết Ion và Cộng hóa trị', 'Tính số mol 5.6g Fe'];
       this.messages = [
         {
           role: 'bot',
-          text: 'Chào bạn! Mình là **Trợ lý Học tập CHEMVERSE** 🤖✨\nMình có thể đồng hành cùng bạn như một gia sư Hóa học 24/7:\n• **Giải bài tập & Tính nhanh:** *"Tính số mol 5.6g Fe"*, *"Tính M(H2SO4)"*, *"Công thức tính C%"*\n• **Tra cứu & So sánh 118 nguyên tố:** *"Thông tin Iron"*, *"So sánh Na và K"*, hỏi tiếp *"ứng dụng của nó?"*\n• **Cân bằng & Hiện tượng:** *"Na + H2O"*, *"Dãy hoạt động hóa học"*, *"Mẹo học Hóa"*\n• **Hỏi đáp đời sống & Luyện tập:** *"Tại sao sắt bị gỉ?"*, *"Cho 1 câu hỏi"*'
+          text: 'Chào bạn! Mình là **Trợ lý AI CHEMVERSE** 🤖✨ — trả lời theo phong cách **ChatGPT** (gõ từng chữ mượt mà + gợi ý câu hỏi tiếp theo).\n\nMình có thể giải đáp mọi thắc mắc Hóa học của bạn:\n• **Giải toán Hóa học:** *"Tính số mol 5.6g Fe"*, *"Tính % khối lượng trong CaCO3"*, *"12.395 lít khí O2 ở đkc"*\n• **Lý thuyết & Phân biệt:** *"Phân biệt axit và bazơ"*, *"Tính chất hóa học của kim loại"*, *"Nhận biết khí CO2, NH3, H2"*\n• **118 Nguyên tố & Phản ứng:** *"Thông tin Iron"*, *"So sánh Na và K"*, *"Na + H2O"*\n• **Kết nối LLM ngoài (tùy chọn):** Bấm **⚙️ Kết nối AI** nếu muốn dùng OpenAI / Gemini / Ollama.'
         }
       ];
       this.render();
@@ -618,14 +620,18 @@
       if (!keys.length) return null;
       let total = 0;
       const parts = [];
+      const breakdown = [];
       for (const sym of keys) {
         const el = CV.ELEMENTS.find((e) => e.symbol === sym);
         if (!el) return null;
         const m = Number(el.atomicMass);
-        total += m * counts[sym];
+        const sub = m * counts[sym];
+        total += sub;
         parts.push(`${sym}: ${m} × ${counts[sym]}`);
+        breakdown.push({ sym, sub });
       }
-      return { total: Number(total.toFixed(2)), parts: parts.join(' + ') };
+      const pct = breakdown.map((b) => `%${b.sym} = ${((b.sub / total) * 100).toFixed(2)}%`).join(' • ');
+      return { total: Number(total.toFixed(2)), parts: parts.join(' + '), pct };
     },
 
     findElementsInQuery(q) {
@@ -646,6 +652,32 @@
       return hits;
     },
 
+    async fetchExternalLLM(userPrompt) {
+      const cfg = JSON.parse(localStorage.getItem('chemverse_llm_cfg') || 'null');
+      if (!cfg || !cfg.endpoint) return null;
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
+        const res = await fetch(cfg.endpoint, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            model: cfg.model || 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: 'Bạn là Trợ lý AI Hóa học CHEMVERSE (GDPT 2018, danh pháp tiếng Anh IUPAC). Trả lời ngắn gọn, chính xác khoa học, dễ hiểu cho học sinh Việt Nam.' },
+              ...this.messages.slice(-6).map((m) => ({ role: m.role === 'bot' ? 'assistant' : 'user', content: m.text })),
+              { role: 'user', content: userPrompt }
+            ]
+          })
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.choices?.[0]?.message?.content || data.message?.content || null;
+      } catch (_) {
+        return null;
+      }
+    },
+
     reply(query) {
       const raw = (query || '').trim();
       const q = raw.toLowerCase();
@@ -653,13 +685,21 @@
 
       // 0. Natural greetings, thanks & encouragement
       if (/^(chào|hello|hi|hey|alo|xin chào|bạn là ai)/.test(q)) {
-        return 'Chào bạn! 👋 Mình là **Trợ lý Học tập CHEMVERSE**.\nHôm nay bạn muốn ôn **Bảng tuần hoàn**, giải **bài tập tính số mol / M**, cân bằng **phương trình**, hay chuẩn bị cho **bài kiểm tra** nào? Cứ hỏi tự nhiên nhé!';
+        this.followUps = ['Tính % khối lượng H2SO4', 'Mẹo học Hóa nhanh', 'Thông tin Iron'];
+        return 'Chào bạn! 👋 Mình là **Trợ lý AI CHEMVERSE**.\nBạn cần mình giải bài tập mol/nồng độ, tra cứu nguyên tố, viết phương trình hay giải thích lý thuyết nào? Cứ nhắn tự nhiên như đang chat với bạn bè nhé!';
       }
       if (q.includes('cảm ơn') || q.includes('thank') || q.includes('tuyệt') || q.includes('ok')) {
-        return 'Không có gì nè! 🌟 Học Hóa sẽ rất nhẹ nhàng khi hiểu bản chất. Cần hỏi thêm bài tập hay công thức gì bạn cứ nhắn mình nhé!';
+        return 'Rất vui được giúp bạn! 🌟 Cần giải thêm bài tập hay ôn thi phần nào cứ nhắn mình nha.';
+      }
+      if (q.includes('đơn giản hơn') || q.includes('dễ hiểu hơn') || q.includes('ví dụ')) {
+        if (this.lastElement) {
+          return `Nói dễ hiểu về **${this.lastElement.name} (${this.lastElement.symbol})**:\n• Nó đứng ở ô số **${this.lastElement.number}** trong bảng tuần hoàn.\n• Nó có **${this.lastElement.shells.length} lớp electron**, lớp ngoài cùng có **${this.lastElement.shells[this.lastElement.shells.length - 1]} electron** (đây là số electron quyết định tính chất hóa học của nó!).\n• Ví dụ đời sống: ${(this.lastElement.applications || [this.lastElement.summary])[0]}.`;
+        }
+        return 'Ví dụ thực tế siêu dễ nhớ: Khi bạn thả 1 mẩu **Sodium (Na)** vào nước, nó chạy trên mặt nước và sủi bọt khí `H₂` vì Na rất hoạt động (`2Na + 2H₂O → 2NaOH + H₂↑`). Bạn muốn mình lấy ví dụ về chủ đề nào nữa?';
       }
       if (q.includes('mệt') || q.includes('khó quá') || q.includes('chán') || q.includes('mẹo') || q.includes('cách học')) {
-        return 'Đừng nản nha! 💪 **3 mẹo học Hóa siêu nhanh cho học sinh:**\n1. **Nhớ Dãy hoạt động kim loại** bằng câu: *"Khi Nào Bạn Cần May Áo Giáp Sắt Nhìn Sang Phố Hỏi Cửa Hàng Á Phi Âu"* (K, Na, Ba, Ca, Mg, Al, Zn, Fe, Ni, Sn, Pb, H, Cu, Hg, Ag, Pt, Au).\n2. **Thuộc 4 công thức gốc:** `n = m/M`, `n = V/24.79` (đkc), `n = C_M·V`, `C% = (m_ct/m_dd)·100%`.\n3. **Vào Phòng Lab 3D** xem hiện tượng kết tủa, đổi màu sẽ nhớ lâu gấp 3 lần học vẹt!';
+        this.followUps = ['Dãy hoạt động hóa học', 'Bộ công thức tính mol', 'Cho 1 câu hỏi luyện tập'];
+        return 'Đừng nản nha! 💪 **3 bí quyết học Hóa nhẹ nhàng:**\n1. **Nhớ Dãy hoạt động kim loại:** *"Khi Nào Bạn Cần May Áo Giáp Sắt Nhìn Sang Phố Hỏi Cửa Hàng Á Phi Âu"* (`K, Na, Ba, Ca, Mg, Al, Zn, Fe, Ni, Sn, Pb, H, Cu, Hg, Ag, Pt, Au`).\n2. **Thuộc 4 công thức gốc:** `n = m/M`, `n = V/24.79` (đkc), `n = C_M·V`, `C% = (m_ct/m_dd)·100%`.\n3. **Thực hành trên Phòng Lab 3D** để nhớ hiện tượng kết tủa, đổi màu bằng hình ảnh thay vì học vẹt!';
       }
 
       // Check pending practice answer
@@ -667,7 +707,7 @@
         const ansEl = this.pendingQuiz;
         this.pendingQuiz = null;
         const ok = q.includes(String(ansEl.period)) || q.includes(ansEl.symbol.toLowerCase()) || q.includes(ansEl.electronConfig.toLowerCase());
-        return `${ok ? '🎉 **Chuẩn xác! Giỏi lắm!**' : '📌 **Gần đúng rồi — cùng xem đáp án chuẩn IUPAC nhé:**'}\nNguyên tố **${ansEl.name} (${ansEl.symbol}, Z=${ansEl.number})** ở **Chu kỳ ${ansEl.period}, Nhóm ${CV.groupRoman(ansEl.group)}**, cấu hình \`${ansEl.electronConfig}\`.`;
+        return `${ok ? '🎉 **Chuẩn xác! Giỏi lắm!**' : '📌 **Cùng xem đáp án chuẩn IUPAC nhé:**'}\nNguyên tố **${ansEl.name} (${ansEl.symbol}, Z=${ansEl.number})** ở **Chu kỳ ${ansEl.period}, Nhóm ${CV.groupRoman(ansEl.group)}**, cấu hình \`${ansEl.electronConfig}\`.`;
       }
 
       // 1. Contextual follow-up on last element
@@ -676,7 +716,26 @@
         return `**Thông tin bổ sung về ${el.name} (${el.symbol}):**\n• **Hóa trị / Oxi hóa:** ${CV.commonValence(el)}\n• **Phân bố lớp vỏ:** [${el.shells.join(', ')}]\n• **Ứng dụng thực tiễn:** ${(el.applications || []).join('; ') || el.summary}\n• **Phát hiện:** ${el.discoveredBy || 'Cổ đại'} (${el.discoveryYear || '—'})`;
       }
 
-      // 2. Stoichiometry: Calculate moles n = m / M
+      // 2. Gas volume at DKC (n = V / 24.79)
+      const volMatch = raw.match(/(\d+(?:[.,]\d+)?)\s*(?:l|lít)\s*(?:khí\s+)?([A-Za-z0-9]+)?/i);
+      if (volMatch && (q.includes('đkc') || q.includes('số mol') || q.includes('tính'))) {
+        const v = Number(volMatch[1].replace(',', '.'));
+        const n = (v / 24.79).toFixed(4);
+        return `**Tính số mol khí ở điều kiện chuẩn (ĐKC: 25°C, 1 bar):**\n• Áp dụng công thức GDPT 2018: \`n = V / 24.79\`\n• Kết quả: \`n = ${v} / 24.79 ≈ ${n} mol\` ✅`;
+      }
+
+      // 3. Mass percentage calculator (% khối lượng)
+      if (q.includes('%') || q.includes('phần trăm')) {
+        const fMatch = raw.match(/([A-Z][A-Za-z0-9()\[\]]+)/);
+        if (fMatch) {
+          const mm = this.calcMolarMass(fMatch[1]);
+          if (mm) {
+            return `**Thành phần phần trăm theo khối lượng của \`${fMatch[1]}\`:**\n• Khối lượng mol: \`M = ${mm.parts} = ${mm.total} g/mol\`\n• Tỷ lệ phần trăm: **${mm.pct}** ✅`;
+          }
+        }
+      }
+
+      // 4. Stoichiometry: Calculate moles n = m / M
       const molMatch = raw.match(/(\d+(?:[.,]\d+)?)\s*(?:g|gam)\s+([A-Za-z0-9()\[\]]+)/i);
       if (molMatch) {
         const mass = Number(molMatch[1].replace(',', '.'));
@@ -684,109 +743,127 @@
         const mm = this.calcMolarMass(f);
         if (mm && mm.total > 0) {
           const moles = (mass / mm.total).toFixed(4);
-          return `**Giải nhanh bài toán tính số mol của \`${f}\`:**\n• Bước 1: Tính khối lượng mol: \`M(${f}) = ${mm.parts} = ${mm.total} g/mol\`\n• Bước 2: Áp dụng công thức \`n = m / M\`\n• Kết quả: \`n = ${mass} / ${mm.total} ≈ ${moles} mol\` ✅`;
+          return `**Giải nhanh bài toán tính số mol của \`${f}\`:**\n• Bước 1: Tính khối lượng mol: \`M(${f}) = ${mm.parts} = ${mm.total} g/mol\`\n• Bước 2: Áp dụng \`n = m / M\`\n• Kết quả: \`n = ${mass} / ${mm.total} ≈ ${moles} mol\` ✅`;
         }
       }
 
-      // 3. Molar mass calculator
+      // 5. Molar mass calculator
       const mMatch = raw.match(/(?:M\s*\(\s*|khối lượng mol\s+(?:của\s+)?|molar mass\s+)([A-Za-z0-9()\[\]]+)/i);
       if (mMatch) {
         const res = this.calcMolarMass(mMatch[1]);
         if (res) {
-          return `**Khối lượng mol của \`${mMatch[1]}\` (Chuẩn IUPAC):**\n• Công thức tính: ${res.parts}\n• Kết quả: **M(${mMatch[1]}) = ${res.total} g/mol**`;
+          this.followUps = [`Tính % khối lượng ${mMatch[1]}`, `Tính số mol 10g ${mMatch[1]}`];
+          return `**Khối lượng mol của \`${mMatch[1]}\` (Chuẩn IUPAC):**\n• Công thức tính: ${res.parts}\n• Kết quả: **M(${mMatch[1]}) = ${res.total} g/mol**\n• Thành phần %: ${res.pct}`;
         }
       }
 
-      // 4. Stoichiometry formulas / Chemistry knowledge topics
+      // 6. Concept comparisons & core chemistry knowledge
+      if (q.includes('liên kết ion') && q.includes('cộng hóa trị')) {
+        return '**Phân biệt Liên kết Ion và Cộng hóa trị:**\n• **Liên kết Ion:** Hình thành do lực hút tĩnh điện giữa các ion trái dấu (thường giữa **Kim loại điển hình + Phi kim điển hình**, hiệu độ âm điện `Δχ ≥ 1.7`, vd: `NaCl`).\n• **Liên kết Cộng hóa trị:** Hình thành do sự **dùng chung cặp electron** giữa các nguyên tử (thường giữa **Phi kim + Phi kim**, `Δχ < 1.7`, vd: `H₂O, CH₄, CO₂`).';
+      }
+      if (q.includes('nhận biết') && (q.includes('khí') || q.includes('co2') || q.includes('nh3') || q.includes('h2'))) {
+        return '**Cách nhận biết các khí quen thuộc:**\n• **Khí CO₂:** Sục vào nước vôi trong `Ca(OH)₂` → làm **đục nước vôi trong** (`CaCO₃↓`).\n• **Khí NH₃:** Mùi khai, làm **quỳ tím ẩm hóa xanh**.\n• **Khí H₂:** Đốt cháy cho **ngọn lửa xanh nhạt** kèm tiếng nổ nhỏ.\n• **Khí O₂:** Làm **bùng cháy que đóm còn tàn đỏ**.';
+      }
+      if (q.includes('tính chất') && (q.includes('kim loại') || q.includes('axit') || q.includes('bazơ'))) {
+        return '**Tính chất hóa học chung (GDPT 2018):**\n• **Kim loại:** Tác dụng với phi kim (`O₂, Cl₂, S`), tác dụng với axit (`HCl, H₂SO₄ loãng`), tác dụng với dung dịch muối (đẩy KL yếu hơn), KL kiềm/kiềm thổ tác dụng với `H₂O`.\n• **Axit:** Làm quỳ tím hóa **đỏ**, tác dụng với bazơ (trung hòa), oxit bazơ, kim loại trước H và muối cacbonat (`CO₂↑`).\n• **Bazơ:** Làm quỳ tím hóa **xanh**, phenolphtalein hóa **hồng**, tác dụng với axit và oxit axit (`CO₂, SO₂`).';
+      }
       if (q.includes('công thức') || q.includes('số mol') || q.includes('nồng độ') || q.includes('hiệu suất')) {
-        return '**Bộ công thức Hóa học trọng tâm (GDPT 2018):**\n• **Số mol theo khối lượng:** `n = m / M` (mol)\n• **Số mol khí ở ĐKC (25°C, 1 bar):** `n = V / 24.79` (mol)\n• **Nồng độ mol:** `C_M = n / V_dd` (M hoặc mol/L)\n• **Nồng độ phần trăm:** `C% = (m_ct / m_dd) × 100%`\n• **Hiệu suất phản ứng:** `H% = (lượng thực tế / lượng lý thuyết) × 100%`\n👉 Thử gõ *"Tính số mol 5.6g Fe"* để mình tính giúp bạn!';
+        return '**Bộ công thức Hóa học trọng tâm (GDPT 2018):**\n• **Số mol:** `n = m / M` | `n = V / 24.79` (khí ĐKC) | `n = C_M · V_dd`\n• **Nồng độ mol:** `C_M = n / V_dd` (mol/L)\n• **Nồng độ phần trăm:** `C% = (m_ct / m_dd) × 100%`\n• **Hiệu suất:** `H% = (lượng thực tế / lượng lý thuyết) × 100%`';
       }
       if (q.includes('dãy hoạt động') || q.includes('kim loại mạnh')) {
-        return '**Dãy hoạt động hóa học của kim loại:**\n`K > Na > Ba > Ca > Mg > Al > Zn > Fe > Ni > Sn > Pb > (H) > Cu > Hg > Ag > Pt > Au`\n• **Ý nghĩa:** Kim loại đứng trước `(H)` đẩy được `H₂` ra khỏi axit `HCl, H₂SO₄ loãng`; kim loại đứng trước (trừ `K, Na, Ba, Ca`) đẩy được kim loại đứng sau ra khỏi dung dịch muối (vd: `Fe + CuSO₄ → FeSO₄ + Cu`).';
+        return '**Dãy hoạt động hóa học của kim loại:**\n`K > Na > Ba > Ca > Mg > Al > Zn > Fe > Ni > Sn > Pb > (H) > Cu > Hg > Ag > Pt > Au`\n• Kim loại trước `(H)` đẩy được `H₂` khỏi axit loãng.\n• Kim loại đứng trước (trừ `K, Na, Ba, Ca`) đẩy kim loại đứng sau ra khỏi muối.';
       }
       if (q.includes('axit') || q.includes('bazơ') || q.includes('ph') || q.includes('quỳ tím') || q.includes('phenolphtalein')) {
-        return '**Thang pH & Chất chỉ thị màu:**\n• **pH < 7:** Môi trường Axit → Quỳ tím hóa **đỏ**, Phenolphtalein **không màu**.\n• **pH = 7:** Trung tính (`H₂O`, `NaCl`) → Quỳ tím không đổi màu.\n• **pH > 7:** Môi trường Bazơ/Kiềm → Quỳ tím hóa **xanh**, Phenolphtalein hóa **hồng**.\n👉 Bạn có thể thử trực tiếp trong **Phòng Lab 3D**!';
+        return '**Thang pH & Chất chỉ thị màu:**\n• **pH < 7:** Axit → Quỳ tím **đỏ**, Phenolphtalein **không màu**.\n• **pH = 7:** Trung tính (`H₂O`, `NaCl`).\n• **pH > 7:** Bazơ → Quỳ tím **xanh**, Phenolphtalein **hồng**.';
       }
       if (q.includes('gỉ') || q.includes('tanh cá') || q.includes('nước ngọt') || q.includes('mưa axit') || q.includes('vôi tôi')) {
-        return '**Giải thích hiện tượng Hóa học đời sống:**\n• **Sắt bị gỉ:** `Fe` tác dụng với `O₂` và hơi nước `H₂O` tạo oxit sắt ngậm nước màu nâu đỏ.\n• **Khử mùi tanh cá:** Axit trong chanh/giấm trung hòa các **amin** có tính bazơ gây mùi tanh.\n• **Nước ngọt có gas:** Mở nắp làm giảm áp suất khiến `H₂CO₃ → H₂O + CO₂↑` sủi bọt.\n• **Mưa axit:** Do khí thải `SO₂, NOₓ` tạo `H₂SO₄, HNO₃`.\n👉 Vào **ChemQuiz → Bài tập hằng ngày** để luyện thêm nhé!';
+        return '**Hóa học đời sống quanh ta:**\n• **Sắt bị gỉ:** `Fe + O₂ + H₂O` tạo oxit sắt ngậm nước nâu đỏ.\n• **Khử mùi tanh cá:** Axit trong chanh/giấm trung hòa các **amin** có tính bazơ.\n• **Nước ngọt có gas:** Giảm áp suất làm `H₂CO₃ → H₂O + CO₂↑`.\n• **Mưa axit:** Khí `SO₂, NOₓ` tạo `H₂SO₄, HNO₃`.';
       }
 
-      // 5. Compare 2 elements
+      // 7. Compare 2 elements
       const foundEls = this.findElementsInQuery(raw);
       if ((q.includes('so sánh') || q.includes('khác nhau') || q.includes('vs')) && foundEls.length >= 2) {
         const [a, b] = foundEls;
         this.lastElement = a;
-        return `**So sánh ${a.name} (${a.symbol}) và ${b.name} (${b.symbol}) [IUPAC]:**\n• **Số hiệu Z:** ${a.symbol} = ${a.number} | ${b.symbol} = ${b.number}\n• **Vị trí:** ${a.symbol} (CK ${a.period}, N ${CV.groupRoman(a.group)}) | ${b.symbol} (CK ${b.period}, N ${CV.groupRoman(b.group)})\n• **Cấu hình e:** \`${a.electronConfig}\` | \`${b.electronConfig}\`\n• **Bán kính nguyên tử:** ${a.atomicRadius ?? '—'} pm | ${b.atomicRadius ?? '—'} pm\n• **Độ âm điện (χ):** ${a.electronegativity ?? '—'} | ${b.electronegativity ?? '—'}`;
+        return `**So sánh ${a.name} (${a.symbol}) và ${b.name} (${b.symbol}) [IUPAC]:**\n• **Số hiệu Z:** ${a.symbol} = ${a.number} | ${b.symbol} = ${b.number}\n• **Vị trí:** ${a.symbol} (CK ${a.period}, N ${CV.groupRoman(a.group)}) | ${b.symbol} (CK ${b.period}, N ${CV.groupRoman(b.group)})\n• **Cấu hình e:** \`${a.electronConfig}\` | \`${b.electronConfig}\`\n• **Bán kính:** ${a.atomicRadius ?? '—'} pm | ${b.atomicRadius ?? '—'} pm • **χ:** ${a.electronegativity ?? '—'} | ${b.electronegativity ?? '—'}`;
       }
 
-      // 6. Reaction / equation lookup
+      // 8. Reaction / equation lookup
       if (CV.REACTIONS) {
         const rx = CV.REACTIONS.find((r) =>
           (r.equation && q.includes(r.equation.split('→')[0].trim().toLowerCase())) ||
           (r.reagents && r.reagents.length >= 2 && r.reagents.every((rg) => q.includes(rg.toLowerCase())))
         );
         if (rx) {
-          return `**Phương trình đã kiểm chứng:**\n\`${rx.equation}\`\n• **Hiện tượng:** ${rx.phenomenon || 'Có phản ứng hóa học xảy ra.'}\n• **Hướng dẫn cân bằng:** Đếm số nguyên tử từng nguyên tố ở hai vế (ưu tiên kim loại → phi kim → H → O).\n• **An toàn:** ${rx.safety || 'Thực hiện với lượng nhỏ và đeo kính bảo hộ.'}`;
+          return `**Phương trình đã kiểm chứng:**\n\`${rx.equation}\`\n• **Hiện tượng:** ${rx.phenomenon || 'Có phản ứng hóa học xảy ra.'}\n• **Cân bằng:** Đếm số nguyên tử 2 vế (kim loại → phi kim → H → O).\n• **An toàn:** ${rx.safety || 'Dùng lượng nhỏ và đeo kính bảo hộ.'}`;
         }
       }
 
-      // 7. Single element lookup
+      // 9. Single element lookup
       if (foundEls.length >= 1) {
         const el = foundEls[0];
         this.lastElement = el;
-        return `**${el.number}. ${el.symbol} – ${el.name}** [Nguồn: IUPAC]\n• Cấu hình electron: \`${el.electronConfig}\` (Lớp: [${el.shells.join(', ')}])\n• Vị trí: Chu kỳ ${el.period}, Nhóm ${CV.groupRoman(el.group)} • Hóa trị: ${CV.commonValence(el)}\n• Nguyên tử khối: ${el.atomicMass} u • Độ âm điện: ${el.electronegativity ?? '—'} • I₁: ${el.ionizationEnergy ?? '—'} kJ/mol\n• Đặc điểm: ${el.summary}\n💬 *Bạn có thể hỏi tiếp: "ứng dụng của nó?" hoặc "tính số mol 10g ${el.symbol}"!*`;
+        this.followUps = [`Ứng dụng của ${el.symbol}?`, `Giải thích đơn giản hơn`, `Tính số mol 10g ${el.symbol}`];
+        return `**${el.number}. ${el.symbol} – ${el.name}** [Nguồn: IUPAC]\n• Cấu hình electron: \`${el.electronConfig}\` (Lớp: [${el.shells.join(', ')}])\n• Vị trí: Chu kỳ ${el.period}, Nhóm ${CV.groupRoman(el.group)} • Hóa trị: ${CV.commonValence(el)}\n• Nguyên tử khối: ${el.atomicMass} u • Độ âm điện: ${el.electronegativity ?? '—'} • I₁: ${el.ionizationEnergy ?? '—'} kJ/mol\n• Đặc điểm: ${el.summary}`;
       }
 
-      // 8. Theory: Periodic trends / Aufbau
+      // 10. Periodic trends & Aufbau
       if (q.includes('bán kính') || q.includes('độ âm điện') || q.includes('ion hóa') || q.includes('quy luật')) {
-        return '**Quy luật tuần hoàn (Đã kiểm chứng trên 118 nguyên tố IUPAC):**\n• **Trong 1 chu kỳ (trái → phải):** Điện tích hạt nhân Z⁺ tăng, số lớp e không đổi → lực hút vỏ mạnh hơn → **Bán kính giảm**, **Độ âm điện & I₁ tăng**.\n• **Trong 1 nhóm A (trên → dưới):** Số lớp electron tăng nhanh → **Bán kính tăng**, **Độ âm điện & I₁ giảm**.';
+        return '**Quy luật tuần hoàn (IUPAC):**\n• **Trong 1 chu kỳ (trái → phải):** Z⁺ tăng, số lớp e không đổi → **Bán kính giảm**, **Độ âm điện & I₁ tăng**.\n• **Trong 1 nhóm A (trên → dưới):** Số lớp e tăng → **Bán kính tăng**, **Độ âm điện & I₁ giảm**.';
       }
       if (q.includes('aufbau') || q.includes('pauli') || q.includes('hund') || q.includes('nguyên lý')) {
-        return '**3 Nguyên lý phân bố Electron:**\n• **Aufbau (Vững bền):** Electron điền vào phân lớp có năng lượng từ thấp đến cao (`1s → 2s → 2p → 3s → 3p → 4s → 3d...`).\n• **Pauli:** Mỗi ô orbital chứa tối đa 2 electron có spin ngược dấu (`↑↓`).\n• **Hund:** Trong cùng phân lớp, electron phân bố vào các ô sao cho số electron độc thân là tối đa.';
+        return '**3 Nguyên lý phân bố Electron:**\n• **Aufbau:** Điền e từ mức năng lượng thấp đến cao (`1s → 2s → 2p → 3s → 3p → 4s → 3d...`).\n• **Pauli:** Tối đa 2e/ô orbital, spin ngược dấu (`↑↓`).\n• **Hund:** Phân bố đều vào các ô cùng phân lớp để số e độc thân tối đa.';
       }
 
-      // 9. Practice question
+      // 11. Practice question
       if (q.includes('luyện tập') || q.includes('câu hỏi') || q.includes('bài tập')) {
         const sample = CV.ELEMENTS[(new Date().getSeconds() * 3 + this.messages.length) % 30];
         this.pendingQuiz = sample;
-        return `**Câu hỏi luyện tập nhanh (Dữ liệu IUPAC):**\nNguyên tố **${sample.name} (${sample.symbol})** có số hiệu nguyên tử Z = ${sample.number}. Hãy xác định **Chu kỳ, Nhóm** hoặc **cấu hình electron** của ${sample.symbol}? (Nhập câu trả lời để mình chấm ngay!)`;
+        return `**Câu hỏi luyện tập nhanh (IUPAC):**\nNguyên tố **${sample.name} (${sample.symbol})** có Z = ${sample.number}. Hãy xác định **Chu kỳ, Nhóm** hoặc **cấu hình electron** của ${sample.symbol}? (Nhập câu trả lời để mình chấm ngay!)`;
       }
 
-      // Helpful fallback with guidance
-      return 'Mình hiểu bạn đang hỏi về: *"' + raw + '"*.\nHiện mình chuyên sâu hỗ trợ toàn bộ **Hóa học THCS/THPT (GDPT 2018)** từ dữ liệu kiểm chứng:\n• Tra cứu **118 nguyên tố** (vd: *"Thông tin Iron"*, *"Z=17"*)\n• Tính **số mol / khối lượng mol** (vd: *"Tính số mol 5.6g Fe"*, *"M(H2SO4)"*)\n• **Phương trình, Dãy hoạt động, pH, Đời sống, Mẹo học Hóa**\nBạn thử hỏi theo một trong các gợi ý trên nhé! 😊';
+      return 'Mình hiểu bạn đang hỏi: *"' + raw + '"*.\nBạn có thể hỏi cụ thể hơn về:\n• **Tính toán:** *"Tính số mol 5.6g Fe"*, *"Tính % khối lượng H2SO4"*, *"12.395 lít khí ở đkc"*\n• **Lý thuyết:** *"Phân biệt liên kết ion và cộng hóa trị"*, *"Nhận biết khí CO2, NH3"*, *"Tính chất hóa học của kim loại"*\n• Hoặc bấm **⚙️ Kết nối AI** ở góc trên nếu bạn muốn gắn API Key OpenAI / Gemini / Ollama cá nhân để hỏi mọi chủ đề mở!';
     },
 
     render() {
+      const hasExt = !!JSON.parse(localStorage.getItem('chemverse_llm_cfg') || 'null')?.endpoint;
       this.container.innerHTML = `
         <div class="page-container">
-          <div class="section-header" style="margin-bottom:16px;">
+          <div class="section-header" style="margin-bottom:14px;">
             <div>
-              <h2 class="section-title">🤖 Trợ Lý Ảo Học Tập CHEMVERSE</h2>
-              <p class="section-subtitle">Hỏi đáp tự nhiên như gia sư thật: tra cứu IUPAC, giải bài tập mol/M, cân bằng phương trình, mẹo học &amp; luyện tập</p>
+              <h2 class="section-title">🤖 Trợ Lý Ảo Thông Minh CHEMVERSE</h2>
+              <p class="section-subtitle">Hỏi đáp thông minh như ChatGPT: giải bài tập mol/M/%, phân biệt lý thuyết, cân bằng &amp; gợi ý câu hỏi tiếp theo</p>
             </div>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" id="tutor-cfg-btn">⚙️ ${hasExt ? 'AI Ngoài: Đã bật' : 'Kết nối AI'}</button>
               <button class="btn btn-secondary btn-sm" id="tutor-clear-btn">🗑️ Hội thoại mới</button>
               <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('learning')">← Về Học tập</button>
             </div>
           </div>
+
+          <div id="tutor-cfg-panel" class="glass-surface" style="display:none;padding:14px;border-radius:14px;max-width:900px;margin:0 auto 12px;">
+            <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;">⚙️ Kết nối LLM ngoài (tùy chọn — lưu cục bộ trong trình duyệt, để trống nếu dùng bộ não Hóa học tích hợp sẵn)</div>
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:8px;flex-wrap:wrap;">
+              <input id="llm-ep" class="input-field" placeholder="Endpoint (vd: http://localhost:11434/v1/chat/completions)" />
+              <input id="llm-model" class="input-field" placeholder="Model (vd: gpt-4o-mini, llama3)" />
+              <input id="llm-key" type="password" class="input-field" placeholder="API Key (tùy chọn)" />
+              <button class="btn btn-primary btn-sm" id="llm-save">Lưu</button>
+            </div>
+          </div>
+
           <div class="glass-surface" style="padding:18px;border-radius:16px;max-width:900px;margin:0 auto;">
-            <div id="tutor-chat-log" style="display:flex;flex-direction:column;gap:10px;height:390px;overflow-y:auto;margin-bottom:14px;padding-right:4px;">
+            <div id="tutor-chat-log" style="display:flex;flex-direction:column;gap:10px;height:380px;overflow-y:auto;margin-bottom:12px;padding-right:4px;">
               ${this.messages.map((m) => `
                 <div class="glass-surface" style="padding:12px 14px;border-radius:12px;align-self:${m.role === 'user' ? 'flex-end' : 'flex-start'};max-width:88%;background:${m.role === 'user' ? 'rgba(0,229,255,0.16)' : 'rgba(15,23,42,0.78)'};border-color:${m.role === 'user' ? 'rgba(0,229,255,0.45)' : 'rgba(255,255,255,0.1)'};white-space:pre-line;font-size:0.88rem;line-height:1.55;">
                   ${this.formatText(m.text)}
                 </div>`).join('')}
-              ${this.isTyping ? `<div class="glass-surface" style="padding:10px 14px;border-radius:12px;align-self:flex-start;font-size:0.82rem;color:var(--accent-cyan);">🤖 Trợ lý CHEMVERSE đang soạn câu trả lời...</div>` : ''}
+              ${this.isTyping ? `<div id="tutor-stream-msg" class="glass-surface" style="padding:12px 14px;border-radius:12px;align-self:flex-start;max-width:88%;background:rgba(15,23,42,0.78);white-space:pre-line;font-size:0.88rem;line-height:1.55;color:var(--accent-cyan);">🤖 Đang suy nghĩ...</div>` : ''}
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Tính số mol 5.6g Fe">Tính n của 5.6g Fe</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Tính M(H2SO4)">Tính M(H₂SO₄)</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="So sánh Na và K">So sánh Na &amp; K</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Dãy hoạt động hóa học">Dãy hoạt động KL</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Mẹo học Hóa nhanh">Mẹo học Hóa</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Cho tôi 1 câu hỏi luyện tập">Luyện tập nhanh</button>
+              ${(this.followUps || []).map((q) => `<button class="btn btn-secondary btn-sm tutor-chip" data-q="${q.replace(/"/g, '&quot;')}">✨ ${q}</button>`).join('')}
             </div>
             <div style="display:flex;gap:8px;">
-              <input id="tutor-input" class="input-field" style="flex:1;" placeholder="Nhắn tin với Trợ lý CHEMVERSE (vd: Tính số mol 10g CaCO3, Mẹo học Hóa, Na + H2O)..." />
+              <input id="tutor-input" class="input-field" style="flex:1;" placeholder="Nhắn với Trợ lý AI CHEMVERSE..." />
               <button class="btn btn-primary" id="tutor-send">Gửi</button>
             </div>
           </div>
@@ -795,20 +872,54 @@
       const log = document.getElementById('tutor-chat-log');
       if (log) log.scrollTop = log.scrollHeight;
 
-      const send = (txt) => {
+      const cfgPanel = document.getElementById('tutor-cfg-panel');
+      document.getElementById('tutor-cfg-btn').addEventListener('click', () => {
+        cfgPanel.style.display = cfgPanel.style.display === 'none' ? 'block' : 'none';
+      });
+      document.getElementById('llm-save').addEventListener('click', () => {
+        const ep = document.getElementById('llm-ep').value.trim();
+        const model = document.getElementById('llm-model').value.trim();
+        const apiKey = document.getElementById('llm-key').value.trim();
+        localStorage.setItem('chemverse_llm_cfg', JSON.stringify({ endpoint: ep, model, apiKey }));
+        cfgPanel.style.display = 'none';
+        CV.showToast(ep ? 'Đã lưu cấu hình AI ngoài!' : 'Đã chuyển về bộ não Hóa học tích hợp.');
+        this.render();
+      });
+
+      const streamReply = (fullText) => {
+        const msgObj = { role: 'bot', text: '' };
+        this.messages.push(msgObj);
+        this.isTyping = false;
+        this.render();
+        const words = fullText.split(' ');
+        let idx = 0;
+        const step = () => {
+          idx = Math.min(words.length, idx + 4);
+          msgObj.text = words.slice(0, idx).join(' ');
+          const logEl = document.getElementById('tutor-chat-log');
+          if (logEl && logEl.lastElementChild) {
+            logEl.lastElementChild.innerHTML = this.formatText(msgObj.text);
+            logEl.scrollTop = logEl.scrollHeight;
+          }
+          if (idx < words.length) setTimeout(step, 24);
+          else {
+            const inp = document.getElementById('tutor-input');
+            if (inp) inp.focus();
+          }
+        };
+        step();
+      };
+
+      const send = async (txt) => {
         const inp = document.getElementById('tutor-input');
         const q = (txt ?? inp.value).trim();
         if (!q || this.isTyping) return;
         this.messages.push({ role: 'user', text: q });
         this.isTyping = true;
         this.render();
-        setTimeout(() => {
-          this.isTyping = false;
-          this.messages.push({ role: 'bot', text: this.reply(q) });
-          this.render();
-          const nextInp = document.getElementById('tutor-input');
-          if (nextInp) nextInp.focus();
-        }, 320);
+        const extAns = await this.fetchExternalLLM(q);
+        const ans = extAns || this.reply(q);
+        setTimeout(() => streamReply(ans), 180);
       };
       document.getElementById('tutor-send').addEventListener('click', () => send());
       document.getElementById('tutor-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
