@@ -144,16 +144,16 @@
           <div class="learning-hub-grid">
             <article class="learning-hub-card glass-surface" style="border-color:rgba(168,85,247,0.4);" onclick="CHEMVERSE.navigate('virtual-lab')" role="button" tabindex="0">
               <div class="lh-icon" style="color:#E879F9;">🧪</div>
-              <h3>1. ${t('Phòng Lab 3D (Virtual Lab)', '3D Virtual Chemistry Lab')}</h3>
-              <p>${t('Bàn thí nghiệm 3D với tủ hóa chất, dụng cụ đun/đo, 3 mức độ (Cơ bản, Nâng cao, Tự do), cảnh báo an toàn GHS và đồ thị pH/Nhiệt độ thời gian thực.', '3D lab bench with reagents, heating/sensors, 3 levels, GHS safety alerts, and real-time pH/Temp charts.')}</p>
-              <button class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.navigate('virtual-lab')">🔬 ${t('Mở Phòng Lab 3D →', 'Open 3D Lab →')}</button>
+              <h3>1. Phòng Lab 3D (Thí nghiệm ảo)</h3>
+              <p>Bàn thí nghiệm 3D với tủ hóa chất, dụng cụ đun/đo, 3 mức độ (Cơ bản, Nâng cao, Tự do), cảnh báo an toàn GHS và đồ thị pH/Nhiệt độ thời gian thực.</p>
+              <button class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.navigate('virtual-lab')">🔬 Mở Phòng Lab 3D →</button>
             </article>
 
             <article class="learning-hub-card glass-surface" style="border-color:rgba(0,229,255,0.4);" onclick="CHEMVERSE.navigate('research')" role="button" tabindex="0">
               <div class="lh-icon" style="color:#00E5FF;">📊</div>
-              <h3>2. ${t('Nghiên Cứu Khoa Học (Research Core)', 'Scientific Research Core')}</h3>
-              <p>${t('Chemical Data Lab (+CSV), Periodic Trend Explorer & Analyzer, AI Periodic Prediction (Train/Test + MAE/RMSE/R²), Hypothesis Lab (Pearson r) và Báo cáo 10 mục.', 'Data Lab (+CSV), Trends, Ridge ML Prediction (Train/Test + metrics), Hypothesis Lab (Pearson r), and 10-part Report.')}</p>
-              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('research')">📊 ${t('Mở Không Gian Nghiên Cứu →', 'Open Research Core →')}</button>
+              <h3>2. Không Gian Nghiên Cứu Khoa Học</h3>
+              <p>Phòng dữ liệu hóa học (+xuất CSV), Phân tích xu hướng tuần hoàn, Dự đoán AI (Huấn luyện/Kiểm tra + MAE/RMSE/R²), Kiểm chứng giả thuyết &amp; Báo cáo 10 mục.</p>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('research')">📊 Mở Không Gian Nghiên Cứu →</button>
             </article>
           </div>
         </div>

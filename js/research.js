@@ -81,9 +81,9 @@
         <div class="page-container">
           <div class="section-header" style="margin-bottom:18px;">
             <div>
-              <div class="hero-pill" style="margin-bottom:6px;">🔬 RESEARCH SPACE • EXPLORE – EXPERIMENT – ANALYZE – DISCOVER</div>
-              <h2 class="section-title">Không Gian Nghiên Cứu Khoa Học (Research Core)</h2>
-              <p class="section-subtitle">Phân tích dữ liệu 118 nguyên tố IUPAC, quy luật tuần hoàn, mô hình ML (Train/Test), kiểm chứng giả thuyết &amp; xuất báo cáo</p>
+              <div class="hero-pill" style="margin-bottom:6px;">🔬 KHÔNG GIAN NGHIÊN CỨU • KHÁM PHÁ – THỰC NGHIỆM – PHÂN TÍCH – PHÁT HIỆN</div>
+              <h2 class="section-title">Không Gian Nghiên Cứu Khoa Học</h2>
+              <p class="section-subtitle">Phân tích dữ liệu 118 nguyên tố IUPAC, quy luật tuần hoàn, mô hình học máy (Huấn luyện/Kiểm tra), kiểm chứng giả thuyết &amp; xuất báo cáo</p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('virtual-lab')">🧪 Sang Phòng Lab 3D</button>
@@ -93,11 +93,11 @@
 
           <!-- Research Sub-navigation Tabs -->
           <div class="el-modal-tabs" id="res-tabs" style="margin-bottom:18px;">
-            <button class="el-tab-btn ${st.activeTab === 'data' ? 'active' : ''}" data-rtab="data">📊 1. Chemical Data Lab</button>
-            <button class="el-tab-btn ${st.activeTab === 'trends' ? 'active' : ''}" data-rtab="trends">📈 2. Trends &amp; Analyzer</button>
-            <button class="el-tab-btn ${st.activeTab === 'ml' ? 'active' : ''}" data-rtab="ml">🤖 3. AI Periodic Prediction</button>
-            <button class="el-tab-btn ${st.activeTab === 'hypothesis' ? 'active' : ''}" data-rtab="hypothesis">🧪 4. Hypothesis Lab</button>
-            <button class="el-tab-btn ${st.activeTab === 'report' ? 'active' : ''}" data-rtab="report">📝 5. Research Report</button>
+            <button class="el-tab-btn ${st.activeTab === 'data' ? 'active' : ''}" data-rtab="data">📊 1. Dữ liệu Hóa học</button>
+            <button class="el-tab-btn ${st.activeTab === 'trends' ? 'active' : ''}" data-rtab="trends">📈 2. Xu hướng &amp; Phân tích</button>
+            <button class="el-tab-btn ${st.activeTab === 'ml' ? 'active' : ''}" data-rtab="ml">🤖 3. Dự đoán AI (Học máy)</button>
+            <button class="el-tab-btn ${st.activeTab === 'hypothesis' ? 'active' : ''}" data-rtab="hypothesis">🧪 4. Kiểm chứng Giả thuyết</button>
+            <button class="el-tab-btn ${st.activeTab === 'report' ? 'active' : ''}" data-rtab="report">📝 5. Báo cáo Nghiên cứu</button>
           </div>
 
           <div id="res-body"></div>
@@ -211,7 +211,7 @@
           </div>
 
           <div class="glass-surface" style="padding:18px;border-radius:16px;">
-            <strong style="display:block;margin-bottom:10px;">🔎 Element Analyzer &amp; So sánh</strong>
+            <strong style="display:block;margin-bottom:10px;">🔎 Phân Tích &amp; So Sánh Nguyên Tố</strong>
             <div style="display:flex;gap:6px;margin-bottom:10px;">
               <select id="res-add-cmp" class="select-field" style="flex:1;">
                 ${CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.nameVi}</option>`).join('')}
@@ -304,8 +304,8 @@
       body.innerHTML = `
         <div class="glass-surface" style="padding:16px;border-radius:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
           <div>
-            <strong>🤖 AI Scientific Discovery: Model Comparison, XAI &amp; Anomaly Discovery</strong>
-            <div style="font-size:0.8rem;color:var(--text-muted);">Đặc trưng: [Chu kỳ, Nhóm, Số lớp e, Z/118, Electron hóa trị] • Tách Train ${res.trainCount} / Test ${res.testCount} (Kiểm soát rò rỉ dữ liệu)</div>
+            <strong>🤖 Khám Phá Khoa Học AI: So Sánh Mô Hình, Giải Thích &amp; Phát Hiện Bất Thường</strong>
+            <div style="font-size:0.8rem;color:var(--text-muted);">Đặc trưng: [Chu kỳ, Nhóm, Số lớp e, Z/118, Electron hóa trị] • Tách Tập huấn luyện ${res.trainCount} / Tập kiểm tra ${res.testCount} (Kiểm soát rò rỉ dữ liệu)</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <select id="res-ml-target" class="select-field">
@@ -320,22 +320,22 @@
         <!-- Model Comparison vs Baseline -->
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
           <div class="glass-surface" style="padding:12px 14px;border-radius:12px;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">Baseline (Mean Predictor)</div>
+            <div style="font-size:0.74rem;color:var(--text-muted);">Mô hình cơ sở (Trung bình)</div>
             <div class="mono" style="font-size:0.86rem;margin-top:4px;">MAE: ${res.baseline.mae.toFixed(3)} • R²: ${res.baseline.r2.toFixed(3)}</div>
           </div>
           <div class="glass-surface" style="padding:12px 14px;border-radius:12px;">
-            <div style="font-size:0.74rem;color:var(--text-muted);">Linear Regression (OLS)</div>
+            <div style="font-size:0.74rem;color:var(--text-muted);">Hồi quy Tuyến tính (OLS)</div>
             <div class="mono" style="font-size:0.86rem;margin-top:4px;color:#38BDF8;">MAE: ${res.linear.mae.toFixed(3)} • R²: ${res.linear.r2.toFixed(3)}</div>
           </div>
           <div class="glass-surface" style="padding:12px 14px;border-radius:12px;border-color:#00E5FF;">
-            <div style="font-size:0.74rem;color:var(--accent-cyan);">Ridge Regression (λ=0.1)</div>
+            <div style="font-size:0.74rem;color:var(--accent-cyan);">Hồi quy Ridge (λ=0.1)</div>
             <div class="mono" style="font-size:0.86rem;margin-top:4px;color:#34D399;">MAE: ${res.mae.toFixed(3)} • RMSE: ${res.rmse.toFixed(3)} • R²: ${res.r2.toFixed(3)}</div>
           </div>
         </div>
 
         <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-bottom:16px;" class="res-2col">
           <div class="glass-surface" style="padding:16px;border-radius:16px;">
-            <strong style="display:block;margin-bottom:8px;">📉 Dự Đoán vs Thực Tế (Tập Kiểm Tra Test)</strong>
+            <strong style="display:block;margin-bottom:8px;">📉 Dự Đoán vs Thực Tế (Tập Kiểm Tra)</strong>
             <canvas id="res-ml-canvas" width="460" height="220" style="width:100%;height:220px;display:block;"></canvas>
             <div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);font-size:0.76rem;color:#FDE68A;">
               ⚠️ <strong>Giới hạn mô hình:</strong> Không tuyên bố dự đoán chính xác tuyệt đối. Dữ liệu ≤118 nguyên tố nhỏ, sai số tăng ở khối d/f do hiệu ứng chắn electron.
@@ -343,7 +343,7 @@
           </div>
 
           <div class="glass-surface" style="padding:16px;border-radius:16px;">
-            <strong style="display:block;margin-bottom:10px;">🔎 Explainable AI: Mức Ảnh Hưởng Đặc Trưng (Feature Importance)</strong>
+            <strong style="display:block;margin-bottom:10px;">🔎 Giải Thích AI: Mức Ảnh Hưởng Đặc Trưng</strong>
             <div style="display:flex;flex-direction:column;gap:8px;">
               ${res.importance.map((fi) => `
                 <div>
@@ -355,7 +355,7 @@
         </div>
 
         <div class="glass-surface" style="padding:16px;border-radius:16px;max-height:300px;overflow-y:auto;">
-          <strong style="display:block;margin-bottom:8px;">🚨 Anomaly Discovery: Top Sai Số Lớn Nhất &amp; Phân Tích Hóa Học</strong>
+          <strong style="display:block;margin-bottom:8px;">🚨 Phát Hiện Bất Thường: Top Sai Số Lớn Nhất &amp; Phân Tích Hóa Học</strong>
           <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;">Lưu ý: Sai số lớn là bất thường so với mô hình tuyến tính (thường do cấu hình d/f đặc biệt như Cr, Cu, Pd, Au), không tự động coi là phát hiện khoa học mới.</div>
           <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
             <thead><tr style="color:var(--accent-cyan);border-bottom:1px solid rgba(255,255,255,0.14);text-align:left;"><th style="padding:6px;">Nguyên tố</th><th>Nhóm / CK</th><th>Thực tế</th><th>Dự đoán</th><th>|Sai số|</th><th>Ghi chú hóa học</th></tr></thead>
