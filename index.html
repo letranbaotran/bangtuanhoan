@@ -76,7 +76,7 @@
         </a>
         <a href="#chemquest" class="nav-item" data-route="chemquest">
           <span class="nav-icon" aria-hidden="true">🚀</span>
-          <span class="nav-label">ChemQuest</span>
+          <span class="nav-label">ChemQuiz</span>
         </a>
         <a href="#profile" class="nav-item" data-route="profile">
           <span class="nav-icon" aria-hidden="true">👤</span>
@@ -91,9 +91,9 @@
       <!-- Right Utilities: Dual-Mode Quick Switcher, Language, Theme, Guide & Avatar -->
       <div class="nav-utilities">
         <div class="dual-switcher" id="dual-mode-switcher" role="group" aria-label="Chuyển đổi phân hệ">
-          <button class="dual-sw-btn" data-branch="home" onclick="CHEMVERSE.navigate('home')" title="Màn hình điều hướng trung tâm">🏠</button>
-          <button class="dual-sw-btn active" data-branch="learn" onclick="CHEMVERSE.switchBranch('learn')" title="Nhánh 1: Học tập & Khám phá">🎓 Học tập</button>
-          <button class="dual-sw-btn" data-branch="research" onclick="CHEMVERSE.switchBranch('research')" title="Nhánh 2: Nghiên cứu chuyên sâu">🔬 Nghiên cứu</button>
+          <button class="dual-sw-btn active" data-branch="home" onclick="CHEMVERSE.navigate('home')" title="Quay lại Trang chủ chia đôi">🏠 Trang chủ</button>
+          <button class="dual-sw-btn" data-branch="learn" onclick="CHEMVERSE.switchBranch('learn')" title="Nhánh 1: Học tập & Khám phá">🎓 Học tập</button>
+          <button class="dual-sw-btn" data-branch="research" onclick="CHEMVERSE.switchBranch('research')" title="Nhánh 2: Phòng Lab 3D">🔬 Phòng Lab</button>
         </div>
         <button class="btn btn-sm btn-secondary" id="lang-toggle-btn" title="Chuyển ngôn ngữ Tiếng Việt / English" aria-label="Chuyển ngôn ngữ" style="padding:5px 10px;font-size:0.78rem;">🇻🇳 VI</button>
         <button class="icon-btn" id="theme-toggle-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển chế độ Sáng / Tối">🌙</button>
@@ -121,7 +121,7 @@
       <a href="#simulator" class="nav-item" data-route="simulator"><span>⚛️</span> Atom Simulator</a>
       <a href="#periodic-table" class="nav-item" data-route="periodic-table"><span>🧪</span> Periodic Table</a>
       <a href="#virtual-lab" class="nav-item" data-route="virtual-lab"><span>🔬</span> Virtual Lab</a>
-      <a href="#chemquest" class="nav-item" data-route="chemquest"><span>🚀</span> ChemQuest</a>
+      <a href="#chemquest" class="nav-item" data-route="chemquest"><span>🚀</span> ChemQuiz</a>
       <a href="#profile" class="nav-item" data-route="profile"><span>👤</span> Profile</a>
       <a href="#about" class="nav-item" data-route="about"><span>📘</span> About Project</a>
     </nav>
@@ -130,6 +130,7 @@
   <!-- Main SPA View Container -->
   <main id="app-main" class="app-main">
     <section id="view-home" class="spa-view active"></section>
+    <section id="view-learning" class="spa-view"></section>
     <section id="view-universe" class="spa-view"></section>
     <section id="view-simulator" class="spa-view"></section>
     <section id="view-periodic-table" class="spa-view"></section>

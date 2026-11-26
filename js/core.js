@@ -21,7 +21,7 @@
     return CV.state.lang === 'en' ? cat.nameEn : cat.nameVi;
   };
 
-  CV.routes = ['home', 'universe', 'simulator', 'periodic-table', 'virtual-lab', 'chemquest', 'profile', 'about'];
+  CV.routes = ['home', 'learning', 'universe', 'simulator', 'periodic-table', 'virtual-lab', 'chemquest', 'profile', 'about'];
 
   CV.getElement = function (num) {
     return CV.ELEMENTS.find((e) => e.number === Number(num));
@@ -230,11 +230,12 @@
 
   CV.NAV_LABELS = {
     home: { vi: 'Trang chủ', en: 'Home', shortVi: 'Trang chủ', shortEn: 'Home' },
+    learning: { vi: 'Học tập', en: 'Learning', shortVi: 'Học tập', shortEn: 'Learn' },
     universe: { vi: 'Vũ trụ 3D', en: 'Universe 3D', shortVi: '3D', shortEn: '3D' },
     simulator: { vi: 'Mô phỏng', en: 'Atom Simulator', shortVi: 'Nguyên tử', shortEn: 'Atom' },
     'periodic-table': { vi: 'Bảng tuần hoàn', en: 'Periodic Table', shortVi: 'Bảng', shortEn: 'Table' },
-    'virtual-lab': { vi: 'Thí nghiệm ảo', en: 'Virtual Lab', shortVi: 'Lab', shortEn: 'Lab' },
-    chemquest: { vi: 'ChemQuest', en: 'ChemQuest', shortVi: 'Quest', shortEn: 'Quest' },
+    'virtual-lab': { vi: 'Phòng Lab', en: 'Virtual Lab', shortVi: 'Lab', shortEn: 'Lab' },
+    chemquest: { vi: 'ChemQuiz', en: 'ChemQuiz', shortVi: 'Quiz', shortEn: 'Quiz' },
     profile: { vi: 'Hồ sơ', en: 'Profile', shortVi: 'Hồ sơ', shortEn: 'Profile' },
     about: { vi: 'Giới thiệu', en: 'About Project', shortVi: 'Giới thiệu', shortEn: 'About' }
   };
@@ -655,7 +656,7 @@
     if (branch === 'research') {
       CV.navigate('virtual-lab');
     } else if (branch === 'learn') {
-      CV.navigate('periodic-table');
+      CV.navigate('learning');
     } else {
       CV.navigate('home');
     }
@@ -666,7 +667,7 @@
     if (!sw) return;
     let active = 'home';
     if (route === 'virtual-lab') active = 'research';
-    else if (['periodic-table', 'universe', 'simulator', 'chemquest'].includes(route)) active = 'learn';
+    else if (['learning', 'periodic-table', 'universe', 'simulator', 'chemquest'].includes(route)) active = 'learn';
     CV.state.activeBranch = active;
     sw.querySelectorAll('.dual-sw-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-branch') === active);

@@ -5,175 +5,114 @@
     init(container) {
       const t = CV.t;
       container.innerHTML = `
-        <!-- 1. Hero & Dual-Mode Hub Section -->
-        <section class="hero-section">
+        <!-- TRANG 1: MÀN HÌNH CHÍNH CHIA ĐÔI 2 NHÁNH LỚN (SPLIT-SCREEN CARDS) -->
+        <section class="hero-section split-home-section">
           <canvas id="home-star-canvas"></canvas>
-          <div class="hero-content" style="max-width:1120px;width:100%;">
-            <div class="hero-pill">${t('✦ CHEMVERSE 3D • KIẾN TRÚC 2 PHÂN HỆ LIÊN THÔNG', '✦ CHEMVERSE 3D • DUAL-MODE ARCHITECTURE')}</div>
-            <h1 class="hero-title">${t('TRUNG TÂM HÓA HỌC 3D', 'CHEMVERSE 3D HUB')}</h1>
-            <p class="hero-slogan">${t('Chọn phân hệ phù hợp để bắt đầu hành trình khám phá hoặc nghiên cứu chuyên sâu', 'Choose your mode to start learning & exploring or in-depth 3D research')}</p>
+          <div class="hero-content" style="max-width:1180px;width:100%;">
+            <div class="hero-pill">${t('✦ CHEMVERSE 3D • HỆ THỐNG HÓA HỌC TƯƠNG TÁC', '✦ CHEMVERSE 3D • INTERACTIVE CHEMISTRY SYSTEM')}</div>
+            <h1 class="hero-title" style="margin-bottom:8px;">${t('CHỌN PHÂN HỆ TRẢI NGHIỆM', 'CHOOSE YOUR MODE')}</h1>
+            <p class="hero-slogan" style="margin-bottom:24px;">${t('Khám phá kiến thức nền tảng hoặc bước ngay vào Phòng thí nghiệm 3D chuyên sâu', 'Explore foundational chemistry or step straight into the 3D Research Lab')}</p>
 
-            <!-- DUAL-MODE HUB CARDS -->
-            <div class="dual-hub-grid">
-              <article class="dual-branch-card learn glass-surface">
-                <div class="dual-branch-badge">NHÁNH 1 • LEARNING & EXPLORATION</div>
+            <div class="dual-hub-grid split-cards-grid">
+              <!-- THẺ 1: HỌC TẬP & KHÁM PHÁ -->
+              <article class="dual-branch-card learn glass-surface split-card-clickable" onclick="CHEMVERSE.switchBranch('learn')" role="button" tabindex="0">
+                <div class="dual-branch-badge">THẺ 1 • NHÁNH HỌC TẬP</div>
                 <div class="dual-branch-head">
                   <span class="dual-branch-icon">🎓</span>
                   <div>
                     <h2>${t('HỌC TẬP & KHÁM PHÁ', 'LEARNING & EXPLORATION')}</h2>
-                    <p>${t('Tra cứu trực quan, học lý thuyết, tương tác mô hình 3D và luyện tập', 'Visual lookup, theory, 3D atomic models, and interactive quizzes')}</p>
+                    <p>${t('Không gian học trực quan gồm 4 phân mục: Bảng tuần hoàn, Mô phỏng, Vũ trụ 3D và ChemQuiz.', 'Visual learning space with 4 modules: Periodic Table, Simulator, 3D Universe, and ChemQuiz.')}</p>
                   </div>
                 </div>
                 <ul class="dual-branch-list">
-                  <li>🧪 <strong>Bảng tuần hoàn 2D & 3D:</strong> tra cứu 118 nguyên tố chuẩn IUPAC</li>
-                  <li>📱 <strong>Thẻ thông tin & Mã QR:</strong> quét nhanh hoặc chia sẻ từng nguyên tố</li>
-                  <li>⚛️ <strong>Mô hình 3D & Electron:</strong> lớp vỏ K, L, M, ô orbital s/p/d/f & đám mây 360°</li>
-                  <li>🎯 <strong>Quiz & Củng cố:</strong> câu hỏi trắc nghiệm gắn trực tiếp với nguyên tố đang xem</li>
+                  <li>🧪 <strong>Bảng tuần hoàn:</strong> Tra cứu 118 nguyên tố, cấu hình e &amp; tạo mã QR</li>
+                  <li>⚛️ <strong>Mô phỏng:</strong> Nguyên tử 3D, lớp vỏ electron &amp; orbital (s, p, d, f)</li>
+                  <li>🌌 <strong>Vũ trụ 3D:</strong> Không gian thiên hà nguyên tố &amp; cấu trúc 3D</li>
+                  <li>🚀 <strong>ChemQuiz:</strong> Trắc nghiệm, trò chơi hóa học &amp; chấm điểm</li>
                 </ul>
                 <div class="dual-branch-actions">
-                  <button class="btn btn-primary" onclick="CHEMVERSE.switchBranch('learn')">🎓 ${t('Vào Nhánh Học Tập →', 'Enter Learning Mode →')}</button>
-                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('universe')">🌌 Vũ trụ 3D</button>
-                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('simulator')">⚛️ Orbital 3D</button>
-                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('chemquest')">🚀 ChemQuest</button>
+                  <button class="btn btn-primary" style="width:100%;" onclick="event.stopPropagation();CHEMVERSE.switchBranch('learn')">🎓 ${t('Vào Học Tập & Khám Phá →', 'Enter Learning & Exploration →')}</button>
                 </div>
               </article>
 
-              <article class="dual-branch-card research glass-surface">
-                <div class="dual-branch-badge">NHÁNH 2 • IN-DEPTH RESEARCH & LAB</div>
+              <!-- THẺ 2: NGHIÊN CỨU CHUYÊN SÂU -->
+              <article class="dual-branch-card research glass-surface split-card-clickable" onclick="CHEMVERSE.switchBranch('research')" role="button" tabindex="0">
+                <div class="dual-branch-badge">THẺ 2 • NHÁNH PHÒNG LAB 3D</div>
                 <div class="dual-branch-head">
                   <span class="dual-branch-icon">🔬</span>
                   <div>
                     <h2>${t('NGHIÊN CỨU CHUYÊN SÂU', 'IN-DEPTH RESEARCH & LAB')}</h2>
-                    <p>${t('Thực hành thí nghiệm 3D, mô phỏng phản ứng và phân tích dữ liệu nâng cao', '3D virtual experiments, reaction simulation, and real-time analytics')}</p>
+                    <p>${t('Mở thẳng Phòng Lab 3D với bàn thí nghiệm, hóa chất, cảm biến và đồ thị phân tích phản ứng.', 'Open the 3D Virtual Lab directly with glassware, reagents, sensors, and live charts.')}</p>
                   </div>
                 </div>
                 <ul class="dual-branch-list">
-                  <li>🧪 <strong>Phòng Lab 3D:</strong> cốc đong, ống nghiệm, đèn cồn, cảm biến pH/nhiệt độ & tủ hóa chất</li>
-                  <li>🎚️ <strong>3 Mức độ thực hành:</strong> Cơ bản (THCS) • Nâng cao (THPT) • Tự do (Sandbox)</li>
-                  <li>⚡ <strong>Hiện tượng chân thực:</strong> kết tủa, sủi bọt, đổi màu, ngọn lửa + âm thanh</li>
-                  <li>📈 <strong>Phân tích thời gian thực:</strong> đồ thị nhiệt độ/pH & xuất báo cáo kết quả</li>
+                  <li>🧪 <strong>Phòng Lab 3D:</strong> Cốc đong, đèn cồn, tủ hóa chất &amp; hiệu ứng chân thực</li>
+                  <li>🎚️ <strong>3 Mức độ thực hành:</strong> Cơ bản (THCS) • Nâng cao (THPT) • Tự do</li>
+                  <li>📖 <strong>Chuyên đề mẫu:</strong> Vô cơ, Axit-Bazơ, Điện hóa, Ngọn lửa</li>
+                  <li>📈 <strong>Đồ thị &amp; Báo cáo:</strong> Theo dõi nhiệt độ, pH thời gian thực</li>
                 </ul>
                 <div class="dual-branch-actions">
-                  <button class="btn btn-primary" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="CHEMVERSE.switchBranch('research')">🔬 ${t('Vào Phòng Lab 3D →', 'Enter Research Lab →')}</button>
+                  <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.switchBranch('research')">🔬 ${t('Mở Thẳng Phòng Lab 3D →', 'Open Virtual Lab 3D →')}</button>
                 </div>
               </article>
             </div>
           </div>
         </section>
-
-        <div class="page-container">
-          <!-- 2. Stats Section -->
-          <section class="stats-grid" aria-label="${t('Thống kê bảng tuần hoàn', 'Periodic Table Statistics')}">
-            <div class="stat-card glass-surface">
-              <div class="stat-value">118</div>
-              <div class="stat-label">${t('Nguyên tố hóa học', 'Chemical Elements')}</div>
-              <div class="stat-sub">${t('Chuẩn dữ liệu IUPAC mới nhất', 'Latest IUPAC standard data')}</div>
-            </div>
-            <div class="stat-card glass-surface">
-              <div class="stat-value">7</div>
-              <div class="stat-label">${t('Chu kỳ', 'Periods')}</div>
-              <div class="stat-sub">${t('7 tầng quỹ đạo thiên hà', '7 galactic orbital rings')}</div>
-            </div>
-            <div class="stat-card glass-surface">
-              <div class="stat-value">18</div>
-              <div class="stat-label">${t('Nhóm', 'Groups')}</div>
-              <div class="stat-sub">${t('Nhóm cột trong bảng tuần hoàn', 'Columns in the periodic table')}</div>
-            </div>
-            <div class="stat-card glass-surface">
-              <div class="stat-value">4</div>
-              <div class="stat-label">${t('Nhóm nguyên tố chính', 'Main Element Categories')}</div>
-              <div class="stat-sub">${t('Kim loại, Á kim, Phi kim, Khí hiếm', 'Metals, Metalloids, Nonmetals, Noble Gases')}</div>
-            </div>
-          </section>
-
-          <!-- 3. Explore Modules -->
-          <section style="margin-bottom:56px;">
-            <div class="section-header">
-              <div>
-                <h2 class="section-title">${t('Hệ Sinh Thái Khám Phá', 'Explore Modules')}</h2>
-                <p class="section-subtitle">${t('Chọn một module chuyên sâu để bắt đầu hành trình du hành nguyên tố', 'Choose an interactive module to start your elemental journey')}</p>
-              </div>
-            </div>
-            <div class="modules-grid">
-              <article class="module-card glass-surface">
-                <div>
-                  <div class="module-card-visual">🌌</div>
-                  <h3>${t('Khám phá Vũ trụ 3D', 'Explore Universe')}</h3>
-                  <p>${t('Khám phá thiên hà 118 hành tinh nguyên tố trong không gian 3D tương tác theo chu kỳ xoắn ốc hoặc cụm nhóm.', 'Explore the galaxy of 118 element planets in interactive 3D space by spiral periods or group clusters.')}</p>
-                </div>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('universe')">${t('Mở Vũ trụ 3D →', 'Open Universe 3D →')}</button>
-              </article>
-
-              <article class="module-card glass-surface">
-                <div>
-                  <div class="module-card-visual">⚛️</div>
-                  <h3>${t('Mô phỏng Nguyên tử', 'Simulate Atom')}</h3>
-                  <p>${t('Quan sát hạt nhân, vệ tinh electron, sơ đồ ô orbital ↑↓ và mô hình orbital lượng tử 3D (n, l, m).', 'Observe nuclei, electron satellites, orbital box diagrams ↑↓, and 3D quantum orbitals (n, l, m).')}</p>
-                </div>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('simulator')">${t('Mở Mô phỏng →', 'Open Simulator →')}</button>
-              </article>
-
-              <article class="module-card glass-surface">
-                <div>
-                  <div class="module-card-visual">🧪</div>
-                  <h3>${t('Bảng tuần hoàn Thông minh', 'Smart Periodic Table')}</h3>
-                  <p>${t('Bảng tuần hoàn 2D & 3D với thanh trượt nhiệt độ, bản đồ nhiệt và biểu đồ cột 3D thuộc tính.', '2D & 3D Periodic Table with live temperature slider, heatmaps, and 3D property height-map.')}</p>
-                </div>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('periodic-table')">${t('Mở Bảng tuần hoàn →', 'Open Periodic Table →')}</button>
-              </article>
-
-              <article class="module-card glass-surface">
-                <div>
-                  <div class="module-card-visual">🔬</div>
-                  <h3>${t('Phòng thí nghiệm Ảo', 'Virtual ChemLab')}</h3>
-                  <p>${t('Thực hành pha trộn hóa chất, thử màu ngọn lửa và quan sát phản ứng hóa học an toàn ngay trên trình duyệt.', 'Mix reagents safely, run spectral flame tests, and watch balanced chemical reactions live.')}</p>
-                </div>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('virtual-lab')">${t('Vào Phòng thí nghiệm →', 'Open Virtual Lab →')}</button>
-              </article>
-
-              <article class="module-card glass-surface">
-                <div>
-                  <div class="module-card-visual">🚀</div>
-                  <h3>${t('Thử thách ChemQuest', 'ChemQuest')}</h3>
-                  <p>${t('Thử thách phi hành gia: giải mã hành tinh nguyên tố, xưởng ghép hợp chất và trắc nghiệm tốc độ.', 'Astronaut challenges: decode element planets, synthesize compounds, and play speed quizzes.')}</p>
-                </div>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('chemquest')">${t('Chơi ChemQuest →', 'Play ChemQuest →')}</button>
-              </article>
-            </div>
-          </section>
-
-          <!-- 4. Project Overview -->
-          <section>
-            <div class="section-header">
-              <div>
-                <h2 class="section-title">${t('Tổng Quan Dự Án', 'Project Overview')}</h2>
-                <p class="section-subtitle">${t('Cầu nối giữa Thiên văn học vĩ mô và Hóa học lượng tử vi mô', 'Bridging macro astronomy and micro quantum chemistry')}</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('about')">${t('Xem thêm về dự án →', 'About Project →')}</button>
-            </div>
-            <div class="overview-grid">
-              <div class="overview-card glass-surface">
-                <h4>🌠 ${t('Ý tưởng dự án', 'Project Concept')}</h4>
-                <p>${t('Kết nối cấu trúc nguyên tử vi mô với mô hình thiên hà và chuyển động vệ tinh, biến các con số khô khan thành hệ hành tinh trực quan.', 'Connects atomic structure with galaxy and satellite motion, turning dry numbers into an intuitive planetary system.')}</p>
-              </div>
-              <div class="overview-card glass-surface">
-                <h4>🎓 ${t('Mục tiêu giáo dục', 'Educational Goal')}</h4>
-                <p>${t('Giúp học sinh, sinh viên ghi nhớ bản chất tuần hoàn, electron hóa trị và hiện tượng phản ứng qua trải nghiệm tương tác.', 'Helps students grasp periodic trends, valence electrons, and reaction phenomena through interactive visuals.')}</p>
-              </div>
-              <div class="overview-card glass-surface">
-                <h4>⚡ ${t('Công nghệ sử dụng', 'Technology Stack')}</h4>
-                <p>${t('Đồ họa WebGL / Three.js tối ưu hiệu năng cao, giao diện Glassmorphism hiện đại và dữ liệu chuẩn hóa theo IUPAC.', 'High-performance WebGL / Three.js graphics, modern Glassmorphism UI, and IUPAC standardized data.')}</p>
-              </div>
-              <div class="overview-card glass-surface">
-                <h4>🏫 ${t('Giá trị ứng dụng', 'Practical Value')}</h4>
-                <p>${t('Công cụ tự học, thực hành thí nghiệm an toàn tại nhà và giáo cụ trình chiếu 3D trực quan trên lớp cho giáo viên Hóa học.', 'Self-study tool, safe virtual lab practice at home, and 3D classroom presentation aid for Chemistry teachers.')}</p>
-              </div>
-            </div>
-          </section>
-        </div>
       `;
 
       initHeroCanvas();
+    }
+  };
+
+  /* --- KHÔNG GIAN HỌC TẬP (4 PHÂN MỤC CHÍNH) --- */
+  CV.modules.learning = {
+    init(container) {
+      const t = CV.t;
+      container.innerHTML = `
+        <div class="page-container">
+          <div class="section-header" style="margin-bottom:24px;">
+            <div>
+              <div class="hero-pill" style="margin-bottom:8px;">🎓 ${t('NHÁNH 1 • HỌC TẬP & KHÁM PHÁ', 'BRANCH 1 • LEARNING & EXPLORATION')}</div>
+              <h2 class="section-title">${t('Không Gian Học Tập Hóa Học 3D', '3D Chemistry Learning Space')}</h2>
+              <p class="section-subtitle">${t('Chọn 1 trong 4 phân mục chính bên dưới để tra cứu, mô phỏng, khám phá hoặc luyện tập', 'Choose 1 of the 4 core learning modules below')}</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('home')">🏠 ${t('Trang chủ', 'Home')}</button>
+              <button class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="CHEMVERSE.switchBranch('research')">🔬 ${t('Chuyển sang Phòng Lab →', 'Switch to Virtual Lab →')}</button>
+            </div>
+          </div>
+
+          <div class="learning-hub-grid">
+            <article class="learning-hub-card glass-surface" onclick="CHEMVERSE.navigate('periodic-table')" role="button" tabindex="0">
+              <div class="lh-icon" style="color:#00E5FF;">🧪</div>
+              <h3>1. ${t('Bảng tuần hoàn', 'Periodic Table')}</h3>
+              <p>${t('Bảng tuần hoàn các nguyên tố hóa học tương tác: tra cứu thông tin chi tiết, tính chất, cấu hình e và tạo mã QR cho từng nguyên tố.', 'Interactive periodic table: look up detailed properties, electron configs, and generate QR codes.')}</p>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('periodic-table')">${t('Mở Bảng tuần hoàn →', 'Open Periodic Table →')}</button>
+            </article>
+
+            <article class="learning-hub-card glass-surface" onclick="CHEMVERSE.navigate('simulator')" role="button" tabindex="0">
+              <div class="lh-icon" style="color:#38BDF8;">⚛️</div>
+              <h3>2. ${t('Mô phỏng', 'Atom Simulator')}</h3>
+              <p>${t('Trực quan hóa mô hình nguyên tử 3D, chuyển động các lớp vỏ electron và đám mây xác suất orbital (s, p, d, f).', 'Visualize 3D atomic models, electron shell motion, and quantum orbital probability clouds (s, p, d, f).')}</p>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('simulator')">${t('Mở Mô phỏng 3D →', 'Open Simulator →')}</button>
+            </article>
+
+            <article class="learning-hub-card glass-surface" onclick="CHEMVERSE.navigate('universe')" role="button" tabindex="0">
+              <div class="lh-icon" style="color:#A855F7;">🌌</div>
+              <h3>3. ${t('Vũ trụ 3D', '3D Universe')}</h3>
+              <p>${t('Không gian khám phá cấu trúc nguyên tố, hệ hành tinh chu kỳ, cụm nhóm và liên kết không gian 3D.', 'Explore element structures, periodic galaxy rings, group clusters, and 3D spatial relationships.')}</p>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('universe')">${t('Khám phá Vũ trụ 3D →', 'Explore 3D Universe →')}</button>
+            </article>
+
+            <article class="learning-hub-card glass-surface" onclick="CHEMVERSE.navigate('chemquest')" role="button" tabindex="0">
+              <div class="lh-icon" style="color:#FBBF24;">🚀</div>
+              <h3>4. ChemQuiz</h3>
+              <p>${t('Hệ thống câu hỏi trắc nghiệm tương tác, trò chơi đố vui hóa học (cân bằng phương trình, lật thẻ, ghép hợp chất) có chấm điểm.', 'Interactive quizzes, chemistry games (equation balancer, memory cards, compound builder) with scoring.')}</p>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('chemquest')">${t('Vào ChemQuiz →', 'Open ChemQuiz →')}</button>
+            </article>
+          </div>
+        </div>
+      `;
     }
   };
 
