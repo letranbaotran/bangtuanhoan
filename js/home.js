@@ -71,15 +71,6 @@
 
               <article class="module-card glass-surface">
                 <div>
-                  <div class="module-card-visual">🔭</div>
-                  <h3>${t('Tra cứu Nguyên tố', 'Discover Elements')}</h3>
-                  <p>${t('Tra cứu tức thì, lọc đa điều kiện theo 11 nhóm, trạng thái, chu kỳ và đọc hồ sơ thiên văn – hóa lý chi tiết.', 'Search and multi-filter by 11 categories, phase, period, and read detailed cosmic & chemical profiles.')}</p>
-                </div>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('explorer')">${t('Mở Tra cứu →', 'Open Explorer →')}</button>
-              </article>
-
-              <article class="module-card glass-surface">
-                <div>
                   <div class="module-card-visual">⚛️</div>
                   <h3>${t('Mô phỏng Nguyên tử', 'Simulate Atom')}</h3>
                   <p>${t('Quan sát hạt nhân, vệ tinh electron, sơ đồ ô orbital ↑↓ và mô hình orbital lượng tử 3D (n, l, m).', 'Observe nuclei, electron satellites, orbital box diagrams ↑↓, and 3D quantum orbitals (n, l, m).')}</p>

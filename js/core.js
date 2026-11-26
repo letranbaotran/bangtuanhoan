@@ -21,7 +21,7 @@
     return CV.state.lang === 'en' ? cat.nameEn : cat.nameVi;
   };
 
-  CV.routes = ['home', 'universe', 'explorer', 'simulator', 'periodic-table', 'chempredict', 'virtual-lab', 'chemquest', 'profile', 'about'];
+  CV.routes = ['home', 'universe', 'simulator', 'periodic-table', 'chempredict', 'virtual-lab', 'chemquest', 'profile', 'about'];
 
   CV.getElement = function (num) {
     return CV.ELEMENTS.find((e) => e.number === Number(num));
@@ -231,7 +231,6 @@
   CV.NAV_LABELS = {
     home: { vi: 'Trang chủ', en: 'Home', shortVi: 'Trang chủ', shortEn: 'Home' },
     universe: { vi: 'Vũ trụ 3D', en: 'Universe 3D', shortVi: '3D', shortEn: '3D' },
-    explorer: { vi: 'Tra cứu', en: 'Element Explorer', shortVi: 'Tra cứu', shortEn: 'Explore' },
     simulator: { vi: 'Mô phỏng', en: 'Atom Simulator', shortVi: 'Nguyên tử', shortEn: 'Atom' },
     'periodic-table': { vi: 'Bảng tuần hoàn', en: 'Periodic Table', shortVi: 'Bảng', shortEn: 'Table' },
     chempredict: { vi: 'ChemPredict', en: 'ChemPredict', shortVi: 'Dự đoán', shortEn: 'Predict' },
