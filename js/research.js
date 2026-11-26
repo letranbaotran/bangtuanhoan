@@ -157,7 +157,7 @@
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;" onclick="CHEMVERSE.openElementModal(${e.number})">
                   <td class="mono" style="padding:7px 8px;">${e.number}</td>
                   <td><strong style="color:var(--accent-cyan);">${e.symbol}</strong></td>
-                  <td>${e.nameVi} / ${e.name}</td>
+                  <td>${e.name}</td>
                   <td class="mono">CK ${e.period} • N ${e.group}</td>
                   <td class="mono">${e.atomicMass}</td>
                   <td class="mono">${e.atomicRadius ?? '—'}</td>
@@ -214,7 +214,7 @@
             <strong style="display:block;margin-bottom:10px;">🔎 Phân Tích &amp; So Sánh Nguyên Tố</strong>
             <div style="display:flex;gap:6px;margin-bottom:10px;">
               <select id="res-add-cmp" class="select-field" style="flex:1;">
-                ${CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.nameVi}</option>`).join('')}
+                ${CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.name}</option>`).join('')}
               </select>
               <button class="btn btn-primary btn-sm" id="res-add-cmp-btn">+ Thêm</button>
             </div>
@@ -224,7 +224,7 @@
                 if (!el) return '';
                 return `<div class="glass-surface" style="padding:10px;border-radius:10px;font-size:0.8rem;">
                   <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <strong style="color:var(--accent-cyan);">${el.number}. ${el.symbol} – ${el.nameVi}</strong>
+                    <strong style="color:var(--accent-cyan);">${el.number}. ${el.symbol} – ${el.name}</strong>
                     <button class="icon-btn" style="width:24px;height:24px;font-size:0.7rem;" onclick="CHEMVERSE.modules.research.removeCompare(${el.number})">✕</button>
                   </div>
                   <div class="mono" style="margin-top:4px;">${el.electronConfig} • CK ${el.period}, N ${el.group}</div>

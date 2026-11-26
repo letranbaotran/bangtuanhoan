@@ -148,7 +148,7 @@
         </div>
       `;
 
-      const optsHtml = CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.nameVi}</option>`).join('');
+      const optsHtml = CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.name}</option>`).join('');
       const sel = document.getElementById('sim-el-select');
       sel.innerHTML = optsHtml;
       sel.value = this.state.elementId;
@@ -387,7 +387,7 @@
         <div style="display:flex;align-items:center;gap:10px;">
           <strong style="font-size:1.5rem;color:${cat.color};font-family:var(--font-display);">${el.symbol}</strong>
           <div>
-            <div style="font-weight:700;">${el.nameVi} (${el.name})</div>
+            <div style="font-weight:700;">${el.name}</div>
             <div class="mono" style="font-size:0.78rem;color:var(--text-muted);">Z=${el.number} • P:${el.protons} N:${el.neutrons} E:${el.electrons}</div>
           </div>
         </div>

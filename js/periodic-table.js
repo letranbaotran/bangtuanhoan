@@ -177,13 +177,13 @@
             <div class="pt-anatomy-sample">
               <div style="display:flex;justify-content:space-between;font-size:0.85rem;" class="mono"><span>26</span><span>🧊</span></div>
               <strong style="font-size:2rem;color:#FFC312;font-family:var(--font-display);line-height:1;">Fe</strong>
-              <span style="font-size:0.85rem;font-weight:600;">Sắt</span>
+              <span style="font-size:0.85rem;font-weight:600;">Iron</span>
               <span class="mono" style="font-size:0.72rem;color:var(--text-muted);">55.845 u</span>
             </div>
             <div class="pt-anatomy-labels">
               <div>↖ <strong class="mono">26</strong>: Số hiệu nguyên tử (Z)</div>
               <div>← <strong style="color:#FFC312;">Fe</strong>: Ký hiệu hóa học</div>
-              <div>← <strong>Sắt</strong>: Tên nguyên tố (VI/EN)</div>
+              <div>← <strong>Iron</strong>: Tên nguyên tố (IUPAC)</div>
               <div>↙ <strong class="mono">55.845</strong>: Nguyên tử khối / Cấu hình e</div>
             </div>
           </div>
@@ -630,7 +630,7 @@
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
           <strong style="font-size:1.5rem;color:${cat.color};font-family:var(--font-display);">${el.symbol}</strong>
           <div>
-            <strong>${el.nameVi} (${el.name})</strong> • <span class="mono">Z=${el.number}</span> • <span class="mono">${el.electronConfig}</span>
+            <strong>${el.name}</strong> • <span class="mono">Z=${el.number}</span> • <span class="mono">${el.electronConfig}</span>
             <div style="font-size:0.82rem;color:var(--text-muted);">${cat.nameVi} • Trạng thái tại ${CV.formatTemp(this.state.tempK, this.state.tempUnit)}: ${CV.phaseIcon(phase)} ${CV.phaseVi(phase)}</div>
           </div>
         </div>

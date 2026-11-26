@@ -626,8 +626,8 @@
               <strong style="font-size:1.45rem;line-height:1;">${el.symbol}</strong>
             </div>
             <div>
-              <h3 style="font-size:1.25rem;">${el.nameVi}</h3>
-              <div style="font-size:0.84rem;color:var(--text-muted);">${el.name} • <span class="mono">${el.atomicMass} u</span></div>
+              <h3 style="font-size:1.25rem;">${el.name}</h3>
+              <div style="font-size:0.84rem;color:var(--text-muted);"><span class="mono">${el.atomicMass} u</span></div>
             </div>
           </div>
           <button class="icon-btn" onclick="CHEMVERSE.modules.universe.closeDetailPanel()" aria-label="Đóng">✕</button>

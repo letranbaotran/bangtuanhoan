@@ -14,7 +14,7 @@
   };
 
   CV.elName = function (el) {
-    return CV.state.lang === 'en' ? el.name : el.nameVi;
+    return el.name;
   };
 
   CV.catName = function (cat) {
@@ -522,7 +522,7 @@
             </div>
             <div style="text-align:center;margin:10px 0;">
               <div style="font-family:var(--font-display);font-size:3.3rem;font-weight:700;line-height:1;color:${cat.color};">${el.symbol}</div>
-              <div style="font-size:1.2rem;font-weight:700;margin-top:4px;">${el.nameVi} / ${el.name}</div>
+              <div style="font-size:1.2rem;font-weight:700;margin-top:4px;">${el.name}</div>
             </div>
             <div class="mono" style="text-align:center;font-size:0.86rem;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,0.28);color:#00E5FF;">
               ${el.electronConfig}

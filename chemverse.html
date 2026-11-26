@@ -2774,7 +2774,7 @@ window.CHEMVERSE.REACTIONS = [
   };
 
   CV.elName = function (el) {
-    return CV.state.lang === 'en' ? el.name : el.nameVi;
+    return el.name;
   };
 
   CV.catName = function (cat) {
@@ -3282,7 +3282,7 @@ window.CHEMVERSE.REACTIONS = [
             </div>
             <div style="text-align:center;margin:10px 0;">
               <div style="font-family:var(--font-display);font-size:3.3rem;font-weight:700;line-height:1;color:${cat.color};">${el.symbol}</div>
-              <div style="font-size:1.2rem;font-weight:700;margin-top:4px;">${el.nameVi} / ${el.name}</div>
+              <div style="font-size:1.2rem;font-weight:700;margin-top:4px;">${el.name}</div>
             </div>
             <div class="mono" style="text-align:center;font-size:0.86rem;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,0.28);color:#00E5FF;">
               ${el.electronConfig}
@@ -4977,8 +4977,8 @@ window.CHEMVERSE.REACTIONS = [
               <strong style="font-size:1.45rem;line-height:1;">${el.symbol}</strong>
             </div>
             <div>
-              <h3 style="font-size:1.25rem;">${el.nameVi}</h3>
-              <div style="font-size:0.84rem;color:var(--text-muted);">${el.name} • <span class="mono">${el.atomicMass} u</span></div>
+              <h3 style="font-size:1.25rem;">${el.name}</h3>
+              <div style="font-size:0.84rem;color:var(--text-muted);"><span class="mono">${el.atomicMass} u</span></div>
             </div>
           </div>
           <button class="icon-btn" onclick="CHEMVERSE.modules.universe.closeDetailPanel()" aria-label="Đóng">✕</button>
@@ -5188,7 +5188,7 @@ window.CHEMVERSE.REACTIONS = [
         </div>
       `;
 
-      const optsHtml = CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.nameVi}</option>`).join('');
+      const optsHtml = CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.name}</option>`).join('');
       const sel = document.getElementById('sim-el-select');
       sel.innerHTML = optsHtml;
       sel.value = this.state.elementId;
@@ -5427,7 +5427,7 @@ window.CHEMVERSE.REACTIONS = [
         <div style="display:flex;align-items:center;gap:10px;">
           <strong style="font-size:1.5rem;color:${cat.color};font-family:var(--font-display);">${el.symbol}</strong>
           <div>
-            <div style="font-weight:700;">${el.nameVi} (${el.name})</div>
+            <div style="font-weight:700;">${el.name}</div>
             <div class="mono" style="font-size:0.78rem;color:var(--text-muted);">Z=${el.number} • P:${el.protons} N:${el.neutrons} E:${el.electrons}</div>
           </div>
         </div>
@@ -5912,13 +5912,13 @@ window.CHEMVERSE.REACTIONS = [
             <div class="pt-anatomy-sample">
               <div style="display:flex;justify-content:space-between;font-size:0.85rem;" class="mono"><span>26</span><span>🧊</span></div>
               <strong style="font-size:2rem;color:#FFC312;font-family:var(--font-display);line-height:1;">Fe</strong>
-              <span style="font-size:0.85rem;font-weight:600;">Sắt</span>
+              <span style="font-size:0.85rem;font-weight:600;">Iron</span>
               <span class="mono" style="font-size:0.72rem;color:var(--text-muted);">55.845 u</span>
             </div>
             <div class="pt-anatomy-labels">
               <div>↖ <strong class="mono">26</strong>: Số hiệu nguyên tử (Z)</div>
               <div>← <strong style="color:#FFC312;">Fe</strong>: Ký hiệu hóa học</div>
-              <div>← <strong>Sắt</strong>: Tên nguyên tố (VI/EN)</div>
+              <div>← <strong>Iron</strong>: Tên nguyên tố (IUPAC)</div>
               <div>↙ <strong class="mono">55.845</strong>: Nguyên tử khối / Cấu hình e</div>
             </div>
           </div>
@@ -6365,7 +6365,7 @@ window.CHEMVERSE.REACTIONS = [
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
           <strong style="font-size:1.5rem;color:${cat.color};font-family:var(--font-display);">${el.symbol}</strong>
           <div>
-            <strong>${el.nameVi} (${el.name})</strong> • <span class="mono">Z=${el.number}</span> • <span class="mono">${el.electronConfig}</span>
+            <strong>${el.name}</strong> • <span class="mono">Z=${el.number}</span> • <span class="mono">${el.electronConfig}</span>
             <div style="font-size:0.82rem;color:var(--text-muted);">${cat.nameVi} • Trạng thái tại ${CV.formatTemp(this.state.tempK, this.state.tempUnit)}: ${CV.phaseIcon(phase)} ${CV.phaseVi(phase)}</div>
           </div>
         </div>
@@ -9012,7 +9012,7 @@ window.CHEMVERSE.REACTIONS = [
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;" onclick="CHEMVERSE.openElementModal(${e.number})">
                   <td class="mono" style="padding:7px 8px;">${e.number}</td>
                   <td><strong style="color:var(--accent-cyan);">${e.symbol}</strong></td>
-                  <td>${e.nameVi} / ${e.name}</td>
+                  <td>${e.name}</td>
                   <td class="mono">CK ${e.period} • N ${e.group}</td>
                   <td class="mono">${e.atomicMass}</td>
                   <td class="mono">${e.atomicRadius ?? '—'}</td>
@@ -9069,7 +9069,7 @@ window.CHEMVERSE.REACTIONS = [
             <strong style="display:block;margin-bottom:10px;">🔎 Phân Tích &amp; So Sánh Nguyên Tố</strong>
             <div style="display:flex;gap:6px;margin-bottom:10px;">
               <select id="res-add-cmp" class="select-field" style="flex:1;">
-                ${CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.nameVi}</option>`).join('')}
+                ${CV.ELEMENTS.map((e) => `<option value="${e.number}">${e.number}. ${e.symbol} – ${e.name}</option>`).join('')}
               </select>
               <button class="btn btn-primary btn-sm" id="res-add-cmp-btn">+ Thêm</button>
             </div>
@@ -9079,7 +9079,7 @@ window.CHEMVERSE.REACTIONS = [
                 if (!el) return '';
                 return `<div class="glass-surface" style="padding:10px;border-radius:10px;font-size:0.8rem;">
                   <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <strong style="color:var(--accent-cyan);">${el.number}. ${el.symbol} – ${el.nameVi}</strong>
+                    <strong style="color:var(--accent-cyan);">${el.number}. ${el.symbol} – ${el.name}</strong>
                     <button class="icon-btn" style="width:24px;height:24px;font-size:0.7rem;" onclick="CHEMVERSE.modules.research.removeCompare(${el.number})">✕</button>
                   </div>
                   <div class="mono" style="margin-top:4px;">${el.electronConfig} • CK ${el.period}, N ${el.group}</div>
