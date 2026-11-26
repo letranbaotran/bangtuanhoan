@@ -7541,7 +7541,9 @@ window.CHEMVERSE.REACTIONS = [
     { formula: 'CO₂', name: 'Cacbon đioxit', req: { C: 1, O: 2 }, fact: 'Khí nhà kính quan trọng và là nguyên liệu cho quang hợp.' },
     { formula: 'NH₃', name: 'Amoniac', req: { N: 1, H: 3 }, fact: 'Nguyên liệu cốt lõi để sản xuất phân bón đạm.' },
     { formula: 'CH₄', name: 'Khí Metan', req: { C: 1, H: 4 }, fact: 'Thành phần chính của khí thiên nhiên.' },
-    { formula: 'H₂SO₄', name: 'Axit Sunfuric', req: { H: 2, S: 1, O: 4 }, fact: 'Hóa chất công nghiệp quan trọng bậc nhất thế giới.' }
+    { formula: 'H₂SO₄', name: 'Axit Sunfuric', req: { H: 2, S: 1, O: 4 }, fact: 'Hóa chất công nghiệp quan trọng bậc nhất thế giới.' },
+    { formula: 'CaCO₃', name: 'Đá vôi (Canxi cacbonat)', req: { Ca: 1, C: 1, O: 3 }, fact: 'Thành phần chính của đá vôi, đá cẩm thạch và vỏ sò.' },
+    { formula: 'C₂H₅OH', name: 'Ancol Etylic (Etanol)', req: { C: 2, H: 6, O: 1 }, fact: 'Ancol phổ biến dùng trong y tế, nhiên liệu sinh học và công nghiệp.' }
   ];
 
   const QUIZ_BANK = {
@@ -7555,7 +7557,17 @@ window.CHEMVERSE.REACTIONS = [
       { q: 'Kim loại nào dẫn điện tốt nhất trong tất cả các nguyên tố?', opts: ['Đồng (Cu)', 'Vàng (Au)', 'Bạc (Ag)', 'Nhôm (Al)'], ans: 2, exp: 'Bạc (Ag) có độ dẫn điện cao nhất, tiếp theo là Đồng (Cu) và Vàng (Au).' },
       { q: 'Phi kim duy nhất ở trạng thái lỏng tại 25°C là nguyên tố nào?', opts: ['Flo (F)', 'Clo (Cl)', 'Brom (Br)', 'Iot (I)'], ans: 2, exp: 'Brom (Br) là chất lỏng màu nâu đỏ dễ bay hơi ở nhiệt độ phòng.' },
       { q: 'Hạt mang điện tích dương trong hạt nhân nguyên tử là gì?', opts: ['Electron', 'Proton', 'Neutron', 'Photon'], ans: 1, exp: 'Proton mang điện tích +1, quy định số hiệu nguyên tử Z.' },
-      { q: 'Nguyên tố nào tạo nên màu đỏ của máu qua phân tử Hemoglobin?', opts: ['Đồng (Cu)', 'Kẽm (Zn)', 'Sắt (Fe)', 'Magie (Mg)'], ans: 2, exp: 'Ion Sắt ở trung tâm nhóm heme giúp vận chuyển oxy trong hồng cầu.' }
+      { q: 'Nguyên tố nào tạo nên màu đỏ của máu qua phân tử Hemoglobin?', opts: ['Đồng (Cu)', 'Kẽm (Zn)', 'Sắt (Fe)', 'Magie (Mg)'], ans: 2, exp: 'Ion Sắt ở trung tâm nhóm heme giúp vận chuyển oxy trong hồng cầu.' },
+      { q: 'Khi nhỏ Phenolphtalein vào dung dịch bazơ NaOH, dung dịch chuyển màu gì?', opts: ['Xanh lam', 'Hồng cánh sen', 'Vàng cam', 'Không màu'], ans: 1, exp: 'Phenolphtalein chuyển màu hồng cánh sen trong môi trường kiềm (pH > 8.2).' },
+      { q: 'Muối ăn hằng ngày có công thức hóa học là gì?', opts: ['KCl', 'NaCl', 'CaCl₂', 'NaOH'], ans: 1, exp: 'Natri clorua (NaCl) là thành phần chính của muối ăn.' },
+      { q: 'Kim loại nào nhẹ nhất trong bảng tuần hoàn?', opts: ['Natri (Na)', 'Nhôm (Al)', 'Liti (Li)', 'Magie (Mg)'], ans: 2, exp: 'Liti (Z=3) có khối lượng riêng chỉ 0.534 g/cm³, nổi trên mặt nước.' },
+      { q: 'Khí nào làm đục nước vôi trong Ca(OH)₂?', opts: ['O₂', 'H₂', 'CO₂', 'N₂'], ans: 2, exp: 'CO₂ + Ca(OH)₂ → CaCO₃↓ (trắng) + H₂O.' },
+      { q: 'Nguyên tố phổ biến nhất trong lớp vỏ Trái Đất là?', opts: ['Silic (Si)', 'Sắt (Fe)', 'Oxy (O)', 'Nhôm (Al)'], ans: 2, exp: 'Oxy chiếm khoảng 46.1% khối lượng lớp vỏ Trái Đất dưới dạng oxit và silicat.' },
+      { q: 'Đốt muối Natri (Na) trên ngọn lửa cho màu quang phổ gì?', opts: ['Tím hoa cà', 'Vàng rực', 'Xanh lục', 'Đỏ cam'], ans: 1, exp: 'Natri phát xạ vạch kép D màu vàng rực đặc trưng ở 589 nm.' },
+      { q: 'Số hiệu nguyên tử (Z) của nguyên tố Oxy (O) là bao nhiêu?', opts: ['6', '7', '8', '16'], ans: 2, exp: 'Oxy có 8 proton trong hạt nhân nên Z = 8.' },
+      { q: 'Chất nào được dùng làm thuốc thử nhận biết Hồ tinh bột (tạo màu xanh tím)?', opts: ['Dung dịch Brom', 'Dung dịch Iot (I₂)', 'Axit HCl', 'NaOH'], ans: 1, exp: 'Iot len vào cấu trúc xoắn của amilozơ trong hồ tinh bột tạo phức xanh tím.' },
+      { q: 'Khi cho Kẽm (Zn) vào dung dịch HCl, khí nào thoát ra?', opts: ['Cl₂', 'O₂', 'H₂', 'CO₂'], ans: 2, exp: 'Zn + 2HCl → ZnCl₂ + H₂↑.' },
+      { q: 'Trong bảng tuần hoàn hiện đại, các nguyên tố được sắp xếp theo chiều tăng dần của?', opts: ['Nguyên tử khối', 'Số neutron', 'Điện tích hạt nhân (Z)', 'Độ âm điện'], ans: 2, exp: 'Định luật tuần hoàn hiện đại sắp xếp theo chiều tăng của số hiệu nguyên tử Z.' }
     ],
     advanced: [
       { q: 'Nguyên tố có độ âm điện lớn nhất trên thang Pauling (3.98) là?', opts: ['Oxy (O)', 'Clo (Cl)', 'Flo (F)', 'Neon (Ne)'], ans: 2, exp: 'Flo (Z=9) có bán kính nhỏ và lực hút electron mạnh nhất.' },
@@ -7567,7 +7579,17 @@ window.CHEMVERSE.REACTIONS = [
       { q: 'Nguyên tố nào là trung tâm của phân tử Diệp lục (Chlorophyll)?', opts: ['Canxi (Ca)', 'Magie (Mg)', 'Sắt (Fe)', 'Kali (K)'], ans: 1, exp: 'Ion Mg²⁺ nằm ở trung tâm vòng porphyrin của diệp lục.' },
       { q: 'Trong mạng cáp quang biển, ion đất hiếm nào khuếch đại tín hiệu ánh sáng?', opts: ['Neodymi (Nd)', 'Erbi (Er)', 'Xeri (Ce)', 'Lantan (La)'], ans: 1, exp: 'Bộ khuếch đại EDFA sử dụng sợi quang pha Erbi (Er³⁺).' },
       { q: 'Nguyên tố tự nhiên hiếm nhất trên vỏ Trái Đất (chưa tới 30 gam) là?', opts: ['Franxi (Fr)', 'Astatin (At)', 'Prometi (Pm)', 'Radi (Ra)'], ans: 1, exp: 'Astatin (Z=85) cực kỳ phóng xạ và có chu kỳ bán rã rất ngắn.' },
-      { q: 'Nguyên tố nào dùng để định nghĩa đơn vị giây chuẩn trong đồng hồ nguyên tử?', opts: ['Rubidi (Rb)', 'Xesi (Cs)', 'Stronti (Sr)', 'Thủy ngân (Hg)'], ans: 1, exp: 'Tần số chuyển mức siêu tinh tế của nguyên tử Cs-133 định nghĩa 1 giây.' }
+      { q: 'Nguyên tố nào dùng để định nghĩa đơn vị giây chuẩn trong đồng hồ nguyên tử?', opts: ['Rubidi (Rb)', 'Xesi (Cs)', 'Stronti (Sr)', 'Thủy ngân (Hg)'], ans: 1, exp: 'Tần số chuyển mức siêu tinh tế của nguyên tử Cs-133 định nghĩa 1 giây.' },
+      { q: 'Phân lớp d có tối đa bao nhiêu ô orbital lượng tử và bao nhiêu electron?', opts: ['3 ô – 6e', '5 ô – 10e', '7 ô – 14e', '1 ô – 2e'], ans: 1, exp: 'Với l=2 (phân lớp d), m nhận 5 giá trị (-2,-1,0,+1,+2) → 5 ô orbital, tối đa 10e.' },
+      { q: 'Nguyên tử Nitơ (Z=7) ở trạng thái cơ bản có bao nhiêu electron độc thân?', opts: ['1', '2', '3', '5'], ans: 2, exp: 'Theo quy tắc Hund, phân lớp 2p³ của Nitơ điền vào 3 ô orbital khác nhau → 3e độc thân.' },
+      { q: 'Hiệu độ âm điện Δχ ≥ 1.7 giữa hai nguyên tử thường tạo thành loại liên kết nào?', opts: ['Cộng hóa trị không cực', 'Liên kết Ion', 'Liên kết Hydro', 'Liên kết Kim loại'], ans: 1, exp: 'Chênh lệch độ âm điện lớn (Δχ ≥ 1.7) dẫn đến sự chuyển hẳn electron tạo liên kết Ion.' },
+      { q: 'Kết tủa màu vàng óng ánh "Cơn mưa vàng" tạo thành khi trộn Pb(NO₃)₂ với KI là chất nào?', opts: ['Pb(NO₃)₂', 'KNO₃', 'PbI₂', 'K₂I'], ans: 2, exp: 'Pb(NO₃)₂ + 2KI → PbI₂↓ (vàng rực) + 2KNO₃.' },
+      { q: 'Dung dịch phức chất màu đỏ máu thu được khi cho KSCN tác dụng với FeCl₃ là?', opts: ['Fe(OH)₃', 'Fe(SCN)₃', 'K₃[Fe(CN)₆]', 'Fe₂O₃'], ans: 1, exp: 'Ion Fe³⁺ tạo phức chất [Fe(SCN)]²⁺ / Fe(SCN)₃ có màu đỏ máu rất nhạy.' },
+      { q: 'Mức năng lượng của electron ở lớp n = 2 trong nguyên tử Hydro (Eₙ = -13.6/n²) là?', opts: ['-13.6 eV', '-3.40 eV', '-1.51 eV', '-0.85 eV'], ans: 1, exp: 'Với n = 2: E₂ = -13.6 / 2² = -3.40 eV.' },
+      { q: 'Khi cho Sắt (Fe) vào dung dịch CuSO₄, hiện tượng quan sát được là gì?', opts: ['Sủi bọt khí H₂', 'Kết tủa trắng', 'Đồng đỏ bám ngoài đinh sắt', 'Không phản ứng'], ans: 2, exp: 'Fe + CuSO₄ → FeSO₄ + Cu↓ (Sắt đẩy Đồng ra khỏi muối).' },
+      { q: 'Nhiệt phân Cu(OH)₂ (xanh lam) ở nhiệt độ cao thu được chất rắn nào?', opts: ['Cu (đỏ)', 'CuO (đen)', 'Cu₂O (đỏ gạch)', 'CuSO₄'], ans: 1, exp: 'Cu(OH)₂ —(t°)→ CuO (màu đen) + H₂O.' },
+      { q: 'Trong một chu kỳ từ trái sang phải, bán kính nguyên tử nhìn chung biến đổi như thế nào?', opts: ['Tăng dần', 'Giảm dần', 'Không đổi', 'Tăng rồi giảm'], ans: 1, exp: 'Điện tích hạt nhân tăng trong khi số lớp e không đổi nên lực hút vỏ mạnh hơn → bán kính giảm.' },
+      { q: 'Nguyên tố nặng nhất được IUPAC công nhận (Z = 118) hiện nay là?', opts: ['Tennessine (Ts)', 'Livermorium (Lv)', 'Oganesson (Og)', 'Flerovium (Fl)'], ans: 2, exp: 'Oganesson (Og, Z=118) hoàn thiện chu kỳ 7 của bảng tuần hoàn.' }
     ]
   };
 
@@ -7822,12 +7844,14 @@ window.CHEMVERSE.REACTIONS = [
       this.state.score = 0;
       this.state.streak = 0;
       this.state.quizIndex = 0;
+      const pool = [...QUIZ_BANK[diff]].sort(() => Math.random() - 0.5);
+      this.state.quizPool = pool.slice(0, 10);
       this.renderQuiz();
     },
 
     renderQuiz() {
       const st = this.state;
-      const list = QUIZ_BANK[st.quizDiff];
+      const list = st.quizPool || QUIZ_BANK[st.quizDiff];
       if (st.quizIndex >= list.length) {
         this.renderSummary(`Trắc nghiệm (${st.quizDiff === 'basic' ? 'Cơ bản' : 'Nâng cao'})`);
         return;
