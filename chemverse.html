@@ -3681,14 +3681,6 @@ window.CHEMVERSE.REACTIONS = [
               </div>
             </div>
           </div>
-
-          <!-- Activity History -->
-          <div class="glass-surface" style="padding:20px;border-radius:var(--radius-lg);">
-            <h3 style="margin-bottom:10px;">📜 ${CV.t('Lịch Sử Hoạt Động & Tiến Độ', 'Activity History')}</h3>
-            <div style="display:flex;flex-direction:column;gap:4px;font-size:0.84rem;color:var(--text-secondary);max-height:200px;overflow-y:auto;">
-              ${(user.history || []).map((h) => `<div>• ${h}</div>`).join('')}
-            </div>
-          </div>
         </div>
       `;
 
@@ -4582,7 +4574,6 @@ window.CHEMVERSE.REACTIONS = [
             <div style="display:flex;gap:6px;flex-wrap:wrap;" id="sim-main-tabs">
               <button class="btn btn-sm btn-primary" data-tab="satellite">⚛️ Hệ Sao – Vệ Tinh 3D</button>
               <button class="btn btn-sm btn-secondary" data-tab="quantum">🌀 Orbital Lượng Tử (n, l, m)</button>
-              <button class="btn btn-sm btn-secondary" data-tab="bonding">🔗 Ghép Đôi Liên Kết</button>
             </div>
           </div>
 

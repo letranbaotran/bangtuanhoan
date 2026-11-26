@@ -37,7 +37,6 @@
             <div style="display:flex;gap:6px;flex-wrap:wrap;" id="sim-main-tabs">
               <button class="btn btn-sm btn-primary" data-tab="satellite">⚛️ Hệ Sao – Vệ Tinh 3D</button>
               <button class="btn btn-sm btn-secondary" data-tab="quantum">🌀 Orbital Lượng Tử (n, l, m)</button>
-              <button class="btn btn-sm btn-secondary" data-tab="bonding">🔗 Ghép Đôi Liên Kết</button>
             </div>
           </div>
 

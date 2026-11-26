@@ -247,14 +247,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Activity History -->
-          <div class="glass-surface" style="padding:20px;border-radius:var(--radius-lg);">
-            <h3 style="margin-bottom:10px;">📜 ${CV.t('Lịch Sử Hoạt Động & Tiến Độ', 'Activity History')}</h3>
-            <div style="display:flex;flex-direction:column;gap:4px;font-size:0.84rem;color:var(--text-secondary);max-height:200px;overflow-y:auto;">
-              ${(user.history || []).map((h) => `<div>• ${h}</div>`).join('')}
-            </div>
-          </div>
         </div>
       `;
 
