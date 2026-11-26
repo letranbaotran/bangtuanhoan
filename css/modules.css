@@ -954,22 +954,118 @@ body.light-glass .el-summary-card {
   background: rgba(239, 68, 68, 0.2);
 }
 
-/* --- MODULE 6: VIRTUAL LAB --- */
-.lab-workbench {
-  display: grid;
-  grid-template-columns: 320px 1fr 330px;
-  gap: 16px;
-  align-items: start;
+/* --- MODULE 6: 3D VIRTUAL LAB --- */
+.lab3d-shell {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
+  overflow: hidden;
+  background: #0b1224;
 }
 
-.lab-shelf, .lab-analysis {
-  padding: 16px;
-  border-radius: var(--radius-lg);
+#lab3d-canvas-wrap,
+#lab3d-canvas-wrap canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.lab3d-goggles-visor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  opacity: 0;
+  box-shadow: inset 0 0 85px rgba(56, 189, 248, 0.42), inset 0 0 22px rgba(255, 255, 255, 0.65);
+  border: 10px solid rgba(15, 23, 42, 0.68);
+  border-radius: 24px;
+  transition: opacity 0.35s ease;
+}
+
+.lab3d-danger-visor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.lab3d-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 35;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  max-width: 220px;
+}
+
+.lab3d-hud-tl {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 22;
+  padding: 10px 14px;
+  border-radius: 16px;
+  max-width: min(440px, calc(100vw - 24px));
+}
+
+.lab3d-tools-left {
+  position: absolute;
+  top: 104px;
+  left: 12px;
+  z-index: 22;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 760px;
+  gap: 8px;
+}
+
+.lab3d-right-wrap {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 24;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.lab3d-right-drawer {
+  width: min(290px, calc(100vw - 24px));
+  padding: 12px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lab3d-pop-drawer {
+  position: absolute;
+  top: 104px;
+  left: 58px;
+  z-index: 30;
+  width: min(360px, calc(100vw - 72px));
+  max-height: 62vh;
   overflow-y: auto;
+  padding: 14px;
+  border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+  .lab3d-shell {
+    height: calc(100vh - var(--navbar-height) - 60px);
+  }
+  .lab3d-right-wrap {
+    top: auto;
+    bottom: 10px;
+    right: 10px;
+  }
+  .lab3d-right-drawer {
+    max-height: 48vh;
+  }
 }
 
 .lab-tabs {
