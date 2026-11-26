@@ -6884,20 +6884,42 @@ window.CHEMVERSE.REACTIONS = [
       this.tongsSample = new THREE.Mesh(new THREE.DodecahedronGeometry(0.018, 0), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.85 }));
       this.tongsGroup.add(this.tongsSample); this.scene.add(this.tongsGroup);
 
-      // 3D Animated Flame Group + Flickering Flame Light
+      // Soft Circular Particle Texture (replaces blocky squares)
+      const pCanvas = document.createElement('canvas');
+      pCanvas.width = 64; pCanvas.height = 64;
+      const pCtx = pCanvas.getContext('2d');
+      const pGrad = pCtx.createRadialGradient(32, 32, 2, 32, 32, 30);
+      pGrad.addColorStop(0, 'rgba(255,255,255,1)');
+      pGrad.addColorStop(0.45, 'rgba(255,255,255,0.75)');
+      pGrad.addColorStop(1, 'rgba(255,255,255,0)');
+      pCtx.fillStyle = pGrad; pCtx.fillRect(0, 0, 64, 64);
+      const softTex = new THREE.CanvasTexture(pCanvas);
+
+      // Realistic Soft Glowing Flame Sprites (no rigid cones!)
+      const fCanvas = document.createElement('canvas');
+      fCanvas.width = 128; fCanvas.height = 192;
+      const fCtx = fCanvas.getContext('2d');
+      const fGrad = fCtx.createRadialGradient(64, 130, 6, 64, 105, 68);
+      fGrad.addColorStop(0, 'rgba(255,255,255,1)');
+      fGrad.addColorStop(0.35, 'rgba(255,220,120,0.85)');
+      fGrad.addColorStop(0.7, 'rgba(255,120,40,0.35)');
+      fGrad.addColorStop(1, 'rgba(255,80,0,0)');
+      fCtx.fillStyle = fGrad; fCtx.fillRect(0, 0, 128, 192);
+      const flameTex = new THREE.CanvasTexture(fCanvas);
+
       this.flameGroup = new THREE.Group();
       this.flameGroup.visible = false;
-      this.flameOuter = new THREE.Mesh(
-        new THREE.ConeGeometry(0.042, 0.14, 16),
-        new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.82 })
+      this.flameOuter = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: flameTex, color: 0xf97316, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })
       );
-      this.flameOuter.position.y = 0.07;
-      this.flameInner = new THREE.Mesh(
-        new THREE.ConeGeometry(0.022, 0.08, 14),
-        new THREE.MeshBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 0.95 })
+      this.flameOuter.scale.set(0.18, 0.26, 1);
+      this.flameOuter.position.y = 0.08;
+      this.flameInner = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: flameTex, color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false })
       );
-      this.flameInner.position.y = 0.045;
-      this.flameLight = new THREE.PointLight(0xf97316, 0, 2.2);
+      this.flameInner.scale.set(0.09, 0.14, 1);
+      this.flameInner.position.y = 0.05;
+      this.flameLight = new THREE.PointLight(0xf97316, 0, 2.4);
       this.flameLight.position.y = 0.1;
       this.flameGroup.add(this.flameOuter, this.flameInner, this.flameLight);
       this.scene.add(this.flameGroup);
@@ -6909,7 +6931,9 @@ window.CHEMVERSE.REACTIONS = [
       for (let i = 0; i < this.MAX_P; i++) pos[i * 3 + 1] = -50;
       this.pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       this.pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-      this.scene.add(new THREE.Points(this.pGeo, new THREE.PointsMaterial({ size: 0.025, vertexColors: true, transparent: true, opacity: 0.9 })));
+      this.scene.add(new THREE.Points(this.pGeo, new THREE.PointsMaterial({
+        size: 0.042, map: softTex, vertexColors: true, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending
+      })));
     },
 
     spawnParticles(origin, hex, count = 35, vy = 0.02) {
@@ -7425,12 +7449,14 @@ window.CHEMVERSE.REACTIONS = [
           ls.flameTimer -= dt;
           this.flameGroup.visible = true;
           const bp = this.primaryBeaker.position;
-          this.flameGroup.position.set(bp.x, bp.y + 0.11, bp.z);
+          this.flameGroup.position.set(bp.x, bp.y + 0.1, bp.z);
           this.flameOuter.material.color.setHex(ls.flameColor);
           this.flameLight.color.setHex(ls.flameColor);
-          const flick = 0.85 + Math.sin(elapsed * 24) * 0.2;
-          this.flameGroup.scale.set(flick, 0.9 + Math.cos(elapsed * 19) * 0.25, flick);
-          this.flameLight.intensity = 2.2 * flick;
+          const flick = 0.9 + Math.sin(elapsed * 22) * 0.14;
+          this.flameOuter.scale.set(0.18 * flick, 0.25 + Math.cos(elapsed * 17) * 0.04, 1);
+          this.flameInner.scale.set(0.09 * flick, 0.13 + Math.sin(elapsed * 25) * 0.02, 1);
+          this.flameLight.intensity = 2.0 * flick;
+          if (Math.random() < 0.4) this.spawnParticles(this.getTop(), ls.flameColor, 2, 0.028);
           if (ls.flameTimer <= 0) {
             this.flameGroup.visible = false;
             this.flameLight.intensity = 0;
