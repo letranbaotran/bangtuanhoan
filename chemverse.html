@@ -7891,56 +7891,6 @@ window.CHEMVERSE.REACTIONS = [
               </div>
             </div>
           </div>
-
-          <div class="glass-surface" style="padding:24px;border-radius:var(--radius-lg);margin-bottom:28px;">
-            <h3 style="margin-bottom:10px;">⚙️ ${CV.t('Công Nghệ Web Sử Dụng', 'Web Technologies Used')}</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
-              <span class="cat-badge" style="color:var(--accent-cyan);">WebGL / Three.js r147</span>
-              <span class="cat-badge" style="color:var(--accent-blue);">InstancedMesh Starfield</span>
-              <span class="cat-badge" style="color:var(--accent-indigo);">SPA Hash Routing</span>
-              <span class="cat-badge" style="color:var(--accent-purple);">Deep Space Glassmorphism UI</span>
-              <span class="cat-badge" style="color:#34D399;">IUPAC Unified JSON Schema</span>
-            </div>
-          </div>
-
-          <div class="glass-surface" style="padding:24px;border-radius:var(--radius-lg);border-color:rgba(0,229,255,0.28);">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
-              <div>
-                <h3 style="color:var(--accent-cyan);">👥 ${CV.t('Nhóm Thực Hiện Dự Án', 'Project Team')}</h3>
-                <p style="color:var(--text-secondary);font-size:0.95rem;margin-top:4px;font-weight:600;">
-                  ${CV.t('Nhóm 2 – Lớp 10A1 – Trường THPT Ea Súp', 'Group 2 – Class 10A1 – Ea Sup High School')}
-                </p>
-              </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <span class="cat-badge" style="color:#FBBF24;">👑 ${CV.t('Trưởng nhóm', 'Team Leader')}: Lê Trần Bảo Trân</span>
-                <span class="cat-badge" style="color:var(--accent-cyan);">⭐ ${CV.t('Phó nhóm', 'Vice Leader')}: Nguyễn Phương Anh</span>
-              </div>
-            </div>
-
-            <div style="font-size:0.84rem;color:var(--text-muted);margin-bottom:10px;font-weight:600;">
-              ${CV.t('Danh sách thành viên:', 'Team Members:')}
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;">
-              ${[
-          'Nguyễn Công Tuấn Anh',
-          'Nguyễn Đức Anh',
-          'Trần Mỹ Tâm',
-          'Nguyễn Thu Bình',
-          'Phạm Mỹ Nhung',
-          'Phan Thị Hạnh',
-          'Nguyễn Trung Lương',
-          'Nguyễn Thị Thanh Trúc'
-        ]
-          .map(
-            (name) => `
-                <div class="glass-surface" style="padding:10px 14px;border-radius:10px;font-size:0.9rem;display:flex;align-items:center;gap:8px;">
-                  <span style="color:var(--accent-blue);">✦</span>
-                  <span>${name}</span>
-                </div>`
-          )
-          .join('')}
-            </div>
-          </div>
         </div>
       `;
     }
