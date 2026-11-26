@@ -1881,88 +1881,92 @@ body.light-glass .el-summary-card {
 
 .lab3d-hud-tl {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 10px;
+  left: 10px;
   z-index: 22;
-  padding: 12px 16px;
-  border-radius: 16px;
-  max-width: min(470px, calc(100vw - 24px));
+  padding: 8px 12px;
+  border-radius: 14px;
+  max-width: min(390px, calc(100vw - 24px));
 }
 
 .lab3d-tools-left {
   position: absolute;
-  top: 120px;
-  left: 12px;
+  top: 112px;
+  left: 10px;
   z-index: 22;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 42px);
+  gap: 6px;
 }
 
 .lab3d-tools-left .icon-btn {
-  width: 46px;
-  height: 46px;
-  font-size: 1.25rem;
-  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  font-size: 1.15rem;
+  border-radius: 11px;
 }
 
 .lab3d-micro-dock {
   position: absolute;
-  bottom: 14px;
-  left: 70px;
+  bottom: 10px;
+  left: 10px;
   z-index: 25;
-  width: min(370px, calc(100vw - 86px));
-  padding: 12px 14px;
-  border-radius: 16px;
+  width: min(300px, calc(100vw - 24px));
+  padding: 10px 12px;
+  border-radius: 14px;
   border: 1px solid rgba(56, 189, 248, 0.45);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
 }
 
 .lab3d-right-wrap {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   z-index: 24;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
 .lab3d-right-drawer {
-  width: min(355px, calc(100vw - 24px));
-  padding: 14px;
-  border-radius: 16px;
+  width: min(315px, calc(100vw - 24px));
+  padding: 11px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .lab3d-pop-drawer {
   position: absolute;
-  top: 120px;
-  left: 70px;
+  top: 112px;
+  left: 106px;
   z-index: 30;
-  width: min(420px, calc(100vw - 84px));
-  max-height: 64vh;
+  width: min(380px, calc(100vw - 120px));
+  max-height: 60vh;
   overflow-y: auto;
-  padding: 16px;
-  border-radius: 16px;
+  padding: 14px;
+  border-radius: 14px;
 }
 
 @media (max-width: 768px) {
   .lab3d-shell {
     height: calc(100vh - var(--navbar-height) - 60px);
   }
+  .lab3d-tools-left {
+    grid-template-columns: repeat(2, 38px);
+    gap: 5px;
+  }
   .lab3d-tools-left .icon-btn {
-    width: 42px;
-    height: 42px;
-    font-size: 1.15rem;
+    width: 38px;
+    height: 38px;
+    font-size: 1.05rem;
   }
   .lab3d-micro-dock {
-    left: 62px;
-    bottom: 64px;
-    width: min(320px, calc(100vw - 74px));
+    left: 10px;
+    bottom: 62px;
+    width: min(280px, calc(100vw - 20px));
   }
   .lab3d-right-wrap {
     top: auto;
@@ -1970,25 +1974,25 @@ body.light-glass .el-summary-card {
     right: 10px;
   }
   .lab3d-right-drawer {
-    max-height: 50vh;
+    max-height: 46vh;
   }
 }
 
 .lab-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px;
   background: rgba(0, 0, 0, 0.3);
-  padding: 5px;
-  border-radius: 12px;
+  padding: 4px;
+  border-radius: 10px;
 }
 
 .lab-tab-btn {
-  padding: 9px 6px;
+  padding: 7px 4px;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   background: transparent;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-muted);
   cursor: pointer;
@@ -2002,20 +2006,20 @@ body.light-glass .el-summary-card {
 .lab-item-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 7px;
 }
 
 .lab-chem-btn {
-  padding: 12px 10px;
-  min-height: 60px;
-  border-radius: 12px;
+  padding: 8px 9px;
+  min-height: 48px;
+  border-radius: 10px;
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.04);
   text-align: left;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
   transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
 }
 
@@ -6711,13 +6715,13 @@ window.CHEMVERSE.REACTIONS = [
             <div id="lab3d-chips" style="display:flex;gap:4px;overflow-x:auto;padding-top:6px;margin-top:6px;border-top:1px solid rgba(255,255,255,0.08);font-size:0.72rem;" class="mono">
               <span class="cat-badge" style="color:#38BDF8;padding:1px 6px;">H₂O</span>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;" id="lab3d-level-bar">
-              <span style="font-size:0.74rem;color:var(--text-muted);font-weight:700;">CẤP ĐỘ:</span>
-              <button class="btn btn-sm btn-primary lab3d-lvl-btn" data-lvl="basic" style="padding:5px 11px;font-size:0.78rem;">🟢 Cơ bản</button>
-              <button class="btn btn-sm btn-secondary lab3d-lvl-btn" data-lvl="advanced" style="padding:5px 11px;font-size:0.78rem;">🟡 Nâng cao</button>
-              <button class="btn btn-sm btn-secondary lab3d-lvl-btn" data-lvl="sandbox" style="padding:5px 11px;font-size:0.78rem;">🟣 Tự do</button>
+            <div style="display:flex;align-items:center;gap:5px;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;" id="lab3d-level-bar">
+              <span style="font-size:0.7rem;color:var(--text-muted);font-weight:700;">CẤP:</span>
+              <button class="btn btn-sm btn-primary lab3d-lvl-btn" data-lvl="basic" style="padding:3px 9px;font-size:0.72rem;">🟢 Cơ bản</button>
+              <button class="btn btn-sm btn-secondary lab3d-lvl-btn" data-lvl="advanced" style="padding:3px 9px;font-size:0.72rem;">🟡 Nâng cao</button>
+              <button class="btn btn-sm btn-secondary lab3d-lvl-btn" data-lvl="sandbox" style="padding:3px 9px;font-size:0.72rem;">🟣 Tự do</button>
             </div>
-            <div id="lab3d-level-hint" style="font-size:0.72rem;color:#93C5FD;margin-top:4px;">🟢 Cơ bản (THCS): Chọn thí nghiệm mẫu ở 📖 hoặc thêm chất an toàn từng bước.</div>
+            <div id="lab3d-level-hint" style="display:none;"></div>
             <div id="lab3d-a11y-badge" style="display:none;margin-top:6px;padding:4px 8px;border-radius:6px;background:#0F172A;border:1.5px solid #FBBF24;color:#FDE68A;font-size:0.74rem;font-weight:700;">[Trạng thái màu: Dung dịch trong suốt]</div>
           </div>
 
@@ -6738,25 +6742,25 @@ window.CHEMVERSE.REACTIONS = [
 
           <!-- Right Chemical Shelf Drawer -->
           <div class="lab3d-right-wrap">
-            <button class="btn btn-secondary glass-surface" id="lab3d-collapse-right" style="padding:10px 16px;font-size:0.9rem;font-weight:700;">🧪 Kho Hóa Chất (${LAB_CHEMICALS.length}) ▾</button>
+            <button class="btn btn-secondary glass-surface" id="lab3d-collapse-right" style="padding:7px 13px;font-size:0.84rem;font-weight:700;">🧪 Kho Hóa Chất (${LAB_CHEMICALS.length}) ▾</button>
             <div class="lab3d-right-drawer glass-surface" id="lab3d-right-drawer">
-              <input type="text" id="lab3d-search" class="input-field" style="padding:10px 12px;font-size:0.88rem;" placeholder="🔍 Tìm công thức, tên chất..." />
+              <input type="text" id="lab3d-search" class="input-field" style="padding:8px 10px;font-size:0.82rem;" placeholder="🔍 Tìm công thức, tên chất..." />
               <div class="lab-tabs" id="lab3d-tabs">
                 <button class="lab-tab-btn active" data-tab="water">💧 Nhiệt</button>
                 <button class="lab-tab-btn" data-tab="ab">🧪 Ax/Bz</button>
                 <button class="lab-tab-btn" data-tab="salt">⚗️ Muối</button>
                 <button class="lab-tab-btn" data-tab="metal">🔩 Rắn</button>
               </div>
-              <div id="lab3d-items-list" style="overflow-y:auto;max-height:42vh;display:flex;flex-direction:column;gap:8px;"></div>
-              <div style="border-top:1px solid var(--glass-border);padding-top:10px;display:flex;flex-direction:column;gap:8px;">
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-                  <button class="btn btn-secondary" id="lab3d-act-hp" style="font-size:0.82rem;padding:10px 6px;">🔥 Bếp điện</button>
-                  <button class="btn btn-secondary" id="lab3d-act-ice" style="font-size:0.82rem;padding:10px 6px;">🧊 Đá viên</button>
-                  <button class="btn btn-secondary" id="lab3d-act-stir" style="font-size:0.82rem;padding:10px 6px;">🥢 Khuấy</button>
+              <div id="lab3d-items-list" style="overflow-y:auto;max-height:35vh;display:flex;flex-direction:column;gap:6px;"></div>
+              <div style="border-top:1px solid var(--glass-border);padding-top:8px;display:flex;flex-direction:column;gap:6px;">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;">
+                  <button class="btn btn-secondary" id="lab3d-act-hp" style="font-size:0.78rem;padding:7px 4px;">🔥 Bếp điện</button>
+                  <button class="btn btn-secondary" id="lab3d-act-ice" style="font-size:0.78rem;padding:7px 4px;">🧊 Đá viên</button>
+                  <button class="btn btn-secondary" id="lab3d-act-stir" style="font-size:0.78rem;padding:7px 4px;">🥢 Khuấy</button>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                  <button class="btn btn-secondary" id="lab3d-act-export" style="font-size:0.84rem;padding:10px 8px;">📄 Báo cáo</button>
-                  <button class="btn" id="lab3d-act-reset" style="font-size:0.84rem;padding:10px 8px;background:rgba(220,38,38,0.28);border:1px solid rgba(248,113,113,0.45);color:#FCA5A5;">🔄 Rửa Cốc</button>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                  <button class="btn btn-secondary" id="lab3d-act-export" style="font-size:0.78rem;padding:7px 6px;">📄 Báo cáo</button>
+                  <button class="btn" id="lab3d-act-reset" style="font-size:0.78rem;padding:7px 6px;background:rgba(220,38,38,0.28);border:1px solid rgba(248,113,113,0.45);color:#FCA5A5;">🔄 Rửa Cốc</button>
                 </div>
               </div>
             </div>
@@ -7494,7 +7498,7 @@ window.CHEMVERSE.REACTIONS = [
           <option value="__beaker__" ${activeId === '__beaker__' ? 'selected' : ''}>⚗️ Hỗn hợp đang trong cốc (${ls.contents.size} chất)</option>
           ${LAB_CHEMICALS.map((c) => `<option value="${c.id}" ${activeId === c.id ? 'selected' : ''}>🔬 ${c.formula} — ${c.name}</option>`).join('')}
         </select>
-        <canvas id="lab3d-micro-canvas" width="340" height="165" style="width:100%;height:165px;background:#040814;border-radius:10px;border:1px solid rgba(56,189,248,0.35);display:block;"></canvas>
+        <canvas id="lab3d-micro-canvas" width="280" height="125" style="width:100%;height:125px;background:#040814;border-radius:10px;border:1px solid rgba(56,189,248,0.35);display:block;"></canvas>
         <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
           <span style="font-size:0.72rem;color:var(--text-muted);">Độ phóng đại:</span>
           <input id="micro-zoom-rng" type="range" min="0.8" max="1.8" step="0.1" value="${zoom}" style="flex:1;accent-color:var(--accent-cyan);" />
@@ -7510,7 +7514,7 @@ window.CHEMVERSE.REACTIONS = [
       const canvas = document.getElementById('lab3d-micro-canvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const W = 340, H = 165;
+      const W = 280, H = 125;
       const parts = [];
       if (prof.mode === 'metal_lattice' || prof.mode === 'ionic_lattice' || prof.mode === 'molecular_solid') {
         const cols = 6, rows = 3;
@@ -7938,7 +7942,7 @@ window.CHEMVERSE.REACTIONS = [
       ];
 
       if (!q && this.activeRightTab === 'water') {
-        box.innerHTML = waterTools.map((t) => `<button class="btn btn-secondary lab3d-tool-btn" data-tid="${t.id}" style="justify-content:flex-start;font-size:0.86rem;padding:10px 12px;">${t.label}</button>`).join('');
+        box.innerHTML = waterTools.map((t) => `<button class="btn btn-secondary lab3d-tool-btn" data-tid="${t.id}" style="justify-content:flex-start;font-size:0.8rem;padding:8px 10px;">${t.label}</button>`).join('');
         box.querySelectorAll('.lab3d-tool-btn').forEach((b) => {
           b.addEventListener('click', () => waterTools.find((x) => x.id === b.getAttribute('data-tid')).fn());
         });
@@ -7951,13 +7955,13 @@ window.CHEMVERSE.REACTIONS = [
           const hex = '#' + c.color.toString(16).padStart(6, '0');
           return `<div class="lab-chem-btn lab3d-chem-card" data-cid="${c.id}" role="button" tabindex="0">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
-              <strong class="mono" style="font-size:0.92rem;color:var(--accent-cyan);">${c.formula}</strong>
-              <div style="display:flex;align-items:center;gap:5px;">
-                <button type="button" class="lab3d-micro-peek" data-cid="${c.id}" title="Soi chất này dưới kính hiển vi" style="border:1px solid rgba(56,189,248,0.4);background:rgba(56,189,248,0.15);color:#7DD3FC;border-radius:6px;padding:2px 6px;font-size:0.75rem;cursor:pointer;">🔬</button>
+              <strong class="mono" style="font-size:0.84rem;color:var(--accent-cyan);">${c.formula}</strong>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <button type="button" class="lab3d-micro-peek" data-cid="${c.id}" title="Soi chất này dưới kính hiển vi" style="border:1px solid rgba(56,189,248,0.4);background:rgba(56,189,248,0.15);color:#7DD3FC;border-radius:6px;padding:1px 5px;font-size:0.72rem;cursor:pointer;">🔬</button>
                 <span class="lab-swatch" style="background:${hex};"></span>
               </div>
             </div>
-            <div style="font-size:0.8rem;color:var(--text-secondary);">${c.name}</div>
+            <div style="font-size:0.74rem;color:var(--text-secondary);">${c.name}</div>
           </div>`;
         })
         .join('')}</div>`;
