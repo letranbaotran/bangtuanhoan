@@ -536,7 +536,6 @@
 
         <div style="display:flex;flex-direction:column;gap:8px;">
           <button class="btn btn-primary btn-sm" onclick="CHEMVERSE.openInSimulator(${el.number})">⚛️ Mô phỏng nguyên tử</button>
-          <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.addToComparison(${el.number})">⚖️ Thêm vào so sánh</button>
         </div>
       `;
       panel.classList.add('open');
