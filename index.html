@@ -88,8 +88,13 @@
         </a>
       </nav>
 
-      <!-- Right Utilities: Language Toggle, Theme Toggle, Quick Guide & Avatar -->
+      <!-- Right Utilities: Dual-Mode Quick Switcher, Language, Theme, Guide & Avatar -->
       <div class="nav-utilities">
+        <div class="dual-switcher" id="dual-mode-switcher" role="group" aria-label="Chuyển đổi phân hệ">
+          <button class="dual-sw-btn" data-branch="home" onclick="CHEMVERSE.navigate('home')" title="Màn hình điều hướng trung tâm">🏠</button>
+          <button class="dual-sw-btn active" data-branch="learn" onclick="CHEMVERSE.switchBranch('learn')" title="Nhánh 1: Học tập & Khám phá">🎓 Học tập</button>
+          <button class="dual-sw-btn" data-branch="research" onclick="CHEMVERSE.switchBranch('research')" title="Nhánh 2: Nghiên cứu chuyên sâu">🔬 Nghiên cứu</button>
+        </div>
         <button class="btn btn-sm btn-secondary" id="lang-toggle-btn" title="Chuyển ngôn ngữ Tiếng Việt / English" aria-label="Chuyển ngôn ngữ" style="padding:5px 10px;font-size:0.78rem;">🇻🇳 VI</button>
         <button class="icon-btn" id="theme-toggle-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển chế độ Sáng / Tối">🌙</button>
         <button class="icon-btn" id="quick-guide-btn" title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh" onclick="CHEMVERSE.navigate('about')">❔</button>

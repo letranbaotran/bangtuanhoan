@@ -368,6 +368,139 @@
     animate();
   }
 
+  CV.generateElementQRsvg = function (el) {
+    const size = 21;
+    const payload = `CHEMVERSE|Z=${el.number}|${el.symbol}|${el.nameVi}|M=${el.atomicMass}|${el.electronConfig}`;
+    let seed = 2166136261;
+    for (let i = 0; i < payload.length; i++) {
+      seed ^= payload.charCodeAt(i);
+      seed = Math.imul(seed, 16777619);
+    }
+    const isFinder = (r, c, fr, fc) => {
+      const dr = r - fr, dc = c - fc;
+      if (dr < 0 || dr > 6 || dc < 0 || dc > 6) return null;
+      if (dr === 0 || dr === 6 || dc === 0 || dc === 6) return true;
+      if (dr >= 2 && dr <= 4 && dc >= 2 && dc <= 4) return true;
+      return false;
+    };
+    let rects = '';
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        let on = false;
+        const f1 = isFinder(r, c, 0, 0);
+        const f2 = isFinder(r, c, 0, size - 7);
+        const f3 = isFinder(r, c, size - 7, 0);
+        if (f1 !== null) on = f1;
+        else if (f2 !== null) on = f2;
+        else if (f3 !== null) on = f3;
+        else if (r === 6 || c === 6) on = (r + c) % 2 === 0;
+        else {
+          const h = Math.imul(seed ^ (r * 31 + c * 17 + el.number * 7), 2654435761) >>> 0;
+          on = (h & 1) === 1;
+        }
+        if (on) rects += `<rect x="${c + 2}" y="${r + 2}" width="1" height="1" fill="#0F172A"/>`;
+      }
+    }
+    return `<svg id="modal-qr-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size + 4} ${size + 4}" width="112" height="112" style="background:#FFFFFF;border-radius:10px;padding:4px;flex-shrink:0;">${rects}</svg>`;
+  };
+
+  CV.downloadElementQR = function (symbol) {
+    const svg = document.getElementById('modal-qr-svg');
+    if (!svg) return;
+    const blob = new Blob([svg.outerHTML], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chemverse-qr-${symbol}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  CV.sendElementToLab = function (num) {
+    const el = CV.getElement(num);
+    if (!el) return;
+    const map = {
+      H: 'HCl', O: 'H2O2', N: 'HNO3', Cl: 'Cl2', I: 'KI', Mn: 'KMnO4',
+      Li: 'Li', Na: 'Na', K: 'K', Mg: 'Mg', Ca: 'Ca', Ba: 'Ba',
+      Al: 'Al', Zn: 'Zn', Fe: 'Fe', Pb: 'Pb', Cu: 'Cu', Ag: 'Ag',
+      C: 'C', S: 'S', P: 'P', Si: 'Si'
+    };
+    const chemId = map[el.symbol] || (CV.CHEMICALS && CV.CHEMICALS.find((c) => c.id === el.symbol) ? el.symbol : 'Na');
+    CV.state.pendingLabChem = { chemId, fromElement: el };
+    CV.closeElementModal();
+    CV.switchBranch('research');
+  };
+
+  CV.buildElementQuiz = function (el, idx = 0) {
+    const cat = CV.getCategory(el.category);
+    const others = CV.ELEMENTS.filter((x) => x.number !== el.number);
+    const pickWrong = (fn) => {
+      const vals = [];
+      for (let i = 1; vals.length < 3 && i < 40; i++) {
+        const candidate = fn(others[(el.number * 7 + i * 11) % others.length]);
+        if (candidate && !vals.includes(candidate)) vals.push(candidate);
+      }
+      return vals;
+    };
+    const pool = [
+      {
+        q: `Cấu hình electron của nguyên tố ${el.nameVi} (${el.symbol}, Z=${el.number}) là gì?`,
+        correct: el.electronConfig,
+        wrongs: pickWrong((x) => x.electronConfig),
+        exp: `${el.symbol} có Z = ${el.number} nên tổng số electron phân bố vào các phân lớp là ${el.electronConfig}.`
+      },
+      {
+        q: `Nguyên tố ${el.nameVi} (${el.symbol}) nằm ở vị trí nào trong Bảng tuần hoàn?`,
+        correct: `Chu kỳ ${el.period}, Nhóm ${CV.groupRoman(el.group)}`,
+        wrongs: pickWrong((x) => (x.period !== el.period || x.group !== el.group) ? `Chu kỳ ${x.period}, Nhóm ${CV.groupRoman(x.group)}` : null),
+        exp: `${el.symbol} có ${el.shells.length} lớp electron (Chu kỳ ${el.period}) và thuộc Nhóm ${CV.groupRoman(el.group)}.`
+      },
+      {
+        q: `Nguyên tố nào có số hiệu nguyên tử Z = ${el.number} và thuộc nhóm "${CV.catName(cat)}"?`,
+        correct: `${el.symbol} – ${el.nameVi}`,
+        wrongs: pickWrong((x) => `${x.symbol} – ${x.nameVi}`),
+        exp: `Z = ${el.number} là ${el.nameVi} (${el.symbol}), nguyên tử khối ${el.atomicMass} u.`
+      }
+    ];
+    const item = pool[idx % pool.length];
+    const opts = [item.correct, ...item.wrongs].sort(() => 0.5 - Math.random());
+    return { ...item, opts };
+  };
+
+  CV.renderModalQuiz = function (num, qIdx = 0) {
+    const el = CV.getElement(num);
+    const box = document.getElementById('modal-quiz-area');
+    if (!el || !box) return;
+    const quiz = CV.buildElementQuiz(el, qIdx);
+    box.innerHTML = `
+      <div style="font-weight:700;margin-bottom:10px;color:var(--accent-cyan);">Câu ${qIdx + 1}: ${quiz.q}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="modal-quiz-opts">
+        ${quiz.opts.map((opt) => `<button class="btn btn-secondary btn-sm" style="justify-content:flex-start;text-align:left;padding:10px 12px;" data-opt="${opt.replace(/"/g, '&quot;')}">${opt}</button>`).join('')}
+      </div>
+      <div id="modal-quiz-fb" style="display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:0.82rem;"></div>
+    `;
+    box.querySelectorAll('#modal-quiz-opts button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const chosen = btn.getAttribute('data-opt');
+        const isOk = chosen === quiz.correct;
+        box.querySelectorAll('#modal-quiz-opts button').forEach((b) => {
+          b.disabled = true;
+          if (b.getAttribute('data-opt') === quiz.correct) b.className = 'btn btn-sm btn-primary';
+        });
+        if (isOk && CV.Player) CV.Player.recordEvent('quiz', `el-${el.number}-${qIdx}`, 15);
+        const fb = document.getElementById('modal-quiz-fb');
+        fb.style.display = 'block';
+        fb.style.background = isOk ? 'rgba(16,185,129,0.16)' : 'rgba(239,68,68,0.16)';
+        fb.style.border = `1px solid ${isOk ? '#10B981' : '#EF4444'}`;
+        fb.innerHTML = `
+          <div style="font-weight:700;margin-bottom:4px;">${isOk ? '✅ Chính xác! (+15 XP)' : '❌ Chưa đúng rồi!'}</div>
+          <div style="color:var(--text-secondary);margin-bottom:8px;">${quiz.exp}</div>
+          <button class="btn btn-sm btn-primary" onclick="CHEMVERSE.renderModalQuiz(${el.number}, ${qIdx + 1})">Câu tiếp theo →</button>
+        `;
+      });
+    });
+  };
+
   CV.openElementModal = function (num) {
     const el = CV.getElement(num);
     if (!el) return;
@@ -375,10 +508,11 @@
     const cat = CV.getCategory(el.category);
     const backdrop = document.getElementById('element-modal-backdrop');
     const body = document.getElementById('element-modal-body');
+    const shellNames = ['K', 'L', 'M', 'N', 'O', 'P', 'Q'];
 
     body.innerHTML = `
       <div class="el-modal-2col">
-        <!-- Left Column: Summary Gradient Card + 3D Pedestal Atom -->
+        <!-- Left Column: Summary Gradient Card + 3D Pedestal Atom + Inter-branch Action -->
         <div class="el-modal-left">
           <div class="el-summary-card" style="background:linear-gradient(145deg, ${cat.glow}, rgba(11, 16, 38, 0.88));border-color:${cat.color};">
             <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -402,16 +536,17 @@
           </div>
 
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <button class="btn btn-primary btn-sm" onclick="CHEMVERSE.openInSimulator(${el.number})">⚛️ Mở rộng trong Atom Simulator</button>
-            <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.openInUniverse(${el.number})">🌌 Xem trong Universe 3D</button>
+            <button class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="CHEMVERSE.sendElementToLab(${el.number})">🔬 Đưa vào Phòng Lab 3D →</button>
+            <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.openInSimulator(${el.number})">⚛️ Mở Orbital 3D 360°</button>
+            <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.openInUniverse(${el.number})">🌌 Xem trong Vũ trụ 3D</button>
           </div>
         </div>
 
-        <!-- Right Column: Detailed Properties -->
+        <!-- Right Column: 3 Core Learning Tabs -->
         <div class="el-modal-right">
           <div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <h2 id="modal-el-title" style="font-size:1.65rem;">${CV.elName(el)} (${CV.state.lang === 'en' ? el.nameVi : el.name})</h2>
+              <h2 id="modal-el-title" style="font-size:1.55rem;">${CV.elName(el)} (${CV.state.lang === 'en' ? el.nameVi : el.name})</h2>
               ${el.predicted ? `<span class="predicted-badge">⚠ ${CV.t('Giá trị dự đoán', 'Predicted Value')}</span>` : ''}
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;">
@@ -420,34 +555,81 @@
             </div>
           </div>
 
-          <div class="el-specs-list glass-surface">
-            <div class="el-spec-row"><span>⚖️ ${CV.t('Nguyên tử khối', 'Atomic Mass')}</span><strong class="mono">${el.atomicMass} u</strong></div>
-            <div class="el-spec-row"><span>📍 ${CV.t('Nhóm & Chu kỳ', 'Group & Period')}</span><strong class="mono">${CV.t('Nhóm', 'Group')} ${CV.groupRoman(el.group)} • ${CV.t('Chu kỳ', 'Period')} ${el.period}</strong></div>
-            <div class="el-spec-row"><span>🌀 ${CV.t('Cấu hình electron', 'Electron Config')}</span><strong class="mono" style="color:var(--accent-cyan);">${el.electronConfig}</strong></div>
-            <div class="el-spec-row"><span>🛰️ ${CV.t('Số e mỗi lớp', 'Electrons per Shell')}</span><strong class="mono">[${el.shells.join(', ')}]</strong></div>
-            <div class="el-spec-row"><span>🔗 ${CV.t('Hóa trị / Oxi hóa phổ biến', 'Common Oxidation States')}</span><strong class="mono">${CV.commonValence(el)}</strong></div>
+          <!-- 3 Core Tabs -->
+          <div class="el-modal-tabs" id="modal-core-tabs">
+            <button class="el-tab-btn active" data-mtab="info">📄 Thông tin & QR</button>
+            <button class="el-tab-btn" data-mtab="electron">⚛️ 3D & Electron</button>
+            <button class="el-tab-btn" data-mtab="quiz">🎯 Quiz củng cố</button>
           </div>
 
-          <div class="el-props-2col">
-            <div class="glass-surface" style="padding:12px;border-radius:12px;font-size:0.84rem;">
-              <div style="font-weight:700;color:var(--accent-cyan);margin-bottom:6px;">🧊 Tính chất vật lý</div>
-              <div>Trạng thái (298K): <strong>${CV.phaseIcon(el.phase)} ${CV.phaseVi(el.phase)}</strong></div>
-              <div>Nóng chảy: <span class="mono">${CV.formatTemp(el.melt)}</span></div>
+          <!-- Tab 1: Detailed Info & QR -->
+          <div id="mtab-info" class="el-mtab-pane">
+            <div class="el-specs-list glass-surface" style="margin-bottom:10px;">
+              <div class="el-spec-row"><span>⚖️ Nguyên tử khối</span><strong class="mono">${el.atomicMass} u</strong></div>
+              <div class="el-spec-row"><span>📍 Nhóm & Chu kỳ</span><strong class="mono">Nhóm ${CV.groupRoman(el.group)} • Chu kỳ ${el.period}</strong></div>
+              <div class="el-spec-row"><span>🌀 Cấu hình electron</span><strong class="mono" style="color:var(--accent-cyan);">${el.electronConfig}</strong></div>
+              <div class="el-spec-row"><span>🔗 Hóa trị / Oxi hóa</span><strong class="mono">${CV.commonValence(el)}</strong></div>
+              <div class="el-spec-row"><span>⚡ Độ âm điện / Ion hóa I₁</span><strong class="mono">${el.electronegativity ?? '—'} • ${el.ionizationEnergy ?? '—'} kJ/mol</strong></div>
+              <div class="el-spec-row"><span>🧊 Trạng thái / Nóng chảy / Sôi</span><strong class="mono">${CV.phaseIcon(el.phase)} ${CV.phaseVi(el.phase)} • ${CV.formatTemp(el.melt)} / ${CV.formatTemp(el.boil)}</strong></div>
+              <div class="el-spec-row"><span>🏛️ Lịch sử phát hiện</span><strong>${el.discoveredBy || 'Cổ đại'} (${el.discoveryYear || '—'})</strong></div>
             </div>
-            <div class="glass-surface" style="padding:12px;border-radius:12px;font-size:0.84rem;">
-              <div style="font-weight:700;color:var(--accent-purple);margin-bottom:6px;">⚗️ Tính chất hóa học</div>
-              <div>Độ âm điện: <span class="mono">${el.electronegativity ?? '—'}</span></div>
-              <div>Ion hóa I₁: <span class="mono">${el.ionizationEnergy ?? '—'} kJ/mol</span></div>
+
+            <div class="glass-surface" style="padding:12px;border-radius:12px;font-size:0.82rem;margin-bottom:10px;">
+              <div style="font-weight:700;margin-bottom:4px;">🏭 Tính chất & Ứng dụng thực tiễn</div>
+              <div style="color:var(--text-secondary);margin-bottom:6px;">${el.summary}</div>
+              <ul style="padding-left:18px;color:var(--text-secondary);margin:0;">
+                ${(el.applications || []).map((a) => `<li>${a}</li>`).join('')}
+              </ul>
+            </div>
+
+            <div class="glass-surface" style="padding:12px;border-radius:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+              ${CV.generateElementQRsvg(el)}
+              <div style="flex:1;min-width:170px;">
+                <div style="font-weight:700;font-size:0.86rem;margin-bottom:4px;">📱 Mã QR Thẻ Nguyên Tố (${el.symbol})</div>
+                <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;">Quét nhanh hoặc tải thẻ QR để chia sẻ thông số ${el.nameVi} (Z=${el.number}) trong lớp học.</div>
+                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.downloadElementQR('${el.symbol}')">⬇️ Tải thẻ QR (.svg)</button>
+              </div>
             </div>
           </div>
 
-          <div class="glass-surface" style="padding:12px 14px;border-radius:12px;font-size:0.84rem;">
-            <div style="font-weight:700;margin-bottom:8px;">📦 Sơ đồ Ô Orbital (Aufbau • Pauli • Hund)</div>
-            ${CV.renderOrbitalBoxesHTML(el, { showSummary: true })}
+          <!-- Tab 2: 3D & Electron Distribution -->
+          <div id="mtab-electron" class="el-mtab-pane" style="display:none;">
+            <div class="glass-surface" style="padding:12px 14px;border-radius:12px;font-size:0.84rem;margin-bottom:10px;">
+              <div style="font-weight:700;margin-bottom:8px;">🛰️ Phân bố Electron theo lớp (K, L, M, N...)</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+                ${el.shells.map((cnt, idx) => `
+                  <div class="glass-surface" style="padding:8px 12px;border-radius:10px;text-align:center;border:1px solid ${idx === el.shells.length - 1 ? '#FBBF24' : 'rgba(255,255,255,0.12)'};">
+                    <div style="font-size:0.7rem;color:var(--text-muted);">Lớp ${shellNames[idx] || idx + 1}</div>
+                    <strong class="mono" style="font-size:1.05rem;color:${idx === el.shells.length - 1 ? '#FBBF24' : 'var(--accent-cyan)'};">${cnt} e</strong>
+                  </div>`).join('')}
+              </div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">* Mô hình 3D bên trái hiển thị hạt nhân (${el.protons}p, ${el.neutrons}n) cùng các lớp vỏ electron chuyển động thời gian thực.</div>
+            </div>
+
+            <div class="glass-surface" style="padding:12px 14px;border-radius:12px;font-size:0.84rem;margin-bottom:10px;">
+              <div style="font-weight:700;margin-bottom:8px;">📦 Sơ đồ Ô Lượng Tử (Orbital s, p, d, f)</div>
+              ${CV.renderOrbitalBoxesHTML(el, { showSummary: true })}
+            </div>
+
+            <button class="btn btn-primary btn-sm" style="width:100%;" onclick="CHEMVERSE.openInSimulator(${el.number})">🌀 Mở Đám mây Xác suất Electron 3D (Xoay 360°) →</button>
+          </div>
+
+          <!-- Tab 3: Inline Element Quiz -->
+          <div id="mtab-quiz" class="el-mtab-pane" style="display:none;">
+            <div class="glass-surface" style="padding:14px;border-radius:12px;" id="modal-quiz-area"></div>
           </div>
         </div>
       </div>
     `;
+
+    body.querySelectorAll('#modal-core-tabs .el-tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-mtab');
+        body.querySelectorAll('#modal-core-tabs .el-tab-btn').forEach((b) => b.classList.toggle('active', b === btn));
+        body.querySelectorAll('.el-mtab-pane').forEach((p) => { p.style.display = p.id === `mtab-${target}` ? 'block' : 'none'; });
+      });
+    });
+    CV.renderModalQuiz(el.number, 0);
 
     backdrop.classList.add('open');
     backdrop.setAttribute('aria-hidden', 'false');
@@ -468,6 +650,29 @@
 
   CV.modules = {};
 
+  CV.switchBranch = function (branch) {
+    CV.state.activeBranch = branch;
+    if (branch === 'research') {
+      CV.navigate('virtual-lab');
+    } else if (branch === 'learn') {
+      CV.navigate('periodic-table');
+    } else {
+      CV.navigate('home');
+    }
+  };
+
+  CV.updateBranchSwitcher = function (route) {
+    const sw = document.getElementById('dual-mode-switcher');
+    if (!sw) return;
+    let active = 'home';
+    if (route === 'virtual-lab') active = 'research';
+    else if (['periodic-table', 'universe', 'simulator', 'chemquest'].includes(route)) active = 'learn';
+    CV.state.activeBranch = active;
+    sw.querySelectorAll('.dual-sw-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-branch') === active);
+    });
+  };
+
   CV.navigate = function (route) {
     if (!CV.routes.includes(route)) route = 'home';
     CV.state.currentRoute = route;
@@ -482,6 +687,7 @@
     document.querySelectorAll('[data-route]').forEach((el) => {
       el.classList.toggle('active', el.getAttribute('data-route') === route);
     });
+    CV.updateBranchSwitcher(route);
 
     if (!CV.state.viewsInitialized[route] && CV.modules[route] && CV.modules[route].init) {
       CV.modules[route].init(targetView);

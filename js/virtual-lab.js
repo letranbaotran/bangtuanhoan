@@ -210,7 +210,8 @@
           silverMirror: false, bloodRed: false, deepBlueCu: false, limeSlaking: false, metalDisplacement: false
         },
         logs: [],
-        lastReaction: null
+        lastReaction: null,
+        level: 'basic' // 'basic' | 'advanced' | 'sandbox'
       };
 
       container.innerHTML = `
@@ -242,6 +243,13 @@
             <div id="lab3d-chips" style="display:flex;gap:4px;overflow-x:auto;padding-top:6px;margin-top:6px;border-top:1px solid rgba(255,255,255,0.08);font-size:0.72rem;" class="mono">
               <span class="cat-badge" style="color:#38BDF8;padding:1px 6px;">H₂O</span>
             </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;" id="lab3d-level-bar">
+              <span style="font-size:0.68rem;color:var(--text-muted);font-weight:700;">CẤP ĐỘ:</span>
+              <button class="btn btn-sm btn-primary lab3d-lvl-btn" data-lvl="basic" style="padding:2px 8px;font-size:0.7rem;">🟢 Cơ bản</button>
+              <button class="btn btn-sm btn-secondary lab3d-lvl-btn" data-lvl="advanced" style="padding:2px 8px;font-size:0.7rem;">🟡 Nâng cao</button>
+              <button class="btn btn-sm btn-secondary lab3d-lvl-btn" data-lvl="sandbox" style="padding:2px 8px;font-size:0.7rem;">🟣 Tự do</button>
+            </div>
+            <div id="lab3d-level-hint" style="font-size:0.72rem;color:#93C5FD;margin-top:4px;">🟢 Cơ bản (THCS): Chọn thí nghiệm mẫu ở 📖 hoặc thêm chất an toàn từng bước.</div>
           </div>
 
           <!-- Left Vertical Tool Strip -->
@@ -294,6 +302,21 @@
       this.renderGuide();
       this.renderInspector();
       this.startLoop();
+      this.consumePendingLabChem();
+    },
+
+    consumePendingLabChem() {
+      const pending = CV.state.pendingLabChem;
+      if (!pending) return;
+      CV.state.pendingLabChem = null;
+      const { chemId, fromElement } = pending;
+      setTimeout(() => {
+        this.addChemical(chemId);
+        const mini = document.getElementById('lab3d-eq-mini');
+        if (mini && fromElement) {
+          mini.textContent = `🔗 Đã nạp ${fromElement.symbol} (${chemId}) từ Nhánh Học tập`;
+        }
+      }, 250);
     },
 
     onShow() {
@@ -306,6 +329,7 @@
           this.renderer.setSize(w, h);
         }
       }
+      this.consumePendingLabChem();
     },
 
     initThreeScene() {
@@ -1131,16 +1155,33 @@
       }).join('');
     },
 
-    renderGuide() {
+    renderGuide(topic = 'all') {
       const box = document.getElementById('lab3d-guide-drawer');
-      box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <strong>📖 Cẩm Nang 17 Phản Ứng Đặc Sắc</strong>
+      const getTopic = (r) => {
+        if (r.heat || r.title.includes('Đốt') || r.title.includes('Cháy')) return 'flame';
+        if (r.chems.some((c) => ['HCl', 'H2SO4', 'NaOH', 'Phenolphtalein', 'Quỳ tím'].includes(c)) && !r.chems.some((c) => ['Zn', 'Fe', 'Al', 'Mg'].includes(c))) return 'acid';
+        if (r.chems.some((c) => ['Fe', 'Zn', 'Cu', 'Al', 'AgNO3', 'CuSO4'].includes(c))) return 'electro';
+        return 'inorganic';
+      };
+      const filtered = REACTION_RECIPES_GUIDE.map((r, i) => ({ r, i, topic: getTopic(r) }))
+        .filter((item) => topic === 'all' || item.topic === topic);
+
+      box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong>📖 Chuyên Đề Thí Nghiệm (${filtered.length})</strong>
         <button class="icon-btn" onclick="document.getElementById('lab3d-guide-drawer').style.display='none'">✕</button>
-      </div>` + REACTION_RECIPES_GUIDE.map((r, i) => `
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;" id="lab3d-topic-tabs">
+        ${[['all', 'Tất cả'], ['inorganic', 'Vô cơ'], ['acid', 'Axit-Bazơ'], ['electro', 'Điện hóa'], ['flame', 'Ngọn lửa']].map(([k, lbl]) =>
+          `<button class="btn btn-sm ${topic === k ? 'btn-primary' : 'btn-secondary'} lab3d-topic-btn" data-topic="${k}" style="padding:3px 7px;font-size:0.7rem;">${lbl}</button>`
+        ).join('')}
+      </div>` + filtered.map(({ r, i }) => `
         <button class="lab-chem-btn lab3d-recipe-btn" data-ridx="${i}" style="width:100%;margin-bottom:6px;">
           <strong style="color:#C084FC;font-size:0.82rem;">${r.title}</strong>
           <span class="mono" style="font-size:0.74rem;color:var(--text-secondary);">${r.eq}</span>
         </button>`).join('');
+      box.querySelectorAll('.lab3d-topic-btn').forEach((b) => {
+        b.addEventListener('click', () => this.renderGuide(b.getAttribute('data-topic')));
+      });
       box.querySelectorAll('.lab3d-recipe-btn').forEach((b) => {
         b.addEventListener('click', () => {
           const rec = REACTION_RECIPES_GUIDE[Number(b.getAttribute('data-ridx'))];
@@ -1161,20 +1202,65 @@
       if (!box) return;
       const eq = ls.lastReaction ? ls.lastReaction.eq : 'Chưa có phản ứng hóa học mới';
       const bal = ls.lastReaction && ls.lastReaction.balanceCheck ? (ls.lastReaction.balanceCheck.balanced ? `✓ Đã kiểm chứng cân bằng (${ls.lastReaction.balanceCheck.summary})` : '') : '';
+      const molCalc = ls.level === 'advanced'
+        ? `<div class="glass-surface" style="padding:8px 10px;border-radius:10px;margin-bottom:8px;font-size:0.76rem;border-color:rgba(251,191,36,0.35);">
+             <strong style="color:#FBBF24;">🟡 Phân tích Nâng cao (THPT):</strong>
+             <div class="mono" style="margin-top:3px;">V = ${ls.volumeMl} mL • n(H⁺/OH⁻) ≈ ${((ls.volumeMl / 1000) * 0.5).toFixed(3)} mol • Hiệu suất ước tính: ${ls.lastReaction ? '94.5%' : '—'}</div>
+           </div>` : '';
       box.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <strong>📊 Phân Tích & Thang pH</strong>
+          <strong>📊 Phân Tích & Đồ Thị Thời Gian Thực</strong>
           <button class="icon-btn" onclick="document.getElementById('lab3d-insp-drawer').style.display='none'">✕</button>
         </div>
-        <div class="glass-surface" style="padding:10px;border-radius:10px;margin-bottom:10px;">
+        ${molCalc}
+        <div class="glass-surface" style="padding:10px;border-radius:10px;margin-bottom:8px;">
           <div style="font-size:0.72rem;color:var(--text-muted);">Phương trình cân bằng</div>
           <div class="mono" style="color:#FBBF24;font-size:0.82rem;margin-top:4px;">${eq}</div>
           ${bal ? `<div class="mono" style="color:#34D399;font-size:0.72rem;margin-top:4px;">${bal}</div>` : ''}
         </div>
-        <div style="font-size:0.78rem;margin-bottom:8px;">pH hiện tại: <strong class="mono">${ls.ph.toFixed(2)}</strong></div>
-        <div style="font-size:0.74rem;color:var(--text-muted);margin-bottom:4px;">Nhật ký gần đây:</div>
-        ${ls.logs.slice(0, 6).map((l) => `<div style="font-size:0.74rem;color:var(--text-secondary);">• [${l.t}] ${l.text}</div>`).join('')}
+        <div class="glass-surface" style="padding:8px;border-radius:10px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:4px;">
+            <span style="color:#38BDF8;">● Nhiệt độ (${ls.temperature.toFixed(1)}°C)</span>
+            <span style="color:#34D399;">● pH (${ls.ph.toFixed(2)})</span>
+          </div>
+          <canvas id="lab3d-chart" width="280" height="92" style="width:100%;height:92px;display:block;"></canvas>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-size:0.74rem;color:var(--text-muted);">Nhật ký gần đây:</span>
+          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('lab3d-act-export').click()" style="padding:3px 8px;font-size:0.72rem;">📄 Xuất báo cáo</button>
+        </div>
+        ${ls.logs.slice(0, 5).map((l) => `<div style="font-size:0.74rem;color:var(--text-secondary);">• [${l.t}] ${l.text}</div>`).join('')}
       `;
+      this.drawTelemetryChart();
+    },
+
+    drawTelemetryChart() {
+      const canvas = document.getElementById('lab3d-chart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i < 4; i++) {
+        ctx.beginPath(); ctx.moveTo(0, (h / 4) * i); ctx.lineTo(w, (h / 4) * i); ctx.stroke();
+      }
+      const drawSeries = (arr, minV, maxV, color) => {
+        if (!arr || arr.length < 2) return;
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        arr.forEach((v, idx) => {
+          const x = (idx / (arr.length - 1)) * (w - 8) + 4;
+          const norm = Math.max(0, Math.min(1, (v - minV) / (maxV - minV)));
+          const y = h - 8 - norm * (h - 16);
+          if (idx === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      };
+      drawSeries(this.labState.tempHistory, 0, 120, '#38BDF8');
+      drawSeries(this.labState.phHistory, 0, 14, '#34D399');
     },
 
     setCameraView(key) {
@@ -1184,6 +1270,24 @@
     },
 
     bindUI() {
+      document.querySelectorAll('.lab3d-lvl-btn').forEach((b) => {
+        b.addEventListener('click', () => {
+          const lvl = b.getAttribute('data-lvl');
+          this.labState.level = lvl;
+          document.querySelectorAll('.lab3d-lvl-btn').forEach((x) => {
+            x.className = `btn btn-sm ${x === b ? 'btn-primary' : 'btn-secondary'} lab3d-lvl-btn`;
+          });
+          const hints = {
+            basic: '🟢 Cơ bản (THCS): Chọn thí nghiệm mẫu ở 📖 hoặc thêm chất an toàn từng bước.',
+            advanced: '🟡 Nâng cao (THPT): Bật 📊 để theo dõi tính toán mol, hiệu suất & đồ thị pH/Nhiệt.',
+            sandbox: `🟣 Tự do (Sandbox): Mở khóa toàn bộ ${LAB_CHEMICALS.length} hóa chất để tự thiết kế chuỗi phản ứng.`
+          };
+          const hintEl = document.getElementById('lab3d-level-hint');
+          if (hintEl) hintEl.textContent = hints[lvl] || '';
+          this.renderInspector();
+        });
+      });
+
       document.getElementById('lab3d-search').addEventListener('input', () => this.renderRightList());
       document.querySelectorAll('#lab3d-tabs .lab-tab-btn').forEach((b) => {
         b.addEventListener('click', () => {
