@@ -141,6 +141,28 @@
                 <button class="btn btn-secondary" style="flex:1;" onclick="CHEMVERSE.modules.chemquest.startQuiz('advanced')">Nâng cao</button>
               </div>
             </article>
+
+            <article class="quest-mode-card glass-surface">
+              <div>
+                <div style="font-size:2rem;margin-bottom:8px;">⚖️</div>
+                <h3>4. Cân Bằng Phương Trình Siêu Tốc</h3>
+                <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:6px;">
+                  Điền hệ số cân bằng đúng cho các phương trình Hóa học quen thuộc trong sách giáo khoa (Fe + O₂, Al + HCl...).
+                </p>
+              </div>
+              <button class="btn btn-primary" onclick="CHEMVERSE.modules.chemquest.startBalancer()">Thử thách Cân bằng</button>
+            </article>
+
+            <article class="quest-mode-card glass-surface">
+              <div>
+                <div style="font-size:2rem;margin-bottom:8px;">🃏</div>
+                <h3>5. Lật Thẻ Ghép Đôi Nguyên Tố</h3>
+                <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:6px;">
+                  Trò chơi trí nhớ lật thẻ 4×3: ghép đúng ký hiệu hóa học với tên gọi và ứng dụng đời sống quen thuộc!
+                </p>
+              </div>
+              <button class="btn btn-primary" onclick="CHEMVERSE.modules.chemquest.startMemory()">Chơi Lật Thẻ</button>
+            </article>
           </div>
         </div>
       `;
@@ -371,6 +393,183 @@
             st.quizIndex++;
             this.renderQuiz();
           });
+        });
+      });
+    },
+
+    // --- MODE 4: EQUATION BALANCER ---
+    startBalancer() {
+      const EQ_LIST = [
+        { parts: ['Fe', '+', 'O₂', '→', 'Fe₃O₄'], ans: [3, 2, 1] },
+        { parts: ['Al', '+', 'HCl', '→', 'AlCl₃', '+', 'H₂'], ans: [2, 6, 2, 3] },
+        { parts: ['Na', '+', 'H₂O', '→', 'NaOH', '+', 'H₂'], ans: [2, 2, 2, 1] },
+        { parts: ['Fe₂O₃', '+', 'CO', '→', 'Fe', '+', 'CO₂'], ans: [1, 3, 2, 3] },
+        { parts: ['Cu', '+', 'HNO₃', '→', 'Cu(NO₃)₂', '+', 'NO₂', '+', 'H₂O'], ans: [1, 4, 1, 2, 2] },
+        { parts: ['KClO₃', '→', 'KCl', '+', 'O₂'], ans: [2, 2, 3] }
+      ];
+      this.state.mode = 'balancer';
+      this.state.score = 0;
+      this.state.streak = 0;
+      this.state.balList = EQ_LIST;
+      this.state.balIdx = 0;
+      this.loadBalancerRound();
+    },
+
+    loadBalancerRound() {
+      const item = this.state.balList[this.state.balIdx];
+      this.state.balInputs = item.ans.map(() => 1);
+      this.renderBalancer();
+    },
+
+    renderBalancer() {
+      const st = this.state;
+      const item = st.balList[st.balIdx];
+      let slotIdx = 0;
+      const eqHtml = item.parts
+        .map((p) => {
+          if (p === '+' || p === '→') return `<span style="font-size:1.3rem;margin:0 6px;color:var(--accent-cyan);">${p}</span>`;
+          const curIdx = slotIdx++;
+          return `
+            <span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.06);padding:4px 8px;border-radius:10px;border:1px solid var(--glass-border);">
+              <input type="number" min="1" max="12" value="${st.balInputs[curIdx]}" data-bidx="${curIdx}" class="input-field mono cq-bal-inp" style="width:46px;padding:4px;text-align:center;font-weight:700;color:#FBBF24;" />
+              <strong class="mono" style="font-size:1.1rem;">${p}</strong>
+            </span>`;
+        })
+        .join('');
+
+      this.container.innerHTML = `
+        <div class="page-container">
+          <div class="quest-arena glass-surface">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.renderHub()">← Quay lại Hub</button>
+              <div class="mono">Phương trình ${st.balIdx + 1}/${st.balList.length} • Điểm: <strong style="color:#FBBF24;">${st.score}</strong> • 🔥 ${st.streak}</div>
+            </div>
+            <h2>⚖️ Cân Bằng Phương Trình Siêu Tốc</h2>
+            <p style="color:var(--text-muted);font-size:0.88rem;margin:6px 0 18px;">Nhập hệ số nguyên tối giản thích hợp vào từng ô trống để cân bằng số nguyên tử hai vế.</p>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:20px;border-radius:14px;background:rgba(0,0,0,0.28);margin-bottom:18px;">
+              ${eqHtml}
+            </div>
+            <button class="btn btn-primary" id="cq-bal-check">✓ Kiểm tra cân bằng</button>
+            <div id="cq-bal-fb" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      `;
+
+      document.querySelectorAll('.cq-bal-inp').forEach((inp) => {
+        inp.addEventListener('input', (e) => {
+          st.balInputs[Number(inp.getAttribute('data-bidx'))] = Math.max(1, Number(e.target.value) || 1);
+        });
+      });
+
+      document.getElementById('cq-bal-check').addEventListener('click', () => {
+        const ok = item.ans.every((v, i) => st.balInputs[i] === v);
+        const fb = document.getElementById('cq-bal-fb');
+        if (ok) {
+          st.score += 150 + st.streak * 25;
+          st.streak += 1;
+          this.saveHighScore();
+          fb.innerHTML = `<div style="color:#34D399;font-weight:700;">✅ Chính xác tuyệt đối! +${150 + (st.streak - 1) * 25} điểm.</div>`;
+          setTimeout(() => {
+            if (st.balIdx + 1 < st.balList.length) { st.balIdx++; this.loadBalancerRound(); }
+            else this.renderSummary('Cân bằng phương trình siêu tốc');
+          }, 1100);
+        } else {
+          st.streak = 0;
+          fb.innerHTML = `<div style="color:#F87171;">❌ Hai vế chưa cân bằng (hoặc chưa tối giản). Hãy kiểm tra lại số nguyên tử mỗi nguyên tố!</div>`;
+        }
+      });
+    },
+
+    // --- MODE 5: MEMORY FLIP CARDS ---
+    startMemory() {
+      const PAIRS = [
+        { key: 'Fe', a: 'Fe (Z=26)', b: 'Sắt • Tạo hồng cầu máu' },
+        { key: 'Na', a: 'Na (Z=11)', b: 'Natri • Thành phần muối ăn' },
+        { key: 'Cu', a: 'Cu (Z=29)', b: 'Đồng • Lõi dây dẫn điện' },
+        { key: 'Au', a: 'Au (Z=79)', b: 'Vàng • Kim loại quý màu vàng' },
+        { key: 'Cl', a: 'Cl (Z=17)', b: 'Clo • Khử trùng nước sạch' },
+        { key: 'Ca', a: 'Ca (Z=20)', b: 'Canxi • Cấu tạo xương & răng' }
+      ];
+      const deck = [];
+      PAIRS.forEach((p) => {
+        deck.push({ key: p.key, text: p.a, flipped: false, matched: false });
+        deck.push({ key: p.key, text: p.b, flipped: false, matched: false });
+      });
+      deck.sort(() => Math.random() - 0.5);
+      this.state.mode = 'memory';
+      this.state.score = 0;
+      this.state.memDeck = deck;
+      this.state.memFirst = null;
+      this.state.memMoves = 0;
+      this.state.memLock = false;
+      this.renderMemory();
+    },
+
+    renderMemory() {
+      const st = this.state;
+      const matchedPairs = st.memDeck.filter((c) => c.matched).length / 2;
+      this.container.innerHTML = `
+        <div class="page-container">
+          <div class="quest-arena glass-surface">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.renderHub()">← Quay lại Hub</button>
+              <div class="mono">Đã ghép: <strong>${matchedPairs}/6</strong> • Số lượt lật: <strong>${st.memMoves}</strong></div>
+            </div>
+            <h2>🃏 Lật Thẻ Ghép Đôi Nguyên Tố</h2>
+            <p style="color:var(--text-muted);font-size:0.86rem;margin:4px 0 16px;">Lật 2 thẻ bất kỳ để ghép đúng Ký hiệu hóa học với Tên & Ứng dụng quen thuộc.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+              ${st.memDeck
+                .map((card, idx) => {
+                  const open = card.flipped || card.matched;
+                  return `
+                  <button class="glass-surface cq-mem-card" data-midx="${idx}" ${card.matched ? 'disabled' : ''} style="min-height:84px;padding:10px;border-radius:12px;cursor:${card.matched ? 'default' : 'pointer'};border-color:${
+                    card.matched ? '#10B981' : open ? '#00E5FF' : 'var(--glass-border)'
+                  };background:${card.matched ? 'rgba(16,185,129,0.18)' : open ? 'rgba(0,229,255,0.12)' : 'rgba(15,23,42,0.75)'};font-weight:700;font-size:0.86rem;">
+                    ${open ? card.text : '✦ CHEMVERSE'}
+                  </button>`;
+                })
+                .join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.querySelectorAll('.cq-mem-card').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (st.memLock) return;
+          const idx = Number(btn.getAttribute('data-midx'));
+          const card = st.memDeck[idx];
+          if (card.flipped || card.matched) return;
+          card.flipped = true;
+
+          if (st.memFirst === null) {
+            st.memFirst = idx;
+            this.renderMemory();
+          } else {
+            st.memMoves++;
+            const firstCard = st.memDeck[st.memFirst];
+            if (firstCard.key === card.key) {
+              firstCard.matched = true;
+              card.matched = true;
+              st.score += 120;
+              st.memFirst = null;
+              this.renderMemory();
+              if (st.memDeck.every((c) => c.matched)) {
+                st.score = Math.max(200, st.score - st.memMoves * 10);
+                setTimeout(() => this.renderSummary('Lật thẻ ghép đôi nguyên tố'), 700);
+              }
+            } else {
+              st.memLock = true;
+              this.renderMemory();
+              setTimeout(() => {
+                firstCard.flipped = false;
+                card.flipped = false;
+                st.memFirst = null;
+                st.memLock = false;
+                this.renderMemory();
+              }, 750);
+            }
+          }
         });
       });
     },
