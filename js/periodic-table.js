@@ -123,9 +123,6 @@
                 <div class="heatmap-gradient"></div>
                 <span class="mono" id="pt-hm-max">Max</span>
               </div>
-              <div style="display:flex;gap:12px;margin-top:10px;font-size:0.78rem;color:var(--text-secondary);">
-                <span>🧊 Rắn</span><span>💧 Lỏng</span><span>💨 Khí</span><span>❓ Dự đoán</span>
-              </div>
             </div>
           </div>
 
