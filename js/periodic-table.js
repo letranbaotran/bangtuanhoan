@@ -41,6 +41,14 @@
                 ${isLight ? CV.t('🌙 Chế độ Vũ trụ (Tối)', '🌙 Dark Space Mode') : CV.t('☀️ Chế độ Sáng (Lớp học)', '☀️ Light Glass Mode')}
               </button>
               <button class="btn btn-secondary btn-sm" id="pt-toggle-anatomy">${CV.t('🧩 Ẩn/Hiện Ô mẫu', '🧩 Toggle Anatomy Card')}</button>
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('tutor')" title="Mở Trợ lý AI Hóa học">🤖 Hỏi AI</button>
+              <select id="pt-batch-qr-sel" class="select-field" style="padding:4px 8px;font-size:0.78rem;">
+                <option value="top20">📦 Gói QR: 20 nguyên tố đầu</option>
+                <option value="alkali">📦 Gói QR: Kim loại kiềm (IA)</option>
+                <option value="halogen">📦 Gói QR: Halogen (VIIA)</option>
+                <option value="noble">📦 Gói QR: Khí hiếm (VIIIA)</option>
+              </select>
+              <button class="btn btn-primary btn-sm" id="pt-batch-qr-btn">🖨️ Xuất gói QR A4</button>
             </div>
           </div>
 
@@ -320,6 +328,35 @@
         if (!this.three3D) this.init3DTable();
         else this.resize3DTable();
       });
+
+      const batchQrBtn = document.getElementById('pt-batch-qr-btn');
+      if (batchQrBtn) {
+        batchQrBtn.addEventListener('click', () => {
+          const grp = document.getElementById('pt-batch-qr-sel').value;
+          const list = CV.ELEMENTS.filter((e) => {
+            if (grp === 'top20') return e.number <= 20;
+            if (grp === 'alkali') return e.group === 1 && e.number > 1;
+            if (grp === 'halogen') return e.group === 17;
+            if (grp === 'noble') return e.group === 18;
+            return e.number <= 10;
+          });
+          const cards = list.map((el) => `
+            <div style="border:1.5px dashed #0284c7;border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;page-break-inside:avoid;">
+              <div>
+                <div style="font-size:11px;color:#475569;">Z = ${el.number} • ${el.atomicMass} u</div>
+                <div style="font-size:24px;font-weight:800;color:#0369a1;">${el.symbol} – ${el.name}</div>
+                <div style="font-size:11px;font-family:monospace;">${el.electronConfig}</div>
+              </div>
+              <div>${CV.generateElementQRsvg(el)}</div>
+            </div>`).join('');
+          const doc = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Bộ Thẻ QR Nguyên Tố CHEMVERSE</title><style>@page{size:A4;margin:12mm;}body{font-family:Arial,sans-serif;margin:0;padding:16px;}h2{text-align:center;color:#0369a1;margin-bottom:12px;}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}</style></head><body><h2>BỘ THẺ HỌC LIỆU QR CODE – CHEMVERSE 3D (${list.length} nguyên tố)</h2><div class="grid">${cards}</div><script>window.onload=function(){/* ready to print */}<\/script></body></html>`;
+          const blob = new Blob([doc], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = `Bo-The-QR-${grp}.html`; a.click();
+          URL.revokeObjectURL(url);
+          CV.showToast(`Đã xuất gói ${list.length} thẻ QR chuẩn in A4!`);
+        });
+      }
 
       document.getElementById('pt-3d-prop').addEventListener('change', (e) => this.update3DHeights(e.target.value));
       document.getElementById('pt-3d-reset').addEventListener('click', () => {

@@ -250,15 +250,21 @@
               <button class="btn btn-sm btn-secondary lab3d-lvl-btn" data-lvl="sandbox" style="padding:2px 8px;font-size:0.7rem;">🟣 Tự do</button>
             </div>
             <div id="lab3d-level-hint" style="font-size:0.72rem;color:#93C5FD;margin-top:4px;">🟢 Cơ bản (THCS): Chọn thí nghiệm mẫu ở 📖 hoặc thêm chất an toàn từng bước.</div>
+            <div id="lab3d-a11y-badge" style="display:none;margin-top:6px;padding:4px 8px;border-radius:6px;background:#0F172A;border:1.5px solid #FBBF24;color:#FDE68A;font-size:0.74rem;font-weight:700;">[Trạng thái màu: Dung dịch trong suốt]</div>
           </div>
 
           <!-- Left Vertical Tool Strip -->
           <div class="lab3d-tools-left">
             <button class="icon-btn glass-surface" id="lab3d-btn-cam" title="Đổi góc nhìn Camera 3D">🎥</button>
+            <button class="icon-btn glass-surface" id="lab3d-btn-micro" title="Kính hiển vi vi mô (Molecular View)">🔬</button>
+            <button class="icon-btn glass-surface" id="lab3d-btn-quant" title="Mô phỏng Định lượng (CM, V, m)">⚖️</button>
+            <button class="icon-btn glass-surface" id="lab3d-btn-a11y" title="Chế độ Hòa nhập (Nhãn màu & Đọc tiếng Việt)">♿</button>
+            <button class="icon-btn glass-surface" id="lab3d-btn-ai" title="Trợ lý AI Hóa học trong Lab">🤖</button>
             <button class="icon-btn glass-surface" id="lab3d-btn-quests" title="15 Nhiệm vụ thực hành" style="position:relative;">🎯<span id="lab3d-quest-dot" style="position:absolute;top:-4px;right:-4px;font-size:0.62rem;background:#FBBF24;color:#030712;border-radius:999px;padding:0 4px;font-weight:800;">15</span></button>
             <button class="icon-btn glass-surface" id="lab3d-btn-360" title="Xoay tự động 360°" style="font-size:0.68rem;font-weight:800;color:#FBBF24;">360°</button>
             <button class="icon-btn glass-surface" id="lab3d-btn-insp" title="Phương trình & Thang pH">📊</button>
-            <button class="icon-btn glass-surface" id="lab3d-btn-guide" title="Cẩm nang 8 phản ứng mẫu">📖</button>
+            <button class="icon-btn glass-surface" id="lab3d-btn-guide" title="Chuyên đề thí nghiệm">📖</button>
+            <button class="icon-btn glass-surface" id="lab3d-btn-safety" title="Góc An toàn Phòng thí nghiệm (GHS)" style="border-color:rgba(248,113,113,0.45);">🛡️</button>
             <button class="icon-btn glass-surface" id="lab3d-btn-audio" title="Bật/Tắt Âm thanh">🔊</button>
           </div>
 
@@ -288,10 +294,14 @@
             </div>
           </div>
 
-          <!-- Floating Popover Drawers (Quests / Inspector / Guide) -->
+          <!-- Floating Popover Drawers -->
           <div id="lab3d-quests-drawer" class="lab3d-pop-drawer glass-surface" style="display:none;"></div>
           <div id="lab3d-insp-drawer" class="lab3d-pop-drawer glass-surface" style="display:none;"></div>
           <div id="lab3d-guide-drawer" class="lab3d-pop-drawer glass-surface" style="display:none;"></div>
+          <div id="lab3d-safety-drawer" class="lab3d-pop-drawer glass-surface" style="display:none;border-color:#EF4444;background:rgba(30,10,16,0.95);"></div>
+          <div id="lab3d-micro-drawer" class="lab3d-pop-drawer glass-surface" style="display:none;"></div>
+          <div id="lab3d-quant-drawer" class="lab3d-pop-drawer glass-surface" style="display:none;"></div>
+          <div id="lab3d-ai-drawer" class="lab3d-pop-drawer glass-surface" style="display:none;"></div>
         </div>
       `;
 
@@ -877,6 +887,14 @@
       this.sfx.playClick(740);
       this.hotplateLedMesh.material.color.setHex(this.labState.hotplateOn ? 0xef4444 : 0x475569);
       CV.showToast(this.labState.hotplateOn ? '⚡ Bếp điện đang gia nhiệt!' : '🔌 Đã tắt bếp điện.');
+      if (this.labState.hotplateOn && (this.labState.volumeMl <= 0 || this.labState.contents.size === 0)) {
+        this.showSafetyAlert(
+          'GHS02 • QUÁ NHIỆT KHÔ', '🔥',
+          'Cảnh báo: Đun cốc / ống nghiệm khô không chứa dung dịch!',
+          'Thủy tinh giãn nở nhiệt đột ngột khi không có chất lỏng tản nhiệt, dễ gây nứt vỡ bắn mảnh thủy tinh.',
+          'Tắt bếp điện, đợi nguội rồi thêm nước/dung dịch trước khi gia nhiệt.'
+        );
+      }
     },
 
     addIceCubes() {
@@ -912,10 +930,213 @@
       this.evaluateQuests();
     },
 
+    renderMolecularView() {
+      const box = document.getElementById('lab3d-micro-drawer');
+      if (!box) return;
+      const ls = this.labState;
+      const hasGas = ls.continuousGas;
+      const hasPrecip = !!ls.precipColor;
+      const modeText = hasPrecip ? 'Mạng tinh thể kết tủa đang kết tụ ở đáy bình' : hasGas ? 'Các phân tử khí va chạm và thoát khỏi bề mặt' : 'Chuyển động nhiệt Brownian & va chạm ion trong dung dịch';
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong style="color:var(--accent-cyan);">🔬 Kính Hiển Vi Vi Mô (Molecular View)</strong>
+          <button class="icon-btn" onclick="document.getElementById('lab3d-micro-drawer').style.display='none'">✕</button>
+        </div>
+        <canvas id="lab3d-micro-canvas" width="310" height="170" style="width:100%;height:170px;background:#050814;border-radius:10px;border:1px solid rgba(56,189,248,0.3);display:block;"></canvas>
+        <div style="font-size:0.76rem;color:var(--text-secondary);margin-top:8px;">⚛️ ${modeText} (T = ${ls.temperature.toFixed(1)}°C)</div>
+      `;
+      const canvas = document.getElementById('lab3d-micro-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const parts = Array.from({ length: 28 }, (_, i) => ({
+        x: Math.random() * 290 + 10,
+        y: hasPrecip && i < 10 ? 140 + Math.random() * 22 : Math.random() * 140 + 15,
+        vx: (Math.random() - 0.5) * (1.2 + ls.temperature / 40),
+        vy: hasGas && i < 10 ? -(1.2 + Math.random()) : (Math.random() - 0.5) * (1.2 + ls.temperature / 40),
+        r: i % 3 === 0 ? 6 : 4,
+        color: hasPrecip && i < 10 ? '#FBBF24' : hasGas && i < 10 ? '#E2E8F0' : i % 2 === 0 ? '#00E5FF' : '#A855F7'
+      }));
+      const tick = () => {
+        if (box.style.display === 'none' || !document.getElementById('lab3d-micro-canvas')) return;
+        ctx.clearRect(0, 0, 310, 170);
+        parts.forEach((p) => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 10 || p.x > 300) p.vx *= -1;
+          if (hasGas && p.vy < 0 && p.y < 8) p.y = 160;
+          else if (p.y < 10 || p.y > 160) p.vy *= -1;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color; ctx.fill();
+        });
+        requestAnimationFrame(tick);
+      };
+      tick();
+    },
+
+    renderQuantitative() {
+      const box = document.getElementById('lab3d-quant-drawer');
+      if (!box) return;
+      const CASES = {
+        'NaOH+HCl': { title: 'NaOH + HCl → NaCl + H₂O', t1: 'sol', l1: 'NaOH', t2: 'sol', l2: 'HCl', prod: 'NaCl', Mprod: 58.5, unit: 'g muối NaCl' },
+        'Fe+CuSO4': { title: 'Fe + CuSO₄ → FeSO₄ + Cu↓', t1: 'solid', l1: 'Fe (M=56)', M1: 56, t2: 'sol', l2: 'CuSO₄', prod: 'Cu↓', Mprod: 64, unit: 'g Cu kết tủa' },
+        'Zn+HCl': { title: 'Zn + 2HCl → ZnCl₂ + H₂↑', t1: 'solid', l1: 'Zn (M=65)', M1: 65, t2: 'sol', l2: 'HCl (tỉ lệ 2)', ratio2: 2, prod: 'H₂↑', isGas: true, unit: 'L khí H₂ (ĐKC)' },
+        'BaCl2+H2SO4': { title: 'BaCl₂ + H₂SO₄ → BaSO₄↓ + 2HCl', t1: 'sol', l1: 'BaCl₂', t2: 'sol', l2: 'H₂SO₄', prod: 'BaSO₄↓', Mprod: 233, unit: 'g BaSO₄ kết tủa' }
+      };
+      const key = this.quantKey || 'Fe+CuSO4';
+      const c = CASES[key];
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong style="color:#FBBF24;">⚖️ Mô Phỏng Định Lượng</strong>
+          <button class="icon-btn" onclick="document.getElementById('lab3d-quant-drawer').style.display='none'">✕</button>
+        </div>
+        <select id="qnt-rx" class="select-field" style="width:100%;margin-bottom:8px;">
+          ${Object.entries(CASES).map(([k, v]) => `<option value="${k}" ${k === key ? 'selected' : ''}>${v.title}</option>`).join('')}
+        </select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.76rem;margin-bottom:8px;">
+          <div>${c.t1 === 'solid' ? `m ${c.l1} (g)` : `CM ${c.l1} (M)`}<input id="qnt-v1" type="number" step="0.1" class="input-field" style="width:100%;padding:5px;" value="${c.t1 === 'solid' ? 5.6 : 1.0}"/></div>
+          <div>${c.t1 === 'solid' ? '—' : `V ${c.l1} (mL)`}<input id="qnt-v1b" type="number" class="input-field" style="width:100%;padding:5px;" value="100" ${c.t1 === 'solid' ? 'disabled' : ''}/></div>
+          <div>CM ${c.l2} (M)<input id="qnt-v2" type="number" step="0.1" class="input-field" style="width:100%;padding:5px;" value="1.0"/></div>
+          <div>V ${c.l2} (mL)<input id="qnt-v2b" type="number" class="input-field" style="width:100%;padding:5px;" value="150"/></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:0.76rem;">
+          <span>Hiệu suất H (%):</span>
+          <input id="qnt-eff" type="number" min="1" max="100" class="input-field" style="width:70px;padding:4px;" value="90"/>
+          <button class="btn btn-primary btn-sm" id="qnt-calc" style="flex:1;">Tính toán ✓</button>
+        </div>
+        <div id="qnt-res" class="glass-surface" style="padding:8px 10px;border-radius:10px;font-size:0.76rem;color:var(--text-secondary);">Nhấn <strong>Tính toán ✓</strong> để xác định chất hết – chất dư &amp; sản phẩm.</div>
+      `;
+      document.getElementById('qnt-rx').addEventListener('change', (e) => { this.quantKey = e.target.value; this.renderQuantitative(); });
+      document.getElementById('qnt-calc').addEventListener('click', () => {
+        const v1 = Number(document.getElementById('qnt-v1').value || 0);
+        const v1b = Number(document.getElementById('qnt-v1b').value || 0);
+        const v2 = Number(document.getElementById('qnt-v2').value || 0);
+        const v2b = Number(document.getElementById('qnt-v2b').value || 0);
+        const eff = Math.min(100, Math.max(1, Number(document.getElementById('qnt-eff').value || 100))) / 100;
+        const n1 = c.t1 === 'solid' ? v1 / c.M1 : v1 * (v1b / 1000);
+        const n2 = v2 * (v2b / 1000);
+        const r2 = c.ratio2 || 1;
+        const nReact = Math.min(n1, n2 / r2);
+        const excess = n1 > n2 / r2 ? `${c.l1} dư (${(n1 - nReact).toFixed(3)} mol)` : n1 < n2 / r2 ? `${c.l2} dư (${(n2 - nReact * r2).toFixed(3)} mol)` : 'Vừa đủ';
+        const outVal = c.isGas ? (nReact * 24.79 * eff).toFixed(3) : (nReact * c.Mprod * eff).toFixed(3);
+        document.getElementById('qnt-res').innerHTML = `
+          <div>• n(${c.l1}) = <strong>${n1.toFixed(3)} mol</strong> | n(${c.l2}) = <strong>${n2.toFixed(3)} mol</strong></div>
+          <div>• Trạng thái: <strong style="color:#34D399;">${excess}</strong></div>
+          <div>• Lượng ${c.prod} (H=${Math.round(eff * 100)}%): <strong style="color:#FBBF24;">${outVal} ${c.unit}</strong></div>
+        `;
+      });
+    },
+
+    renderLabAI() {
+      const box = document.getElementById('lab3d-ai-drawer');
+      if (!box) return;
+      const ls = this.labState;
+      const list = Array.from(ls.contents).join(' + ');
+      let explanation = 'Hãy trộn 2 chất bất kỳ trên bàn Lab để AI phân tích cơ chế hoặc hỏi câu hỏi bên dưới!';
+      if (ls.lastReaction) {
+        explanation = `<strong>${ls.lastReaction.eq}</strong><br/>Phản ứng xảy ra dựa trên sự trao đổi ion / thế kim loại hoặc oxy hóa khử. Độ pH hiện tại là ${ls.ph.toFixed(2)}.`;
+      } else if (ls.contents.has('Cu') && (ls.contents.has('HCl') || ls.contents.has('H2SO4'))) {
+        explanation = '❌ <strong>Cu + HCl/H₂SO₄ loãng không phản ứng:</strong> Vì Đồng (Cu) đứng sau Hydro (H) trong dãy hoạt động hóa học (E° Cu²⁺/Cu = +0.34V > 0V) nên không khử được ion H⁺.';
+      }
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong style="color:#34D399;">🤖 Trợ Lý AI Trong Phòng Lab</strong>
+          <button class="icon-btn" onclick="document.getElementById('lab3d-ai-drawer').style.display='none'">✕</button>
+        </div>
+        <div class="glass-surface" style="padding:8px 10px;border-radius:10px;font-size:0.78rem;margin-bottom:8px;color:var(--text-secondary);">
+          <div style="color:var(--accent-cyan);font-size:0.72rem;margin-bottom:4px;">Trong cốc: ${list}</div>
+          ${explanation}
+        </div>
+        <div style="display:flex;gap:6px;">
+          <input id="lab3d-ai-inp" class="input-field" style="flex:1;padding:6px 8px;font-size:0.78rem;" placeholder="Hỏi tại sao phản ứng xảy ra / không xảy ra..." />
+          <button class="btn btn-primary btn-sm" id="lab3d-ai-ask">Hỏi</button>
+        </div>
+        <div id="lab3d-ai-ans" style="font-size:0.76rem;color:var(--text-secondary);margin-top:8px;"></div>
+      `;
+      document.getElementById('lab3d-ai-ask').addEventListener('click', () => {
+        const q = document.getElementById('lab3d-ai-inp').value;
+        const ans = CV.modules.tutor ? CV.modules.tutor.reply(q) : 'Đang tra cứu dữ liệu IUPAC...';
+        document.getElementById('lab3d-ai-ans').innerHTML = CV.modules.tutor ? CV.modules.tutor.formatText(ans) : ans;
+      });
+    },
+
+    speakAccessibility(text) {
+      const badge = document.getElementById('lab3d-a11y-badge');
+      if (badge) badge.textContent = `[Hiện tượng]: ${text}`;
+      if (!this.labState.a11yOn) return;
+      try {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = 'vi-VN';
+          window.speechSynthesis.speak(u);
+        }
+      } catch (_) {}
+    },
+
+    showSafetyAlert(code, icon, title, consequence, correctWay) {
+      const box = document.getElementById('lab3d-safety-drawer');
+      if (!box) return;
+      this.sfx.playSparkPop();
+      const dv = document.getElementById('lab3d-danger-visor');
+      if (dv) { dv.style.opacity = '1'; setTimeout(() => { dv.style.opacity = '0'; }, 1800); }
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="padding:3px 8px;border-radius:6px;background:#EF4444;color:#fff;font-size:0.72rem;font-weight:800;">${icon} ${code}</span>
+          <button class="icon-btn" onclick="document.getElementById('lab3d-safety-drawer').style.display='none'">✕</button>
+        </div>
+        <h4 style="color:#FCA5A5;margin-bottom:6px;font-size:0.95rem;">${title}</h4>
+        <div style="font-size:0.8rem;color:#FECACA;margin-bottom:8px;"><strong>⚠️ Hậu quả:</strong> ${consequence}</div>
+        <div style="font-size:0.8rem;color:#86EFAC;background:rgba(16,185,129,0.14);padding:8px 10px;border-radius:8px;border:1px solid rgba(16,185,129,0.35);">
+          <strong>✅ Thao tác đúng:</strong> ${correctWay}
+        </div>
+      `;
+    },
+
+    renderSafetyGuide() {
+      const box = document.getElementById('lab3d-safety-drawer');
+      if (!box) return;
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong style="color:#FCA5A5;">🛡️ Góc An Toàn Phòng Thí Nghiệm (GHS)</strong>
+          <button class="icon-btn" onclick="document.getElementById('lab3d-safety-drawer').style.display='none'">✕</button>
+        </div>
+        <div style="font-size:0.78rem;display:flex;flex-direction:column;gap:8px;color:var(--text-secondary);">
+          <div>☣️ <strong>GHS05 (Ăn mòn):</strong> Luôn rót từ từ axit đặc vào nước, tuyệt đối không đổ nước vào axit đặc.</div>
+          <div>🔥 <strong>GHS02 (Dễ cháy / Quá nhiệt):</strong> Không đun ống nghiệm khô; tránh xa nguồn lửa với kim loại kiềm (Na, K).</div>
+          <div>☠️ <strong>GHS06 (Khí độc):</strong> Thí nghiệm sinh khí Cl₂, H₂S, NO₂ phải thực hiện trong tủ hút và dùng lượng nhỏ.</div>
+          <div>💥 <strong>GHS01 (Nguy cơ nổ):</strong> Không trộn trực tiếp K/Na với axit mạnh HCl, H₂SO₄.</div>
+        </div>
+      `;
+    },
+
     addChemical(chemId) {
       const chem = LAB_CHEMICALS.find((c) => c.id === chemId);
       if (!chem) return;
       const ls = this.labState;
+      if (chemId === 'H2O' && (ls.contents.has('H2SO4') || ls.contents.has('HNO3'))) {
+        this.showSafetyAlert(
+          'GHS05 • ĂN MÒN & BẮN AXIT', '☣️',
+          'Nguy hiểm: Tuyệt đối KHÔNG đổ nước vào axit đặc!',
+          'Nước nhẹ hơn axit đặc nên nổi trên bề mặt, phản ứng hòa tan tỏa nhiệt mạnh làm nước sôi bắn axit ra ngoài gây bỏng nặng.',
+          'Luôn rót từ từ axit vào nước dọc theo đũa thủy tinh và khuấy nhẹ để tản nhiệt.'
+        );
+      } else if ((chemId === 'K' || chemId === 'Na') && (ls.contents.has('HCl') || ls.contents.has('H2SO4'))) {
+        this.showSafetyAlert(
+          'GHS01 • NGUY CƠ NỔ BẮN', '💥',
+          `Nguy hiểm: Kim loại kiềm ${chemId} phản ứng mãnh liệt với axit mạnh!`,
+          'Giải phóng khí H₂ tức thời kèm nhiệt lượng lớn có thể gây nổ và bắn dung dịch axit.',
+          'Chỉ dùng kim loại trung bình (Zn, Fe, Mg) với axit loãng và đeo kính bảo hộ.'
+        );
+      } else if ((chemId === 'HCl' && (ls.contents.has('KMnO4') || ls.contents.has('FeS'))) || ((chemId === 'KMnO4' || chemId === 'FeS') && ls.contents.has('HCl'))) {
+        this.showSafetyAlert(
+          'GHS06 • CẢNH BÁO KHÍ ĐỘC', '☠️',
+          'Cảnh báo: Phản ứng sinh khí độc (Cl₂ hoặc H₂S)!',
+          'Khí Clo (Cl₂) và Hydro sunfua (H₂S) gây kích ứng đường hô hấp và ngộ độc nếu hít phải trực tiếp.',
+          'Thực hiện trong tủ hút khí độc, dùng lượng hóa chất nhỏ và không ngửi trực tiếp miệng bình.'
+        );
+      }
+      this.speakAccessibility(`Đã thêm ${chem.name} (${chem.formula})`);
       const top = this.getTop();
       ls.contents.add(chem.id);
       ls.ph = Math.min(14, Math.max(0.5, ls.ph + (chem.phDelta || 0)));
@@ -1336,8 +1557,9 @@
       });
 
       const togglePop = (id) => {
-        ['lab3d-quests-drawer', 'lab3d-insp-drawer', 'lab3d-guide-drawer'].forEach((k) => {
+        ['lab3d-quests-drawer', 'lab3d-insp-drawer', 'lab3d-guide-drawer', 'lab3d-safety-drawer', 'lab3d-micro-drawer', 'lab3d-quant-drawer', 'lab3d-ai-drawer'].forEach((k) => {
           const el = document.getElementById(k);
+          if (!el) return;
           if (k !== id) el.style.display = 'none';
           else el.style.display = el.style.display === 'none' ? 'block' : 'none';
         });
@@ -1345,6 +1567,17 @@
       document.getElementById('lab3d-btn-quests').addEventListener('click', () => togglePop('lab3d-quests-drawer'));
       document.getElementById('lab3d-btn-insp').addEventListener('click', () => togglePop('lab3d-insp-drawer'));
       document.getElementById('lab3d-btn-guide').addEventListener('click', () => togglePop('lab3d-guide-drawer'));
+      document.getElementById('lab3d-btn-safety')?.addEventListener('click', () => this.renderSafetyGuide());
+      document.getElementById('lab3d-btn-micro')?.addEventListener('click', () => { togglePop('lab3d-micro-drawer'); this.renderMolecularView(); });
+      document.getElementById('lab3d-btn-quant')?.addEventListener('click', () => { togglePop('lab3d-quant-drawer'); this.renderQuantitative(); });
+      document.getElementById('lab3d-btn-ai')?.addEventListener('click', () => { togglePop('lab3d-ai-drawer'); this.renderLabAI(); });
+      document.getElementById('lab3d-btn-a11y')?.addEventListener('click', (e) => {
+        this.labState.a11yOn = !this.labState.a11yOn;
+        e.currentTarget.style.borderColor = this.labState.a11yOn ? '#FBBF24' : '';
+        const b = document.getElementById('lab3d-a11y-badge');
+        if (b) b.style.display = this.labState.a11yOn ? 'block' : 'none';
+        if (this.labState.a11yOn) this.speakAccessibility('Đã bật chế độ hỗ trợ khiếm thị và mù màu. Nhiệt độ ' + this.labState.temperature.toFixed(1) + ' độ C, pH ' + this.labState.ph.toFixed(1));
+      });
     },
 
     startLoop() {

@@ -5,58 +5,62 @@
     init(container) {
       container.innerHTML = `
         <div class="page-container">
-          <div class="section-header">
+          <div class="section-header" style="margin-bottom:22px;">
             <div>
-              <h2 class="section-title">${CV.t('About Project – Giới Thiệu Dự Án CHEMVERSE', 'About Project – CHEMVERSE')}</h2>
-              <p class="section-subtitle">${CV.t('Nền tảng giáo dục Hóa học trực quan kết hợp đồ họa 3D không gian vũ trụ', 'Interactive Chemistry EdTech platform powered by 3D WebGL space visualization')}</p>
+              <div class="hero-pill" style="margin-bottom:8px;">🏆 BÁO CÁO KHOA HỌC • DỰ THI KHKT &amp; THIẾT BỊ DẠY HỌC SỐ CẤP QUỐC GIA</div>
+              <h2 class="section-title">Giới Thiệu Dự Án CHEMVERSE 3D</h2>
+              <p class="section-subtitle">Hệ sinh thái Học tập &amp; Nghiên cứu Hóa học 3D bám sát Chương trình GDPT 2018</p>
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-bottom:28px;">
-            <div class="glass-surface" style="padding:24px;border-radius:var(--radius-lg);">
-              <h3 style="color:var(--accent-cyan);margin-bottom:10px;">🌌 Cảm hứng & Mục tiêu giáo dục</h3>
-              <p style="color:var(--text-secondary);font-size:0.93rem;">
-                CHEMVERSE được xây dựng dựa trên sự tương đồng kỳ thú giữa <strong>Thiên văn học</strong> (hệ sao – hành tinh – vệ tinh) và <strong>Cấu trúc nguyên tử</strong> (hạt nhân – lớp vỏ – electron). Thay vì học thuộc lòng bảng tuần hoàn khô khan, người học được trực tiếp du hành qua thiên hà 118 nguyên tố và quan sát quy luật tuần hoàn sống động.
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-bottom:20px;">
+            <section class="glass-surface" style="padding:22px;border-radius:var(--radius-lg);">
+              <h3 style="color:var(--accent-cyan);margin-bottom:10px;">1. Tính Cấp Thiết (Bám sát GDPT 2018)</h3>
+              <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.55;">
+                Chương trình GDPT 2018 chú trọng phát triển năng lực nhận thức hóa học, tìm hiểu thế giới tự nhiên qua thí nghiệm thực hành và sử dụng danh pháp quốc tế IUPAC. CHEMVERSE 3D giải quyết tình trạng thiếu hóa chất, nguy cơ mất an toàn ở trường phổ thông và giúp học sinh trực quan hóa thế giới vi mô (nguyên tử, orbital, liên kết, ion).
               </p>
-            </div>
+            </section>
 
-            <div class="glass-surface" style="padding:24px;border-radius:var(--radius-lg);">
-              <h3 style="color:var(--accent-blue);margin-bottom:10px;">🔬 Chuẩn dữ liệu khoa học IUPAC</h3>
-              <p style="color:var(--text-secondary);font-size:0.93rem;">
-                Toàn bộ dữ liệu của 118 nguyên tố (từ Hydro Z=1 đến Oganesson Z=118) tuân thủ chuẩn IUPAC mới nhất, thống nhất trong tệp <code class="mono">data/elements.json</code>. Các nguyên tố siêu nặng (Z=104–118) có thời gian sống cực ngắn đều được gắn nhãn cảnh báo <em>"Giá trị dự đoán"</em> rõ ràng.
-              </p>
-            </div>
+            <section class="glass-surface" style="padding:22px;border-radius:var(--radius-lg);">
+              <h3 style="color:#E879F9;margin-bottom:10px;">2. Giải Pháp Công Nghệ &amp; Điểm Mới Sáng Tạo</h3>
+              <ul style="color:var(--text-secondary);font-size:0.9rem;line-height:1.55;padding-left:18px;margin:0;">
+                <li><strong>Định lượng &amp; Kính hiển vi vi mô 3D:</strong> Mô phỏng chuyển động ion/phân tử và tính chất dư – hết, hiệu suất, kết tủa/khí.</li>
+                <li><strong>Giáo dục hòa nhập &amp; Gói QR A4:</strong> Hỗ trợ khiếm thị/mù màu (nhãn màu + đọc tiếng Việt) và xuất bộ thẻ QR dạy học theo trạm.</li>
+                <li><strong>Góc An toàn GHS &amp; Trợ lý AI:</strong> Cảnh báo thao tác nguy hiểm và gợi ý tư duy giải bài tập từng bước.</li>
+              </ul>
+            </section>
           </div>
 
-          <div class="glass-surface" style="padding:24px;border-radius:var(--radius-lg);margin-bottom:28px;">
-            <h3 style="margin-bottom:16px;">🧭 Hướng Dẫn Sử Dụng Nhanh</h3>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
-              <div>
-                <strong style="color:var(--accent-cyan);">1. Universe 3D</strong>
-                <p style="font-size:0.88rem;color:var(--text-secondary);margin-top:4px;">
-                  Kéo chuột / vuốt để xoay, cuộn / chụm để zoom. Nhấn vào hành tinh để camera bay tới (fly-to) và mở bảng thông tin. Dùng nút <em>Reset View</em> để quay về toàn cảnh.
+          <section class="glass-surface" style="padding:22px;border-radius:var(--radius-lg);margin-bottom:20px;">
+            <h3 style="margin-bottom:14px;">3. Quy Trình Sử Dụng 2 Nhánh (Học Tập – Nghiên Cứu)</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+              <div class="glass-surface" style="padding:14px;border-radius:12px;border-color:rgba(0,229,255,0.35);">
+                <strong style="color:var(--accent-cyan);">🎓 Nhánh 1: Học tập &amp; Khám phá</strong>
+                <p style="font-size:0.86rem;color:var(--text-secondary);margin-top:6px;">
+                  Bảng tuần hoàn (IUPAC, QR A4, So sánh) • Mô phỏng 3D (Orbital s/p/d/f) • Vũ trụ 3D (Phân tử, Tinh thể, Liên kết) • ChemQuiz &amp; Trợ lý AI.
                 </p>
               </div>
-              <div>
-                <strong style="color:var(--accent-cyan);">2. Atom Simulator</strong>
-                <p style="font-size:0.88rem;color:var(--text-secondary);margin-top:4px;">
-                  Chọn nguyên tố, điều chỉnh tốc độ quay quỹ đạo, bật nổi bật electron hóa trị hoặc chuyển sang chế độ <em>Ghép đôi liên kết</em> (Ion / Cộng hóa trị).
-                </p>
-              </div>
-              <div>
-                <strong style="color:var(--accent-cyan);">3. Smart Periodic Table</strong>
-                <p style="font-size:0.88rem;color:var(--text-secondary);margin-top:4px;">
-                  Kéo thanh trượt nhiệt độ từ 0 K đến 6000 K để thấy toàn bộ 118 nguyên tố đổi trạng thái Rắn / Lỏng / Khí theo thời gian thực, hoặc bật chế độ Bản đồ nhiệt.
-                </p>
-              </div>
-              <div>
-                <strong style="color:var(--accent-cyan);">4. Virtual Lab</strong>
-                <p style="font-size:0.88rem;color:var(--text-secondary);margin-top:4px;">
-                  Chọn dụng cụ, thêm kim loại hoặc dung dịch từ kệ hóa chất, bật đèn đốt để thử màu ngọn lửa và xem phương trình cân bằng tự động.
+              <div class="glass-surface" style="padding:14px;border-radius:12px;border-color:rgba(168,85,247,0.35);">
+                <strong style="color:#E879F9;">🔬 Nhánh 2: Nghiên cứu chuyên sâu (Phòng Lab 3D)</strong>
+                <p style="font-size:0.86rem;color:var(--text-secondary);margin-top:6px;">
+                  Phòng Lab 3D định lượng (`C_M, V, m`), Kính hiển vi vi mô, Chế độ Hòa nhập (`♿`), Cảnh báo an toàn GHS &amp; Không gian Nghiên cứu Khoa học (Dữ liệu, ML, Báo cáo).
                 </p>
               </div>
             </div>
-          </div>
+          </section>
+
+          <section class="glass-surface" style="padding:22px;border-radius:var(--radius-lg);">
+            <h3 style="color:#FBBF24;margin-bottom:10px;">4. Thông Tin Tác Giả &amp; Đơn Vị Thực Hiện</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;font-size:0.88rem;color:var(--text-secondary);">
+              <div>
+                <strong>🏫 Đơn vị:</strong> Trường THPT Ea Súp (Nhóm 2 – Lớp 10A1)<br/>
+                <strong>👑 Nhóm trưởng:</strong> Lê Trần Bảo Trân &nbsp;•&nbsp; <strong>⭐ Phó nhóm:</strong> Nguyễn Phương Anh
+              </div>
+              <div>
+                <strong>📚 Tài liệu tham khảo:</strong> Chương trình GDPT 2018 (Bộ GD&amp;ĐT), Chuẩn danh pháp IUPAC 2024 &amp; Hệ thống cảnh báo hóa chất GHS.
+              </div>
+            </div>
+          </section>
         </div>
       `;
     }

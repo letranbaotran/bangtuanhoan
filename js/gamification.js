@@ -233,7 +233,14 @@
                 </div>
               </div>
 
-              <h3 style="margin:20px 0 10px;">🏆 ${CV.t('Bảng Xếp Hạng', 'Leaderboard')}</h3>
+              <h3 style="margin:20px 0 10px;">📊 Biểu Đồ Năng Lực Theo 4 Mảng Kiến Thức</h3>
+              <div class="glass-surface" style="padding:12px;border-radius:12px;margin-bottom:14px;">
+                <canvas id="prof-topic-chart" width="340" height="120" style="width:100%;height:120px;display:block;"></canvas>
+              </div>
+
+              <button class="btn btn-primary btn-sm" id="prof-export-report-btn" style="width:100%;margin-bottom:16px;">📄 Xuất Phiếu Kết Quả Học Tập (Chuẩn In A4)</button>
+
+              <h3 style="margin:12px 0 10px;">🏆 ${CV.t('Bảng Xếp Hạng', 'Leaderboard')}</h3>
               <div style="display:flex;flex-direction:column;gap:6px;">
                 ${board
                   .map(
@@ -249,6 +256,42 @@
           </div>
         </div>
       `;
+
+      const topicCanvas = document.getElementById('prof-topic-chart');
+      if (topicCanvas) {
+        const ctx = topicCanvas.getContext('2d');
+        const topics = [
+          { label: 'Cấu tạo nguyên tử', val: Math.min(100, Math.round(((user.exploredElements || []).length / 12) * 100) + 20), color: '#38BDF8' },
+          { label: 'Bảng tuần hoàn', val: Math.min(100, Math.round(((user.exploredElements || []).length / 15) * 100) + 15), color: '#00E5FF' },
+          { label: 'Liên kết hóa học', val: Math.min(100, Math.round(((user.quizCount || 0) / 8) * 100) + 15), color: '#C084FC' },
+          { label: 'Phản ứng & Lab', val: Math.min(100, Math.round(((user.reactionCount || 0) / 6) * 100) + 10), color: '#34D399' }
+        ];
+        ctx.clearRect(0, 0, topicCanvas.width, topicCanvas.height);
+        topics.forEach((tp, idx) => {
+          const y = 12 + idx * 27;
+          ctx.fillStyle = '#CBD5E1';
+          ctx.font = '600 12px sans-serif';
+          ctx.fillText(tp.label, 4, y + 12);
+          ctx.fillStyle = 'rgba(255,255,255,0.08)';
+          ctx.fillRect(128, y + 2, 168, 12);
+          ctx.fillStyle = tp.color;
+          ctx.fillRect(128, y + 2, (168 * tp.val) / 100, 12);
+          ctx.fillStyle = '#F8FAFC';
+          ctx.fillText(`${tp.val}%`, 304, y + 12);
+        });
+      }
+
+      document.getElementById('prof-export-report-btn').addEventListener('click', () => {
+        const reportHtml = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Phiếu Kết Quả Học Tập CHEMVERSE</title><style>@page{size:A4;margin:18mm;}body{font-family:Arial,sans-serif;max-width:740px;margin:20px auto;padding:28px;border:2px solid #0284c7;border-radius:12px;}h1{color:#0369a1;margin-bottom:6px;}table{width:100%;border-collapse:collapse;margin-top:14px;}td,th{border:1px solid #cbd5e1;padding:10px 12px;text-align:left;}</style></head><body><h1>PHIẾU KẾT QUẢ HỌC TẬP – CHEMVERSE 3D</h1><p><strong>Học sinh:</strong> ${user.name} (${user.cls}) &nbsp;|&nbsp; <strong>Cấp độ:</strong> Level ${lv} (${user.xp} XP)</p><table><tr><th>Mảng kiến thức / Hạng mục</th><th>Kết quả ghi nhận</th></tr><tr><td>1. Cấu tạo nguyên tử &amp; Bảng tuần hoàn</td><td>${(user.exploredElements || []).length} / 118 nguyên tố</td></tr><tr><td>2. Liên kết hóa học &amp; Bài tập ChemQuiz</td><td>${user.quizCount || 0} lượt hoàn thành</td></tr><tr><td>3. Phản ứng &amp; Thực hành Phòng Lab 3D</td><td>${user.reactionCount || 0} thí nghiệm</td></tr><tr><td>4. Huy hiệu thành tích</td><td>${(user.badges || []).length} / ${BADGES.length} huy hiệu</td></tr></table><p style="margin-top:22px;font-size:13px;color:#475569;">Định dạng chuẩn in A4 • Xuất từ CHEMVERSE 3D (GDPT 2018) • ${new Date().toLocaleString('vi-VN')}</p></body></html>`;
+        const blob = new Blob([reportHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Phieu-Ket-Qua-Hoc-Tap-${user.name.replace(/\s+/g, '-')}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        CV.showToast('Đã tải về Phiếu kết quả học tập chuẩn in A4!');
+      });
 
       document.getElementById('prof-logout-btn').addEventListener('click', () => {
         CV.Player.logout();

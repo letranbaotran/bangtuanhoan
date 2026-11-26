@@ -654,7 +654,7 @@
   CV.switchBranch = function (branch) {
     CV.state.activeBranch = branch;
     if (branch === 'research') {
-      CV.navigate('research-hub');
+      CV.navigate('virtual-lab');
     } else if (branch === 'learn') {
       CV.navigate('learning');
     } else {
@@ -666,10 +666,10 @@
     const isLearnSub = ['learning', 'periodic-table', 'universe', 'simulator', 'chemquest', 'tutor'].includes(route);
     const isResearchSub = ['research-hub', 'virtual-lab', 'research'].includes(route);
     CV.state.activeBranch = isResearchSub ? 'research' : isLearnSub ? 'learn' : 'home';
-    document.querySelectorAll('#desktop-nav [data-route="learning"]').forEach((el) => {
+    document.querySelectorAll('[data-route="learning"]').forEach((el) => {
       el.classList.toggle('active', isLearnSub);
     });
-    document.querySelectorAll('#desktop-nav [data-route="research-hub"]').forEach((el) => {
+    document.querySelectorAll('[data-route="virtual-lab"]').forEach((el) => {
       el.classList.toggle('active', isResearchSub);
     });
   };
@@ -715,7 +715,6 @@
         e.preventDefault();
         const r = link.getAttribute('data-route');
         CV.navigate(r);
-        closeMobileDrawer();
       });
     });
 
@@ -725,26 +724,6 @@
         CV.navigate(hashRoute);
       }
     });
-
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const drawer = document.getElementById('mobile-drawer');
-    const drawerBackdrop = document.getElementById('mobile-drawer-backdrop');
-    const drawerClose = document.getElementById('mobile-drawer-close');
-
-    function openMobileDrawer() {
-      drawer.classList.add('open');
-      drawerBackdrop.classList.add('open');
-      menuBtn.setAttribute('aria-expanded', 'true');
-    }
-    function closeMobileDrawer() {
-      drawer.classList.remove('open');
-      drawerBackdrop.classList.remove('open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-    }
-
-    if (menuBtn) menuBtn.addEventListener('click', openMobileDrawer);
-    if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeMobileDrawer);
-    if (drawerClose) drawerClose.addEventListener('click', closeMobileDrawer);
 
     const modalBackdrop = document.getElementById('element-modal-backdrop');
     const modalClose = document.getElementById('element-modal-close');
