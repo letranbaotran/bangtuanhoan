@@ -6345,7 +6345,10 @@ window.CHEMVERSE.REACTIONS = [
     { title: '💜 Mất màu Thuốc tím KMnO₄', eq: '2KMnO₄ + 10FeSO₄ + 8H₂SO₄ → Mn²⁺', chems: ['KMnO4', 'FeSO4', 'H2SO4'] },
     { title: '🟤 Đồng + HNO₃ đặc (Khí NO₂)', eq: 'Cu + 4HNO₃ → Cu(NO₃)₂ + 2NO₂↑ + 2H₂O', chems: ['Cu', 'HNO3'] },
     { title: '🫧 Núi lửa Baking Soda + Giấm', eq: 'NaHCO₃ + CH₃COOH → CH₃COONa + CO₂↑', chems: ['NaHCO3', 'CH3COOH'] },
-    { title: '🛡️ Nhôm tan trong Kiềm NaOH', eq: '2Al + 2NaOH + 2H₂O → 2NaAlO₂ + 3H₂↑', chems: ['Al', 'NaOH'] }
+    { title: '🛡️ Nhôm tan trong Kiềm NaOH', eq: '2Al + 2NaOH + 2H₂O → 2NaAlO₂ + 3H₂↑', chems: ['Al', 'NaOH'] },
+    { title: '🔥 Đốt cháy Kim loại Kali (Lửa Tím)', eq: '2K + 2H₂O → 2KOH + H₂↑ (Cháy tím)', chems: ['K'] },
+    { title: '🔥 Đốt cháy Magie sáng chói (Lửa Trắng)', eq: '2Mg + O₂ —(t°)→ 2MgO (Sáng chói)', chems: ['Mg'], heat: true },
+    { title: '🔥 Đốt cháy Lưu huỳnh (Lửa Xanh lam)', eq: 'S + O₂ —(t°)→ SO₂↑ (Ngọn lửa xanh)', chems: ['S'], heat: true }
   ];
 
   CV.modules['virtual-lab'] = {
@@ -6356,7 +6359,9 @@ window.CHEMVERSE.REACTIONS = [
       this.labState = {
         temperature: 25.0, ph: 7.0, volumeMl: 250,
         targetColor: new THREE.Color(0xdbeafe),
-        precipColor: null,
+        precipColor: null, precipTargetScale: 0,
+        continuousGas: false, gasColor: 0xffffff,
+        flameTimer: 0, flameColor: 0xf97316,
         beakerOnHotplate: false, hotplateOn: false, sensorPlaced: false,
         gogglesOn: false, autoRotate360: false, rightPanelOpen: true,
         contents: new Set(['H2O']), iceCubes: [],
@@ -6879,6 +6884,24 @@ window.CHEMVERSE.REACTIONS = [
       this.tongsSample = new THREE.Mesh(new THREE.DodecahedronGeometry(0.018, 0), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.85 }));
       this.tongsGroup.add(this.tongsSample); this.scene.add(this.tongsGroup);
 
+      // 3D Animated Flame Group + Flickering Flame Light
+      this.flameGroup = new THREE.Group();
+      this.flameGroup.visible = false;
+      this.flameOuter = new THREE.Mesh(
+        new THREE.ConeGeometry(0.042, 0.14, 16),
+        new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.82 })
+      );
+      this.flameOuter.position.y = 0.07;
+      this.flameInner = new THREE.Mesh(
+        new THREE.ConeGeometry(0.022, 0.08, 14),
+        new THREE.MeshBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 0.95 })
+      );
+      this.flameInner.position.y = 0.045;
+      this.flameLight = new THREE.PointLight(0xf97316, 0, 2.2);
+      this.flameLight.position.y = 0.1;
+      this.flameGroup.add(this.flameOuter, this.flameInner, this.flameLight);
+      this.scene.add(this.flameGroup);
+
       this.MAX_P = 500;
       this.pGeo = new THREE.BufferGeometry();
       const pos = new Float32Array(this.MAX_P * 3);
@@ -7053,20 +7076,33 @@ window.CHEMVERSE.REACTIONS = [
         ls.targetColor.setHex(0xf1f5f9); this.setPrecip(0xffffff); eq = 'BaCl₂ + H₂SO₄ → BaSO₄↓ + 2HCl';
       } else if (c.has('CaO')) {
         this.sfx.playFizz(1.2); ls.temperature = Math.min(92, ls.temperature + 22); ls.flags.limeSlaking = true;
+        ls.continuousGas = true; ls.gasColor = 0xffffff;
         this.spawnParticles(top, 0xffffff, 45, 0.022); eq = 'CaO + H₂O → Ca(OH)₂';
       } else if (c.has('CuSO4') && (c.has('Fe') || c.has('Zn'))) {
         ls.targetColor.setHex(0x86efac); this.setPrecip(0xb45309); ls.flags.metalDisplacement = true; eq = 'Fe + CuSO₄ → FeSO₄ + Cu↓';
       } else if (['Na', 'K', 'Ca'].includes(chem.id)) {
         this.sfx.playSparkPop(); this.screenShakeIntensity = 0.024; ls.temperature = Math.min(96, ls.temperature + 26);
-        this.spawnParticles(top, chem.id === 'K' ? 0xd946ef : 0xf97316, 70, 0.036);
-        ls.flags.alkaliWater = true; eq = `2${chem.id} + 2H₂O → 2${chem.id}OH + H₂↑`;
+        ls.continuousGas = true; ls.gasColor = 0xffffff;
+        ls.flameTimer = 4.5; ls.flameColor = chem.id === 'K' ? 0xd946ef : chem.id === 'Ca' ? 0xfb923c : 0xfacc15;
+        this.spawnParticles(top, ls.flameColor, 70, 0.036);
+        ls.flags.alkaliWater = true; eq = `2${chem.id} + 2H₂O → 2${chem.id}OH + H₂↑ (Cháy sáng!)`;
       } else if (['Zn', 'Mg', 'Fe', 'Al'].includes(chem.id) && (c.has('HCl') || c.has('H2SO4'))) {
         this.sfx.playFizz(1.5); ls.temperature = Math.min(90, ls.temperature + 10);
+        ls.continuousGas = true; ls.gasColor = 0xffffff;
         this.spawnParticles(top, 0xffffff, 55, 0.026); ls.flags.metalAcid = true; eq = `${chem.id} + 2HCl → ${chem.id}Cl₂ + H₂↑`;
+      } else if (chem.id === 'Mg' && ls.hotplateOn) {
+        this.sfx.playSparkPop(); ls.flameTimer = 5.0; ls.flameColor = 0xf8fafc;
+        eq = '2Mg + O₂ —(t°)→ 2MgO (Ngọn lửa trắng chói!)';
+      } else if (chem.id === 'S' && ls.hotplateOn) {
+        this.sfx.playFizz(1.2); ls.flameTimer = 5.0; ls.flameColor = 0x3b82f6;
+        ls.continuousGas = true; ls.gasColor = 0x93c5fd;
+        eq = 'S + O₂ —(t°)→ SO₂↑ (Ngọn lửa xanh lam!)';
       } else if (c.has('H2O2') && c.has('MnO2')) {
-        this.sfx.playFizz(1.5); this.spawnParticles(top, 0xffffff, 70, 0.032); eq = '2H₂O₂ —[MnO₂]→ 2H₂O + O₂↑';
+        this.sfx.playFizz(1.5); ls.continuousGas = true; ls.gasColor = 0xffffff;
+        this.spawnParticles(top, 0xffffff, 70, 0.032); eq = '2H₂O₂ —[MnO₂]→ 2H₂O + O₂↑';
       } else if (c.has('C6H12O6') && c.has('H2SO4')) {
         this.sfx.playSparkPop(); ls.targetColor.setHex(0x0f172a); this.setPrecip(0x090d16);
+        ls.continuousGas = true; ls.gasColor = 0x475569;
         this.spawnParticles(top, 0x334155, 65, 0.03); eq = 'C₆H₁₂O₆ + H₂SO₄(đặc) → 6C (Than đen) + 6H₂O';
       } else if (c.has('I2') && c.has('Starch')) {
         ls.targetColor.setHex(0x1e1b4b); eq = 'I₂ + Hồ tinh bột → Phức chất màu Xanh tím!';
@@ -7076,16 +7112,19 @@ window.CHEMVERSE.REACTIONS = [
         ls.targetColor.setHex(0x059669); eq = '2K₂Cr₂O₇ + 3C₂H₅OH + 8H₂SO₄ → 2Cr₂(SO₄)₃ (Xanh lục) + 3CH₃COOH + 2K₂SO₄ + 11H₂O';
       } else if (c.has('Cu') && c.has('HNO3')) {
         this.sfx.playFizz(1.4); ls.targetColor.setHex(0x0284c7);
+        ls.continuousGas = true; ls.gasColor = 0xb45309;
         this.spawnParticles(top, 0xb45309, 60, 0.028); eq = 'Cu + 4HNO₃(đặc) → Cu(NO₃)₂ + 2NO₂↑ (Nâu đỏ) + 2H₂O';
       } else if ((c.has('CaCO3') || c.has('Na2CO3') || c.has('NaHCO3')) && (c.has('HCl') || c.has('H2SO4') || c.has('CH3COOH'))) {
-        this.sfx.playFizz(1.4); this.spawnParticles(top, 0xffffff, 58, 0.025);
+        this.sfx.playFizz(1.4); ls.continuousGas = true; ls.gasColor = 0xffffff;
+        this.spawnParticles(top, 0xffffff, 58, 0.025);
         eq = c.has('NaHCO3') ? 'NaHCO₃ + CH₃COOH → CH₃COONa + H₂O + CO₂↑' : 'CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑';
       } else if (c.has('CuO') && (c.has('H2SO4') || c.has('HCl'))) {
         ls.targetColor.setHex(0x0284c7); this.precipitateMesh.visible = false; eq = 'CuO (đen) + H₂SO₄ → CuSO₄ (xanh lam) + H₂O';
       } else if (c.has('Cu') && c.has('AgNO3')) {
         ls.targetColor.setHex(0x0284c7); this.setPrecip(0xf1f5f9); eq = 'Cu + 2AgNO₃ → Cu(NO₃)₂ + 2Ag↓';
       } else if (c.has('Al') && (c.has('NaOH') || c.has('KOH'))) {
-        this.sfx.playFizz(1.4); this.spawnParticles(top, 0xffffff, 60, 0.026); eq = '2Al + 2NaOH + 2H₂O → 2NaAlO₂ + 3H₂↑';
+        this.sfx.playFizz(1.4); ls.continuousGas = true; ls.gasColor = 0xffffff;
+        this.spawnParticles(top, 0xffffff, 60, 0.026); eq = '2Al + 2NaOH + 2H₂O → 2NaAlO₂ + 3H₂↑';
       } else if (c.has('FeSO4') && (c.has('NaOH') || c.has('KOH'))) {
         ls.targetColor.setHex(0xdcfce7); this.setPrecip(0x4d7c0f); eq = 'FeSO₄ + 2NaOH → Fe(OH)₂↓ (Trắng xanh) + Na₂SO₄';
       } else if (c.has('Litmus')) {
@@ -7117,7 +7156,9 @@ window.CHEMVERSE.REACTIONS = [
 
     setPrecip(hex) {
       this.labState.precipColor = hex;
+      this.labState.precipTargetScale = 1.25;
       this.precipitateMesh.visible = true;
+      this.precipitateMesh.scale.y = 0.1;
       this.precipitateMesh.material.color.setHex(hex);
     },
 
@@ -7125,7 +7166,9 @@ window.CHEMVERSE.REACTIONS = [
       this.sfx.playPour();
       const ls = this.labState;
       ls.temperature = 25.0; ls.ph = 7.0; ls.volumeMl = 250;
-      ls.targetColor.setHex(0xdbeafe); ls.precipColor = null; this.precipitateMesh.visible = false;
+      ls.targetColor.setHex(0xdbeafe); ls.precipColor = null; ls.precipTargetScale = 0;
+      ls.continuousGas = false; ls.flameTimer = 0; this.flameGroup.visible = false;
+      this.precipitateMesh.visible = false;
       ls.contents = new Set(['H2O']); ls.lastReaction = null;
       while (this.iceGroup.children.length) this.iceGroup.remove(this.iceGroup.children[0]);
       ls.iceCubes = [];
@@ -7230,7 +7273,7 @@ window.CHEMVERSE.REACTIONS = [
     renderGuide() {
       const box = document.getElementById('lab3d-guide-drawer');
       box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <strong>📖 Cẩm Nang 14 Phản Ứng Đặc Sắc</strong>
+        <strong>📖 Cẩm Nang 17 Phản Ứng Đặc Sắc</strong>
         <button class="icon-btn" onclick="document.getElementById('lab3d-guide-drawer').style.display='none'">✕</button>
       </div>` + REACTION_RECIPES_GUIDE.map((r, i) => `
         <button class="lab-chem-btn lab3d-recipe-btn" data-ridx="${i}" style="width:100%;margin-bottom:6px;">
@@ -7242,6 +7285,10 @@ window.CHEMVERSE.REACTIONS = [
           const rec = REACTION_RECIPES_GUIDE[Number(b.getAttribute('data-ridx'))];
           document.getElementById('lab3d-guide-drawer').style.display = 'none';
           this.resetLab();
+          if (rec.heat) {
+            this.toggleBeakerHotplate();
+            this.toggleHotplatePower();
+          }
           rec.chems.forEach((cid, idx) => setTimeout(() => this.addChemical(cid), idx * 600));
         });
       });
@@ -7368,6 +7415,27 @@ window.CHEMVERSE.REACTIONS = [
         }
 
         this.liquidMesh.material.color.lerp(ls.targetColor, 0.08);
+        if (this.precipitateMesh.visible && ls.precipTargetScale > 0) {
+          this.precipitateMesh.scale.y += (ls.precipTargetScale - this.precipitateMesh.scale.y) * 0.06;
+        }
+        if (ls.continuousGas && Math.random() < 0.35) {
+          this.spawnParticles(this.getTop(), ls.gasColor, 2, 0.022);
+        }
+        if (ls.flameTimer > 0) {
+          ls.flameTimer -= dt;
+          this.flameGroup.visible = true;
+          const bp = this.primaryBeaker.position;
+          this.flameGroup.position.set(bp.x, bp.y + 0.11, bp.z);
+          this.flameOuter.material.color.setHex(ls.flameColor);
+          this.flameLight.color.setHex(ls.flameColor);
+          const flick = 0.85 + Math.sin(elapsed * 24) * 0.2;
+          this.flameGroup.scale.set(flick, 0.9 + Math.cos(elapsed * 19) * 0.25, flick);
+          this.flameLight.intensity = 2.2 * flick;
+          if (ls.flameTimer <= 0) {
+            this.flameGroup.visible = false;
+            this.flameLight.intensity = 0;
+          }
+        }
         this.stirBarMesh.rotation.y += dt * (ls.hotplateOn ? 16 : 6);
         if (this.stirRodMesh.visible && this.stirRodMesh.userData.spinTimer > 0) {
           this.stirRodMesh.userData.spinTimer -= dt;
