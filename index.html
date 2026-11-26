@@ -52,52 +52,30 @@
         </div>
       </a>
 
-      <!-- Desktop Navigation Links (8 modules) -->
+      <!-- Clean Dual-Mode Navigation Bar -->
       <nav class="nav-links" id="desktop-nav" aria-label="Điều hướng chính">
         <a href="#home" class="nav-item active" data-route="home">
           <span class="nav-icon" aria-hidden="true">🏠</span>
-          <span class="nav-label">Home</span>
+          <span class="nav-label">Trang chủ</span>
         </a>
-        <a href="#universe" class="nav-item" data-route="universe">
-          <span class="nav-icon" aria-hidden="true">🌌</span>
-          <span class="nav-label">Universe 3D</span>
-        </a>
-        <a href="#simulator" class="nav-item" data-route="simulator">
-          <span class="nav-icon" aria-hidden="true">⚛️</span>
-          <span class="nav-label">Atom Simulator</span>
-        </a>
-        <a href="#periodic-table" class="nav-item" data-route="periodic-table">
-          <span class="nav-icon" aria-hidden="true">🧪</span>
-          <span class="nav-label">Periodic Table</span>
+        <a href="#learning" class="nav-item" data-route="learning">
+          <span class="nav-icon" aria-hidden="true">🎓</span>
+          <span class="nav-label">Học tập</span>
         </a>
         <a href="#virtual-lab" class="nav-item" data-route="virtual-lab">
           <span class="nav-icon" aria-hidden="true">🔬</span>
-          <span class="nav-label">Virtual Lab</span>
-        </a>
-        <a href="#chemquest" class="nav-item" data-route="chemquest">
-          <span class="nav-icon" aria-hidden="true">🚀</span>
-          <span class="nav-label">ChemQuiz</span>
-        </a>
-        <a href="#profile" class="nav-item" data-route="profile">
-          <span class="nav-icon" aria-hidden="true">👤</span>
-          <span class="nav-label">Profile</span>
+          <span class="nav-label">Phòng Lab</span>
         </a>
         <a href="#about" class="nav-item" data-route="about">
           <span class="nav-icon" aria-hidden="true">📘</span>
-          <span class="nav-label">About Project</span>
+          <span class="nav-label">Giới thiệu</span>
         </a>
       </nav>
 
-      <!-- Right Utilities: Dual-Mode Quick Switcher, Language, Theme, Guide & Avatar -->
+      <!-- Right Utilities: Language, Theme & Profile -->
       <div class="nav-utilities">
-        <div class="dual-switcher" id="dual-mode-switcher" role="group" aria-label="Chuyển đổi phân hệ">
-          <button class="dual-sw-btn active" data-branch="home" onclick="CHEMVERSE.navigate('home')" title="Quay lại Trang chủ chia đôi">🏠 Trang chủ</button>
-          <button class="dual-sw-btn" data-branch="learn" onclick="CHEMVERSE.switchBranch('learn')" title="Nhánh 1: Học tập & Khám phá">🎓 Học tập</button>
-          <button class="dual-sw-btn" data-branch="research" onclick="CHEMVERSE.switchBranch('research')" title="Nhánh 2: Phòng Lab 3D">🔬 Phòng Lab</button>
-        </div>
         <button class="btn btn-sm btn-secondary" id="lang-toggle-btn" title="Chuyển ngôn ngữ Tiếng Việt / English" aria-label="Chuyển ngôn ngữ" style="padding:5px 10px;font-size:0.78rem;">🇻🇳 VI</button>
         <button class="icon-btn" id="theme-toggle-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển chế độ Sáng / Tối">🌙</button>
-        <button class="icon-btn" id="quick-guide-btn" title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh" onclick="CHEMVERSE.navigate('about')">❔</button>
         <div class="user-avatar-pill" title="Hồ sơ & Thành tích" style="cursor:pointer;" onclick="CHEMVERSE.navigate('profile')">👨‍🚀</div>
       </div>
 
@@ -116,14 +94,15 @@
       <button class="icon-btn" id="mobile-drawer-close" aria-label="Đóng menu">✕</button>
     </div>
     <nav class="mobile-nav-list">
-      <a href="#home" class="nav-item" data-route="home"><span>🏠</span> Home</a>
-      <a href="#universe" class="nav-item" data-route="universe"><span>🌌</span> Universe 3D</a>
-      <a href="#simulator" class="nav-item" data-route="simulator"><span>⚛️</span> Atom Simulator</a>
-      <a href="#periodic-table" class="nav-item" data-route="periodic-table"><span>🧪</span> Periodic Table</a>
-      <a href="#virtual-lab" class="nav-item" data-route="virtual-lab"><span>🔬</span> Virtual Lab</a>
+      <a href="#home" class="nav-item" data-route="home"><span>🏠</span> Trang chủ</a>
+      <a href="#learning" class="nav-item" data-route="learning"><span>🎓</span> Học tập &amp; Khám phá</a>
+      <a href="#periodic-table" class="nav-item" data-route="periodic-table"><span>🧪</span> Bảng tuần hoàn</a>
+      <a href="#simulator" class="nav-item" data-route="simulator"><span>⚛️</span> Mô phỏng</a>
+      <a href="#universe" class="nav-item" data-route="universe"><span>🌌</span> Vũ trụ 3D</a>
       <a href="#chemquest" class="nav-item" data-route="chemquest"><span>🚀</span> ChemQuiz</a>
-      <a href="#profile" class="nav-item" data-route="profile"><span>👤</span> Profile</a>
-      <a href="#about" class="nav-item" data-route="about"><span>📘</span> About Project</a>
+      <a href="#virtual-lab" class="nav-item" data-route="virtual-lab"><span>🔬</span> Phòng Lab 3D</a>
+      <a href="#profile" class="nav-item" data-route="profile"><span>👤</span> Hồ sơ</a>
+      <a href="#about" class="nav-item" data-route="about"><span>📘</span> Giới thiệu</a>
     </nav>
   </aside>
 

@@ -2200,52 +2200,30 @@ body.light-glass .el-summary-card {
         </div>
       </a>
 
-      <!-- Desktop Navigation Links (8 modules) -->
+      <!-- Clean Dual-Mode Navigation Bar -->
       <nav class="nav-links" id="desktop-nav" aria-label="Điều hướng chính">
         <a href="#home" class="nav-item active" data-route="home">
           <span class="nav-icon" aria-hidden="true">🏠</span>
-          <span class="nav-label">Home</span>
+          <span class="nav-label">Trang chủ</span>
         </a>
-        <a href="#universe" class="nav-item" data-route="universe">
-          <span class="nav-icon" aria-hidden="true">🌌</span>
-          <span class="nav-label">Universe 3D</span>
-        </a>
-        <a href="#simulator" class="nav-item" data-route="simulator">
-          <span class="nav-icon" aria-hidden="true">⚛️</span>
-          <span class="nav-label">Atom Simulator</span>
-        </a>
-        <a href="#periodic-table" class="nav-item" data-route="periodic-table">
-          <span class="nav-icon" aria-hidden="true">🧪</span>
-          <span class="nav-label">Periodic Table</span>
+        <a href="#learning" class="nav-item" data-route="learning">
+          <span class="nav-icon" aria-hidden="true">🎓</span>
+          <span class="nav-label">Học tập</span>
         </a>
         <a href="#virtual-lab" class="nav-item" data-route="virtual-lab">
           <span class="nav-icon" aria-hidden="true">🔬</span>
-          <span class="nav-label">Virtual Lab</span>
-        </a>
-        <a href="#chemquest" class="nav-item" data-route="chemquest">
-          <span class="nav-icon" aria-hidden="true">🚀</span>
-          <span class="nav-label">ChemQuiz</span>
-        </a>
-        <a href="#profile" class="nav-item" data-route="profile">
-          <span class="nav-icon" aria-hidden="true">👤</span>
-          <span class="nav-label">Profile</span>
+          <span class="nav-label">Phòng Lab</span>
         </a>
         <a href="#about" class="nav-item" data-route="about">
           <span class="nav-icon" aria-hidden="true">📘</span>
-          <span class="nav-label">About Project</span>
+          <span class="nav-label">Giới thiệu</span>
         </a>
       </nav>
 
-      <!-- Right Utilities: Dual-Mode Quick Switcher, Language, Theme, Guide & Avatar -->
+      <!-- Right Utilities: Language, Theme & Profile -->
       <div class="nav-utilities">
-        <div class="dual-switcher" id="dual-mode-switcher" role="group" aria-label="Chuyển đổi phân hệ">
-          <button class="dual-sw-btn active" data-branch="home" onclick="CHEMVERSE.navigate('home')" title="Quay lại Trang chủ chia đôi">🏠 Trang chủ</button>
-          <button class="dual-sw-btn" data-branch="learn" onclick="CHEMVERSE.switchBranch('learn')" title="Nhánh 1: Học tập & Khám phá">🎓 Học tập</button>
-          <button class="dual-sw-btn" data-branch="research" onclick="CHEMVERSE.switchBranch('research')" title="Nhánh 2: Phòng Lab 3D">🔬 Phòng Lab</button>
-        </div>
         <button class="btn btn-sm btn-secondary" id="lang-toggle-btn" title="Chuyển ngôn ngữ Tiếng Việt / English" aria-label="Chuyển ngôn ngữ" style="padding:5px 10px;font-size:0.78rem;">🇻🇳 VI</button>
         <button class="icon-btn" id="theme-toggle-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển chế độ Sáng / Tối">🌙</button>
-        <button class="icon-btn" id="quick-guide-btn" title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh" onclick="CHEMVERSE.navigate('about')">❔</button>
         <div class="user-avatar-pill" title="Hồ sơ & Thành tích" style="cursor:pointer;" onclick="CHEMVERSE.navigate('profile')">👨‍🚀</div>
       </div>
 
@@ -2264,14 +2242,15 @@ body.light-glass .el-summary-card {
       <button class="icon-btn" id="mobile-drawer-close" aria-label="Đóng menu">✕</button>
     </div>
     <nav class="mobile-nav-list">
-      <a href="#home" class="nav-item" data-route="home"><span>🏠</span> Home</a>
-      <a href="#universe" class="nav-item" data-route="universe"><span>🌌</span> Universe 3D</a>
-      <a href="#simulator" class="nav-item" data-route="simulator"><span>⚛️</span> Atom Simulator</a>
-      <a href="#periodic-table" class="nav-item" data-route="periodic-table"><span>🧪</span> Periodic Table</a>
-      <a href="#virtual-lab" class="nav-item" data-route="virtual-lab"><span>🔬</span> Virtual Lab</a>
+      <a href="#home" class="nav-item" data-route="home"><span>🏠</span> Trang chủ</a>
+      <a href="#learning" class="nav-item" data-route="learning"><span>🎓</span> Học tập &amp; Khám phá</a>
+      <a href="#periodic-table" class="nav-item" data-route="periodic-table"><span>🧪</span> Bảng tuần hoàn</a>
+      <a href="#simulator" class="nav-item" data-route="simulator"><span>⚛️</span> Mô phỏng</a>
+      <a href="#universe" class="nav-item" data-route="universe"><span>🌌</span> Vũ trụ 3D</a>
       <a href="#chemquest" class="nav-item" data-route="chemquest"><span>🚀</span> ChemQuiz</a>
-      <a href="#profile" class="nav-item" data-route="profile"><span>👤</span> Profile</a>
-      <a href="#about" class="nav-item" data-route="about"><span>📘</span> About Project</a>
+      <a href="#virtual-lab" class="nav-item" data-route="virtual-lab"><span>🔬</span> Phòng Lab 3D</a>
+      <a href="#profile" class="nav-item" data-route="profile"><span>👤</span> Hồ sơ</a>
+      <a href="#about" class="nav-item" data-route="about"><span>📘</span> Giới thiệu</a>
     </nav>
   </aside>
 
@@ -3441,14 +3420,10 @@ window.CHEMVERSE.REACTIONS = [
   };
 
   CV.updateBranchSwitcher = function (route) {
-    const sw = document.getElementById('dual-mode-switcher');
-    if (!sw) return;
-    let active = 'home';
-    if (route === 'virtual-lab') active = 'research';
-    else if (['learning', 'periodic-table', 'universe', 'simulator', 'chemquest'].includes(route)) active = 'learn';
-    CV.state.activeBranch = active;
-    sw.querySelectorAll('.dual-sw-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.getAttribute('data-branch') === active);
+    const isLearnSub = ['learning', 'periodic-table', 'universe', 'simulator', 'chemquest'].includes(route);
+    CV.state.activeBranch = route === 'virtual-lab' ? 'research' : isLearnSub ? 'learn' : 'home';
+    document.querySelectorAll('#desktop-nav [data-route="learning"]').forEach((el) => {
+      el.classList.toggle('active', isLearnSub);
     });
   };
 
@@ -7950,21 +7925,30 @@ window.CHEMVERSE.REACTIONS = [
           </div>
 
           <!-- 2 PHẦN ĐỘC LẬP: PHẦN 1 (QUIZ) & PHẦN 2 (BÀI TẬP HẰNG NGÀY) -->
-          <div class="dual-hub-grid" style="margin-top:0;margin-bottom:26px;">
-            <!-- PHẦN 1: QUIZ -->
+          <div class="dual-hub-grid" style="margin-top:0;align-items:stretch;">
+            <!-- PHẦN 1: QUIZ & TRÒ CHƠI NHANH -->
             <section class="dual-branch-card learn glass-surface">
               <div class="dual-branch-badge">PHẦN 1 • TRẮC NGHIỆM NHANH &amp; ĐỐ VUI</div>
               <div class="dual-branch-head">
                 <span class="dual-branch-icon">⚡</span>
                 <div>
                   <h2>1. Quiz Phản Xạ Tốc Độ</h2>
-                  <p>Nhận diện ký hiệu, đoán nguyên tố, số proton/electron, cấu hình e &amp; phân loại nhóm với đồng hồ đếm ngược 15 giây + chuỗi combo + âm thanh.</p>
+                  <p>Kiểm tra phản xạ kiến thức (ký hiệu, nguyên tố, cấu hình e, nhóm) với đồng hồ 15s, chuỗi combo &amp; âm thanh.</p>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;">
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                 <button class="btn btn-primary btn-sm" onclick="CHEMVERSE.modules.chemquest.startQuiz('easy')">🟢 Dễ</button>
                 <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startQuiz('medium')">🟡 Trung bình</button>
                 <button class="btn btn-secondary btn-sm" style="border-color:rgba(248,113,113,0.45);color:#FCA5A5;" onclick="CHEMVERSE.modules.chemquest.startQuiz('hard')">🔴 Khó</button>
+              </div>
+              <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:12px;margin-top:4px;">
+                <div style="font-size:0.74rem;color:var(--text-muted);font-weight:700;margin-bottom:8px;">🎮 ĐỐ VUI TƯƠNG TÁC NHANH</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDecoder()">🛸 Giải mã Nguyên tố</button>
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startSynth()">⚗️ Ghép Hợp chất</button>
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startBalancer()">⚖️ Cân bằng PT</button>
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startMemory()">🃏 Lật thẻ Ghép đôi</button>
+                </div>
               </div>
             </section>
 
@@ -7975,54 +7959,19 @@ window.CHEMVERSE.REACTIONS = [
                 <span class="dual-branch-icon">📅</span>
                 <div>
                   <h2>2. Bài Tập Hằng Ngày</h2>
-                  <p>Tình huống thực tế (gỉ sét, khử mùi tanh cá, nước ngọt có gas, dập cháy, vôi tôi, mưa axit...) dạng trắc nghiệm, kéo-thả ghép đôi &amp; điền khuyết kèm Gợi ý.</p>
+                  <p>Luyện tập nhẹ nhàng qua các hiện tượng quen thuộc quanh ta, hỗ trợ 3 dạng bài kèm Gợi ý &amp; Lời giải chi tiết.</p>
                 </div>
               </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+              <ul class="dual-branch-list">
+                <li>🚲 <strong>Tình huống thực tế:</strong> Gỉ sét đồ sắt, khử mùi tanh cá, nước ngọt có gas, dập cháy, kem đánh răng</li>
+                <li>🔗 <strong>Kéo-thả ghép đôi:</strong> Nối hiện tượng đời sống với chất/nguyên nhân hóa học</li>
+                <li>✏️ <strong>Điền khuyết &amp; Đúng/Sai:</strong> Vôi tôi Ca(OH)₂, mưa axit, phân biệt phân bón</li>
+              </ul>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:6px;">
                 <button class="btn btn-primary btn-sm" style="flex:1;background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(true)">🌟 Thử thách mỗi ngày (4 bài)</button>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(false)">📚 Toàn bộ kho (${DAILY_PRACTICE_BANK.length} bài)</button>
+                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(false)">📚 Toàn bộ (${DAILY_PRACTICE_BANK.length} bài)</button>
               </div>
             </section>
-          </div>
-
-          <!-- TRÒ CHƠI TƯƠNG TÁC BỔ TRỢ -->
-          <div style="font-size:0.84rem;color:var(--text-muted);font-weight:700;margin-bottom:10px;letter-spacing:0.04em;">🎮 TRÒ CHƠI HÓA HỌC BỔ TRỢ</div>
-          <div class="quest-hub">
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">🛸</div>
-                <h3>Giải Mã Hành Tinh Nguyên Tố</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Đọc tối đa 3 gợi ý để tìm nguyên tố bí ẩn.</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDecoder()">Bắt đầu Giải mã</button>
-            </article>
-
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">⚗️</div>
-                <h3>Xưởng Ghép Hợp Chất</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Chọn đúng tỷ lệ nguyên tử tổng hợp phân tử (H₂O, NaCl...).</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startSynth()">Vào Xưởng Ghép</button>
-            </article>
-
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">⚖️</div>
-                <h3>Cân Bằng Phương Trình</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Điền hệ số cân bằng nhanh các phương trình SGK.</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startBalancer()">Thử thách Cân bằng</button>
-            </article>
-
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">🃏</div>
-                <h3>Lật Thẻ Ghép Đôi</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Ghép ký hiệu hóa học với tên &amp; ứng dụng quen thuộc.</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startMemory()">Chơi Lật Thẻ</button>
-            </article>
           </div>
         </div>
       `;

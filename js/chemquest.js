@@ -295,21 +295,30 @@
           </div>
 
           <!-- 2 PHẦN ĐỘC LẬP: PHẦN 1 (QUIZ) & PHẦN 2 (BÀI TẬP HẰNG NGÀY) -->
-          <div class="dual-hub-grid" style="margin-top:0;margin-bottom:26px;">
-            <!-- PHẦN 1: QUIZ -->
+          <div class="dual-hub-grid" style="margin-top:0;align-items:stretch;">
+            <!-- PHẦN 1: QUIZ & TRÒ CHƠI NHANH -->
             <section class="dual-branch-card learn glass-surface">
               <div class="dual-branch-badge">PHẦN 1 • TRẮC NGHIỆM NHANH &amp; ĐỐ VUI</div>
               <div class="dual-branch-head">
                 <span class="dual-branch-icon">⚡</span>
                 <div>
                   <h2>1. Quiz Phản Xạ Tốc Độ</h2>
-                  <p>Nhận diện ký hiệu, đoán nguyên tố, số proton/electron, cấu hình e &amp; phân loại nhóm với đồng hồ đếm ngược 15 giây + chuỗi combo + âm thanh.</p>
+                  <p>Kiểm tra phản xạ kiến thức (ký hiệu, nguyên tố, cấu hình e, nhóm) với đồng hồ 15s, chuỗi combo &amp; âm thanh.</p>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;">
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                 <button class="btn btn-primary btn-sm" onclick="CHEMVERSE.modules.chemquest.startQuiz('easy')">🟢 Dễ</button>
                 <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startQuiz('medium')">🟡 Trung bình</button>
                 <button class="btn btn-secondary btn-sm" style="border-color:rgba(248,113,113,0.45);color:#FCA5A5;" onclick="CHEMVERSE.modules.chemquest.startQuiz('hard')">🔴 Khó</button>
+              </div>
+              <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:12px;margin-top:4px;">
+                <div style="font-size:0.74rem;color:var(--text-muted);font-weight:700;margin-bottom:8px;">🎮 ĐỐ VUI TƯƠNG TÁC NHANH</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDecoder()">🛸 Giải mã Nguyên tố</button>
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startSynth()">⚗️ Ghép Hợp chất</button>
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startBalancer()">⚖️ Cân bằng PT</button>
+                  <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startMemory()">🃏 Lật thẻ Ghép đôi</button>
+                </div>
               </div>
             </section>
 
@@ -320,54 +329,19 @@
                 <span class="dual-branch-icon">📅</span>
                 <div>
                   <h2>2. Bài Tập Hằng Ngày</h2>
-                  <p>Tình huống thực tế (gỉ sét, khử mùi tanh cá, nước ngọt có gas, dập cháy, vôi tôi, mưa axit...) dạng trắc nghiệm, kéo-thả ghép đôi &amp; điền khuyết kèm Gợi ý.</p>
+                  <p>Luyện tập nhẹ nhàng qua các hiện tượng quen thuộc quanh ta, hỗ trợ 3 dạng bài kèm Gợi ý &amp; Lời giải chi tiết.</p>
                 </div>
               </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+              <ul class="dual-branch-list">
+                <li>🚲 <strong>Tình huống thực tế:</strong> Gỉ sét đồ sắt, khử mùi tanh cá, nước ngọt có gas, dập cháy, kem đánh răng</li>
+                <li>🔗 <strong>Kéo-thả ghép đôi:</strong> Nối hiện tượng đời sống với chất/nguyên nhân hóa học</li>
+                <li>✏️ <strong>Điền khuyết &amp; Đúng/Sai:</strong> Vôi tôi Ca(OH)₂, mưa axit, phân biệt phân bón</li>
+              </ul>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:6px;">
                 <button class="btn btn-primary btn-sm" style="flex:1;background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(true)">🌟 Thử thách mỗi ngày (4 bài)</button>
-                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(false)">📚 Toàn bộ kho (${DAILY_PRACTICE_BANK.length} bài)</button>
+                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(false)">📚 Toàn bộ (${DAILY_PRACTICE_BANK.length} bài)</button>
               </div>
             </section>
-          </div>
-
-          <!-- TRÒ CHƠI TƯƠNG TÁC BỔ TRỢ -->
-          <div style="font-size:0.84rem;color:var(--text-muted);font-weight:700;margin-bottom:10px;letter-spacing:0.04em;">🎮 TRÒ CHƠI HÓA HỌC BỔ TRỢ</div>
-          <div class="quest-hub">
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">🛸</div>
-                <h3>Giải Mã Hành Tinh Nguyên Tố</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Đọc tối đa 3 gợi ý để tìm nguyên tố bí ẩn.</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDecoder()">Bắt đầu Giải mã</button>
-            </article>
-
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">⚗️</div>
-                <h3>Xưởng Ghép Hợp Chất</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Chọn đúng tỷ lệ nguyên tử tổng hợp phân tử (H₂O, NaCl...).</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startSynth()">Vào Xưởng Ghép</button>
-            </article>
-
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">⚖️</div>
-                <h3>Cân Bằng Phương Trình</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Điền hệ số cân bằng nhanh các phương trình SGK.</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startBalancer()">Thử thách Cân bằng</button>
-            </article>
-
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:1.8rem;margin-bottom:6px;">🃏</div>
-                <h3>Lật Thẻ Ghép Đôi</h3>
-                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Ghép ký hiệu hóa học với tên &amp; ứng dụng quen thuộc.</p>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startMemory()">Chơi Lật Thẻ</button>
-            </article>
           </div>
         </div>
       `;

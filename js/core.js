@@ -663,14 +663,10 @@
   };
 
   CV.updateBranchSwitcher = function (route) {
-    const sw = document.getElementById('dual-mode-switcher');
-    if (!sw) return;
-    let active = 'home';
-    if (route === 'virtual-lab') active = 'research';
-    else if (['learning', 'periodic-table', 'universe', 'simulator', 'chemquest'].includes(route)) active = 'learn';
-    CV.state.activeBranch = active;
-    sw.querySelectorAll('.dual-sw-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.getAttribute('data-branch') === active);
+    const isLearnSub = ['learning', 'periodic-table', 'universe', 'simulator', 'chemquest'].includes(route);
+    CV.state.activeBranch = route === 'virtual-lab' ? 'research' : isLearnSub ? 'learn' : 'home';
+    document.querySelectorAll('#desktop-nav [data-route="learning"]').forEach((el) => {
+      el.classList.toggle('active', isLearnSub);
     });
   };
 
