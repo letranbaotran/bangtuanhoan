@@ -9418,85 +9418,202 @@ window.CHEMVERSE.REACTIONS = [
   CV.modules.tutor = {
     init(container) {
       this.container = container;
+      this.pendingQuiz = null;
       this.messages = [
-        { role: 'bot', text: 'Xin chào! Tôi là **AI Chemistry Tutor** của CHEMVERSE. Mọi câu trả lời đều được truy xuất trực tiếp từ **Cơ sở dữ liệu IUPAC (118 nguyên tố) & Kho phản ứng đã kiểm chứng** — không tự bịa số liệu.\n\nBạn có thể hỏi: *"Thông tin về Fe"*, *"Cân bằng Na + H2O"*, *"Quy luật bán kính nguyên tử"*, hoặc *"Cho tôi 1 câu hỏi luyện tập"*.' }
+        {
+          role: 'bot',
+          text: 'Xin chào! Tôi là **AI Chemistry Tutor** của CHEMVERSE. Mọi câu trả lời đều truy xuất trực tiếp từ **Cơ sở dữ liệu IUPAC (118 nguyên tố) & Kho phản ứng kiểm chứng**.\n\nBạn có thể hỏi:\n• **Tra cứu nguyên tố:** *"Thông tin Iron"*, *"Z=29"*\n• **Tính khối lượng mol:** *"Tính M(H2SO4)"*, *"M(CaCO3)"*\n• **So sánh 2 nguyên tố:** *"So sánh Na và K"*\n• **Cân bằng & hiện tượng:** *"Na + H2O"*, *"Zn + HCl"*\n• **Lý thuyết & Luyện tập:** *"Quy luật bán kính"*, *"Cho 1 câu hỏi"*'
+        }
       ];
       this.render();
     },
-    reply(query) {
-      const q = (query || '').trim().toLowerCase();
-      if (!q) return 'Vui lòng nhập câu hỏi hóa học bạn muốn tra cứu.';
-      // 1. Check element match
-      const el = CV.ELEMENTS.find((e) =>
-        q.includes(` ${e.symbol.toLowerCase()} `) ||
-        q === e.symbol.toLowerCase() ||
-        q.includes(e.nameVi.toLowerCase()) ||
-        q.includes(e.name.toLowerCase()) ||
-        q.includes(`z=${e.number}`) || q.includes(`z = ${e.number}`)
-      );
-      if (el && (q.includes('thông tin') || q.includes('cấu hình') || q.includes('nguyên tố') || q.length <= 16)) {
-        return `**${el.number}. ${el.symbol} – ${el.nameVi} (${el.name})** [Nguồn: IUPAC]\n• Cấu hình electron: \`${el.electronConfig}\` (Lớp: [${el.shells.join(', ')}])\n• Vị trí: Chu kỳ ${el.period}, Nhóm ${CV.groupRoman(el.group)}\n• Nguyên tử khối: ${el.atomicMass} u • Độ âm điện: ${el.electronegativity ?? '—'} • I₁: ${el.ionizationEnergy ?? '—'} kJ/mol\n• Đặc điểm: ${el.summary}`;
+
+    formatText(txt) {
+      return String(txt)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="mono" style="color:#00E5FF;background:rgba(0,229,255,0.1);padding:1px 5px;border-radius:4px;">$1</code>');
+    },
+
+    calcMolarMass(formula) {
+      const clean = formula.replace(/\s+/g, '');
+      const stack = [{}];
+      let i = 0;
+      while (i < clean.length) {
+        const ch = clean[i];
+        if (ch === '(' || ch === '[') {
+          stack.push({});
+          i++;
+        } else if (ch === ')' || ch === ']') {
+          i++;
+          let numStr = '';
+          while (i < clean.length && /\d/.test(clean[i])) { numStr += clean[i++]; }
+          const mult = Number(numStr || 1);
+          const top = stack.pop();
+          const cur = stack[stack.length - 1];
+          for (const [sym, cnt] of Object.entries(top)) cur[sym] = (cur[sym] || 0) + cnt * mult;
+        } else if (/[A-Z]/.test(ch)) {
+          let sym = ch; i++;
+          while (i < clean.length && /[a-z]/.test(clean[i])) sym += clean[i++];
+          let numStr = '';
+          while (i < clean.length && /\d/.test(clean[i])) numStr += clean[i++];
+          const cnt = Number(numStr || 1);
+          const cur = stack[stack.length - 1];
+          cur[sym] = (cur[sym] || 0) + cnt;
+        } else {
+          return null;
+        }
       }
-      // 2. Check reaction / equation match
+      if (stack.length !== 1) return null;
+      const counts = stack[0];
+      const keys = Object.keys(counts);
+      if (!keys.length) return null;
+      let total = 0;
+      const parts = [];
+      for (const sym of keys) {
+        const el = CV.ELEMENTS.find((e) => e.symbol === sym);
+        if (!el) return null;
+        const m = Number(el.atomicMass);
+        total += m * counts[sym];
+        parts.push(`${sym}: ${m} × ${counts[sym]}`);
+      }
+      return { total: total.toFixed(2), parts: parts.join(' + ') };
+    },
+
+    findElementsInQuery(q) {
+      const ql = q.toLowerCase();
+      const hits = [];
+      for (const e of CV.ELEMENTS) {
+        const symRe = new RegExp(`(^|[^a-z0-9])${e.symbol.toLowerCase()}([^a-z0-9]|$)`);
+        if (
+          symRe.test(ql) ||
+          ql.includes(e.name.toLowerCase()) ||
+          ql.includes(e.nameVi.toLowerCase()) ||
+          ql.includes(`z=${e.number}`) ||
+          ql.includes(`z = ${e.number}`)
+        ) {
+          hits.push(e);
+        }
+      }
+      return hits;
+    },
+
+    reply(query) {
+      const raw = (query || '').trim();
+      const q = raw.toLowerCase();
+      if (!q) return 'Vui lòng nhập câu hỏi hóa học bạn muốn tra cứu.';
+
+      // Check pending practice answer
+      if (this.pendingQuiz && !q.includes('câu hỏi') && !q.includes('luyện tập')) {
+        const ansEl = this.pendingQuiz;
+        this.pendingQuiz = null;
+        const ok = q.includes(String(ansEl.period)) || q.includes(ansEl.symbol.toLowerCase()) || q.includes(ansEl.electronConfig.toLowerCase());
+        return `${ok ? '✅ **Chính xác!**' : '📌 **Đáp án chuẩn IUPAC:**'} Nguyên tố **${ansEl.name} (${ansEl.symbol}, Z=${ansEl.number})** ở **Chu kỳ ${ansEl.period}, Nhóm ${CV.groupRoman(ansEl.group)}**, cấu hình \`${ansEl.electronConfig}\`.`;
+      }
+
+      // 1. Molar mass calculator
+      const mMatch = raw.match(/(?:M\s*\(\s*|khối lượng mol\s+(?:của\s+)?|molar mass\s+)([A-Za-z0-9()\[\]]+)/i);
+      if (mMatch) {
+        const res = this.calcMolarMass(mMatch[1]);
+        if (res) {
+          return `**Khối lượng mol của \`${mMatch[1]}\` (Chuẩn IUPAC):**\n• Công thức tính: ${res.parts}\n• Kết quả: **M(${mMatch[1]}) = ${res.total} g/mol**`;
+        }
+      }
+
+      // 2. Compare 2 elements
+      const foundEls = this.findElementsInQuery(raw);
+      if ((q.includes('so sánh') || q.includes('khác nhau') || q.includes('vs')) && foundEls.length >= 2) {
+        const [a, b] = foundEls;
+        return `**So sánh ${a.name} (${a.symbol}) và ${b.name} (${b.symbol}) [IUPAC]:**\n• **Số hiệu Z:** ${a.symbol} = ${a.number} | ${b.symbol} = ${b.number}\n• **Vị trí:** ${a.symbol} (CK ${a.period}, N ${CV.groupRoman(a.group)}) | ${b.symbol} (CK ${b.period}, N ${CV.groupRoman(b.group)})\n• **Cấu hình e:** \`${a.electronConfig}\` | \`${b.electronConfig}\`\n• **Bán kính nguyên tử:** ${a.atomicRadius ?? '—'} pm | ${b.atomicRadius ?? '—'} pm\n• **Độ âm điện (χ):** ${a.electronegativity ?? '—'} | ${b.electronegativity ?? '—'}`;
+      }
+
+      // 3. Reaction / equation lookup
       if (CV.REACTIONS) {
         const rx = CV.REACTIONS.find((r) =>
           (r.equation && q.includes(r.equation.split('→')[0].trim().toLowerCase())) ||
-          (r.reagents && r.reagents.every((rg) => q.includes(rg.toLowerCase())))
+          (r.reagents && r.reagents.length >= 2 && r.reagents.every((rg) => q.includes(rg.toLowerCase())))
         );
         if (rx) {
-          return `**Phương trình đã kiểm chứng:**\n\`${rx.equation}\`\n• **Hiện tượng:** ${rx.phenomenon || 'Có phản ứng hóa học xảy ra.'}\n• **Hướng dẫn cân bằng:** Đếm số nguyên tử từng nguyên tố ở hai vế (ưu tiên kim loại → phi kim → H → O) để bảo toàn khối lượng.\n• **Lưu ý:** ${rx.safety || 'Thực hiện thí nghiệm với lượng hóa chất vừa đủ và đeo kính bảo hộ.'}`;
+          return `**Phương trình đã kiểm chứng:**\n\`${rx.equation}\`\n• **Hiện tượng:** ${rx.phenomenon || 'Có phản ứng hóa học xảy ra.'}\n• **Hướng dẫn cân bằng:** Đếm số nguyên tử từng nguyên tố ở hai vế (ưu tiên kim loại → phi kim → H → O).\n• **An toàn:** ${rx.safety || 'Thực hiện với lượng nhỏ và đeo kính bảo hộ.'}`;
         }
       }
-      // 3. Periodic trend explanation
+
+      // 4. Single element lookup
+      if (foundEls.length >= 1) {
+        const el = foundEls[0];
+        return `**${el.number}. ${el.symbol} – ${el.name}** [Nguồn: IUPAC]\n• Cấu hình electron: \`${el.electronConfig}\` (Lớp: [${el.shells.join(', ')}])\n• Vị trí: Chu kỳ ${el.period}, Nhóm ${CV.groupRoman(el.group)} • Hóa trị: ${CV.commonValence(el)}\n• Nguyên tử khối: ${el.atomicMass} u • Độ âm điện: ${el.electronegativity ?? '—'} • I₁: ${el.ionizationEnergy ?? '—'} kJ/mol\n• Đặc điểm: ${el.summary}`;
+      }
+
+      // 5. Theory: Periodic trends / Aufbau / Bonding
       if (q.includes('bán kính') || q.includes('độ âm điện') || q.includes('ion hóa') || q.includes('quy luật')) {
-        return '**Quy luật tuần hoàn (Đã kiểm chứng trên 118 nguyên tố IUPAC):**\n• **Trong 1 chu kỳ (trái → phải):** Điện tích hạt nhân Z⁺ tăng, số lớp e không đổi → lực hút vỏ mạnh hơn → **Bán kính giảm**, **Độ âm điện & I₁ tăng**.\n• **Trong 1 nhóm A (trên → dưới):** Số lớp electron tăng nhanh → **Bán kính tăng**, **Độ âm điện & I₁ giảm**.\n👉 Bạn có thể vào mục **Research → Trends & Analyzer** để xem đồ thị thực nghiệm!';
+        return '**Quy luật tuần hoàn (Đã kiểm chứng trên 118 nguyên tố IUPAC):**\n• **Trong 1 chu kỳ (trái → phải):** Điện tích hạt nhân Z⁺ tăng, số lớp e không đổi → lực hút vỏ mạnh hơn → **Bán kính giảm**, **Độ âm điện & I₁ tăng**.\n• **Trong 1 nhóm A (trên → dưới):** Số lớp electron tăng nhanh → **Bán kính tăng**, **Độ âm điện & I₁ giảm**.';
       }
-      // 4. Practice question
+      if (q.includes('aufbau') || q.includes('pauli') || q.includes('hund') || q.includes('nguyên lý')) {
+        return '**3 Nguyên lý phân bố Electron:**\n• **Aufbau (Vững bền):** Electron điền vào phân lớp có năng lượng từ thấp đến cao (`1s → 2s → 2p → 3s → 3p → 4s → 3d...`).\n• **Pauli:** Mỗi ô orbital chứa tối đa 2 electron có spin ngược dấu (`↑↓`).\n• **Hund:** Trong cùng phân lớp, electron phân bố vào các ô sao cho số electron độc thân là tối đa.';
+      }
+
+      // 6. Practice question
       if (q.includes('luyện tập') || q.includes('câu hỏi') || q.includes('bài tập')) {
-        const sample = CV.ELEMENTS[(new Date().getSeconds() * 3) % 30];
-        return `**Câu hỏi luyện tập nhanh (Dữ liệu IUPAC):**\nNguyên tố **${sample.nameVi} (${sample.symbol})** có số hiệu nguyên tử Z = ${sample.number}. Hãy xác định vị trí (Chu kỳ, Nhóm) và cấu hình electron của ${sample.symbol}?\n\n💡 *Gợi ý:* Vào Bảng tuần hoàn hoặc gõ \`"Thông tin về ${sample.symbol}"\` để đối chiếu đáp án chính xác!`;
+        const sample = CV.ELEMENTS[(new Date().getSeconds() * 3 + this.messages.length) % 30];
+        this.pendingQuiz = sample;
+        return `**Câu hỏi luyện tập nhanh (Dữ liệu IUPAC):**\nNguyên tố **${sample.name} (${sample.symbol})** có số hiệu nguyên tử Z = ${sample.number}. Hãy xác định **Chu kỳ, Nhóm** hoặc **cấu hình electron** của ${sample.symbol}? (Nhập câu trả lời của bạn để tôi chấm ngay!)`;
       }
-      return '⚠️ Nội dung này chưa có trong cơ sở dữ liệu đã kiểm chứng của CHEMVERSE (tôi không tự suy đoán số liệu). Hãy thử hỏi về **118 nguyên tố**, **cân bằng phản ứng quen thuộc** (vd: *Na + H2O*, *Zn + HCl*), hoặc **quy luật tuần hoàn**!';
+
+      return '⚠️ Nội dung này chưa có trong cơ sở dữ liệu kiểm chứng của CHEMVERSE (tôi không tự suy đoán số liệu). Hãy thử hỏi:\n• *"Thông tin Iron"* hoặc *"Z=29"*\n• *"Tính M(H2SO4)"*\n• *"So sánh Na và K"*\n• *"Na + H2O"*';
     },
+
     render() {
       this.container.innerHTML = `
         <div class="page-container">
           <div class="section-header" style="margin-bottom:16px;">
             <div>
               <h2 class="section-title">🤖 AI Chemistry Tutor (Trợ Lý Dữ Liệu Kiểm Chứng)</h2>
-              <p class="section-subtitle">Giải thích kiến thức, hướng dẫn cân bằng phương trình &amp; phân tích hiện tượng dựa trên dữ liệu IUPAC</p>
+              <p class="section-subtitle">Tra cứu nguyên tố IUPAC, tính khối lượng mol, so sánh nguyên tố, cân bằng phương trình &amp; luyện tập tương tác</p>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('learning')">← Về Học tập</button>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary btn-sm" id="tutor-clear-btn">🗑️ Xóa hội thoại</button>
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('learning')">← Về Học tập</button>
+            </div>
           </div>
-          <div class="glass-surface" style="padding:18px;border-radius:16px;max-width:860px;margin:0 auto;">
-            <div id="tutor-chat-log" style="display:flex;flex-direction:column;gap:10px;max-height:400px;overflow-y:auto;margin-bottom:14px;">
+          <div class="glass-surface" style="padding:18px;border-radius:16px;max-width:880px;margin:0 auto;">
+            <div id="tutor-chat-log" style="display:flex;flex-direction:column;gap:10px;height:380px;overflow-y:auto;margin-bottom:14px;padding-right:4px;">
               ${this.messages.map((m) => `
-                <div class="glass-surface" style="padding:12px 14px;border-radius:12px;align-self:${m.role === 'user' ? 'flex-end' : 'flex-start'};max-width:88%;background:${m.role === 'user' ? 'rgba(0,229,255,0.16)' : 'rgba(15,23,42,0.7)'};white-space:pre-line;font-size:0.88rem;">
-                  ${m.text}
+                <div class="glass-surface" style="padding:12px 14px;border-radius:12px;align-self:${m.role === 'user' ? 'flex-end' : 'flex-start'};max-width:88%;background:${m.role === 'user' ? 'rgba(0,229,255,0.16)' : 'rgba(15,23,42,0.75)'};border-color:${m.role === 'user' ? 'rgba(0,229,255,0.45)' : 'rgba(255,255,255,0.1)'};white-space:pre-line;font-size:0.88rem;line-height:1.5;">
+                  ${this.formatText(m.text)}
                 </div>`).join('')}
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Thông tin về Fe">Thông tin Fe</button>
-              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Na + H2O">Cân bằng Na + H2O</button>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Thông tin Iron">Thông tin Iron (Fe)</button>
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Tính M(H2SO4)">Tính M(H₂SO₄)</button>
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="So sánh Na và K">So sánh Na &amp; K</button>
+              <button class="btn btn-secondary btn-sm tutor-chip" data-q="Na + H2O">Cân bằng Na + H₂O</button>
               <button class="btn btn-secondary btn-sm tutor-chip" data-q="Quy luật bán kính nguyên tử">Quy luật bán kính</button>
               <button class="btn btn-secondary btn-sm tutor-chip" data-q="Cho tôi 1 câu hỏi luyện tập">Câu hỏi luyện tập</button>
             </div>
             <div style="display:flex;gap:8px;">
-              <input id="tutor-input" class="input-field" style="flex:1;" placeholder="Hỏi về nguyên tố, phản ứng hoặc quy luật tuần hoàn..." />
+              <input id="tutor-input" class="input-field" style="flex:1;" placeholder="Hỏi nguyên tố, tính M(H2SO4), so sánh Na và K, cân bằng Na + H2O..." />
               <button class="btn btn-primary" id="tutor-send">Gửi</button>
             </div>
           </div>
         </div>
       `;
+      const log = document.getElementById('tutor-chat-log');
+      if (log) log.scrollTop = log.scrollHeight;
+
       const send = (txt) => {
-        const q = (txt ?? document.getElementById('tutor-input').value).trim();
+        const inp = document.getElementById('tutor-input');
+        const q = (txt ?? inp.value).trim();
         if (!q) return;
         this.messages.push({ role: 'user', text: q });
         this.messages.push({ role: 'bot', text: this.reply(q) });
         this.render();
+        const nextInp = document.getElementById('tutor-input');
+        if (nextInp) nextInp.focus();
       };
       document.getElementById('tutor-send').addEventListener('click', () => send());
       document.getElementById('tutor-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
+      document.getElementById('tutor-clear-btn').addEventListener('click', () => this.init(this.container));
       document.querySelectorAll('.tutor-chip').forEach((b) => b.addEventListener('click', () => send(b.getAttribute('data-q'))));
     }
   };
