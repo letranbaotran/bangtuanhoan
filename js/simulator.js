@@ -37,6 +37,7 @@
             <div style="display:flex;gap:6px;flex-wrap:wrap;" id="sim-main-tabs">
               <button class="btn btn-sm btn-primary" data-tab="satellite">⚛️ Hệ Sao – Vệ Tinh 3D</button>
               <button class="btn btn-sm btn-secondary" data-tab="quantum">🌀 Orbital Lượng Tử (n, l, m)</button>
+              <button class="btn btn-sm btn-secondary" data-tab="bonding">🔗 Ghép Đôi Liên Kết</button>
             </div>
           </div>
 
@@ -111,7 +112,6 @@
                     <button class="icon-btn" id="sim-q-next-el" title="Nguyên tố kế tiếp">▶</button>
                   </div>
                 </div>
-
                 <div class="control-group">
                   <span class="control-label">Nguyên tố hóa học nhanh</span>
                   <div style="display:flex;flex-wrap:wrap;gap:5px;" id="sim-q-quick-els">
@@ -121,16 +121,54 @@
                     }).join('')}
                   </div>
                 </div>
+                <div class="control-label">Quantum Controls (Số lượng tử)</div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.82rem;">
+                    <span>Số lượng tử chính (n)</span>
+                    <strong class="mono" id="q-n-val" style="color:var(--accent-cyan);">4</strong>
+                  </div>
+                  <input type="range" id="q-n-slider" min="1" max="7" step="1" value="4" style="width:100%;accent-color:var(--accent-cyan);" />
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.82rem;">
+                    <span>Số lượng tử phụ (l: 0..n-1)</span>
+                    <strong class="mono" id="q-l-val" style="color:var(--accent-cyan);">1 (p)</strong>
+                  </div>
+                  <input type="range" id="q-l-slider" min="0" max="3" step="1" value="1" style="width:100%;accent-color:var(--accent-cyan);" />
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.82rem;">
+                    <span>Số lượng tử từ (m: -l..+l)</span>
+                    <strong class="mono" id="q-m-val" style="color:var(--accent-cyan);">0</strong>
+                  </div>
+                  <input type="range" id="q-m-slider" min="-1" max="1" step="1" value="0" style="width:100%;accent-color:var(--accent-cyan);" />
+                </div>
+
+                <div class="control-label" style="margin-top:4px;">Quick Orbital Presets</div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                  ${[
+                    [1,0,0,'1s'],[2,0,0,'2s'],[2,1,0,'2p'],[3,0,0,'3s'],[3,1,0,'3p'],[3,2,0,'3d'],[4,0,0,'4s'],[4,1,0,'4p'],[4,2,0,'4d'],[4,3,0,'4f']
+                  ].map(([n,l,m,lbl]) => `<button class="btn btn-secondary btn-sm q-preset-btn" data-n="${n}" data-l="${l}" data-m="${m}" style="padding:4px 8px;font-size:0.75rem;">${lbl}</button>`).join('')}
+                </div>
 
                 <div class="control-label" style="margin-top:4px;">Chế độ hiển thị Orbital</div>
                 <div class="segmented-ctrl" id="q-viz-ctrl">
+                  <button data-viz="contours">Đường nét</button>
                   <button data-viz="cloud" class="active">Đám mây |ψ|²</button>
+                  <button data-viz="volumetric">Khối 3D</button>
                 </div>
 
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.78rem;">
+                  <div>Scale <input type="range" id="q-scale-slider" min="0.6" max="1.8" step="0.1" value="1" style="width:100%;" /></div>
+                  <div>Intensity <input type="range" id="q-int-slider" min="0.4" max="1.6" step="0.1" value="1" style="width:100%;" /></div>
+                </div>
                 <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem;cursor:pointer;">
                   <input type="checkbox" id="q-autorot-chk" checked style="accent-color:var(--accent-cyan);" />
                   <span>Tự động xoay (Auto Rotate)</span>
                 </label>
+
+                <!-- Quantum Inspector -->
+                <div id="sim-q-inspector" class="glass-surface" style="padding:12px;border-radius:12px;font-size:0.8rem;"></div>
 
                 <!-- Interactive Orbital Box Diagram -->
                 <div class="glass-surface" style="padding:12px;border-radius:12px;">
@@ -197,9 +235,8 @@
         if (subshells.length) {
           const lastSub = subshells[subshells.length - 1];
           const activeBox = lastSub.boxes.find((b) => b.spins.length === 1) || lastSub.boxes[0];
-          this.state.qn = lastSub.n;
-          this.state.ql = lastSub.l;
-          this.state.qm = activeBox ? activeBox.m : 0;
+          this.selectOrbitalFromBox(lastSub.n, lastSub.l, activeBox ? activeBox.m : 0);
+          return;
         }
       }
       if (this.state.mainTab === 'quantum') {
@@ -413,6 +450,15 @@
       this.state.qn = n;
       this.state.ql = l;
       this.state.qm = m;
+      const nSlider = document.getElementById('q-n-slider');
+      const lSlider = document.getElementById('q-l-slider');
+      const mSlider = document.getElementById('q-m-slider');
+      if (nSlider) nSlider.value = n;
+      if (lSlider) { lSlider.max = n - 1; lSlider.value = l; }
+      if (mSlider) { mSlider.min = -l; mSlider.max = l; mSlider.value = m; }
+      document.getElementById('q-n-val').textContent = n;
+      document.getElementById('q-l-val').textContent = `${l} (${SUBSHELL_LETTERS[l] || 'g'})`;
+      document.getElementById('q-m-val').textContent = m;
       this.buildQuantumOrbital();
     },
 
@@ -498,6 +544,27 @@
         <div class="mono" style="font-size:0.78rem;color:var(--text-muted);">E<sub>${n}</sub> = ${energyEV} eV • |ψ|² Density</div>
       `;
 
+      const notes = [
+        'Orbital s (l=0) luôn có dạng hình cầu đối xứng quanh hạt nhân.',
+        'Orbital p (l=1) có dạng quả tạ đôi với 3 định hướng pₓ, pᵧ, p_z.',
+        'Orbital d (l=2) có 5 định hướng phức tạp, quyết định màu sắc kim loại chuyển tiếp.',
+        'Orbital f (l=3) có 7 định hướng, đặc trưng cho họ Lanthanide và Actinide.'
+      ];
+      document.getElementById('sim-q-inspector').innerHTML = `
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span>Mức năng lượng (E<sub>n</sub>):</span>
+          <strong class="mono" style="color:#34D399;">${energyEV} eV</strong>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;margin-bottom:8px;">
+          <div class="glass-surface" style="padding:6px;border-radius:8px;"><div style="font-size:0.68rem;color:var(--text-muted);">n</div><strong class="mono">${n}</strong></div>
+          <div class="glass-surface" style="padding:6px;border-radius:8px;"><div style="font-size:0.68rem;color:var(--text-muted);">l</div><strong class="mono">${l} (${SUBSHELL_LETTERS[l] || 'g'})</strong></div>
+          <div class="glass-surface" style="padding:6px;border-radius:8px;"><div style="font-size:0.68rem;color:var(--text-muted);">m</div><strong class="mono">${m}</strong></div>
+        </div>
+        <div style="height:8px;border-radius:999px;background:linear-gradient(90deg,#6366F1,#06B6D4,#10B981,#F59E0B,#EF4444);margin-bottom:6px;"></div>
+        <div style="color:var(--text-muted);font-size:0.74rem;margin-bottom:6px;">Quy tắc: n ≥ 1; 0 ≤ l ≤ n-1; -l ≤ m ≤ +l</div>
+        <div style="color:var(--text-secondary);font-size:0.76rem;">💡 ${notes[Math.min(3, l)]}</div>
+      `;
+
       const curEl = CV.getElement(this.state.elementId);
       const qBoxes = document.getElementById('sim-q-boxes');
       if (curEl && qBoxes) {
@@ -551,6 +618,38 @@
         this.buildAtom(this.state.elementId);
       });
 
+      // Quantum Sliders with mathematical clamping
+      const nSlider = document.getElementById('q-n-slider');
+      const lSlider = document.getElementById('q-l-slider');
+      const mSlider = document.getElementById('q-m-slider');
+      const syncQuantumUI = () => {
+        this.state.ql = Math.min(this.state.ql, this.state.qn - 1);
+        this.state.qm = Math.max(-this.state.ql, Math.min(this.state.ql, this.state.qm));
+        lSlider.max = this.state.qn - 1;
+        lSlider.value = this.state.ql;
+        mSlider.min = -this.state.ql;
+        mSlider.max = this.state.ql;
+        mSlider.value = this.state.qm;
+        document.getElementById('q-n-val').textContent = this.state.qn;
+        document.getElementById('q-l-val').textContent = `${this.state.ql} (${SUBSHELL_LETTERS[this.state.ql] || 'g'})`;
+        document.getElementById('q-m-val').textContent = this.state.qm;
+        this.buildQuantumOrbital();
+      };
+
+      nSlider.addEventListener('input', (e) => { this.state.qn = Number(e.target.value); syncQuantumUI(); });
+      lSlider.addEventListener('input', (e) => { this.state.ql = Number(e.target.value); syncQuantumUI(); });
+      mSlider.addEventListener('input', (e) => { this.state.qm = Number(e.target.value); syncQuantumUI(); });
+
+      document.querySelectorAll('.q-preset-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.state.qn = Number(btn.getAttribute('data-n'));
+          this.state.ql = Number(btn.getAttribute('data-l'));
+          this.state.qm = Number(btn.getAttribute('data-m'));
+          nSlider.value = this.state.qn;
+          syncQuantumUI();
+        });
+      });
+
       document.querySelectorAll('#q-viz-ctrl button').forEach((btn) => {
         btn.addEventListener('click', () => {
           this.state.qVizMode = btn.getAttribute('data-viz');
@@ -560,6 +659,8 @@
         });
       });
 
+      document.getElementById('q-scale-slider').addEventListener('input', (e) => { this.state.qScale = Number(e.target.value); this.buildQuantumOrbital(); });
+      document.getElementById('q-int-slider').addEventListener('input', (e) => { this.state.qIntensity = Number(e.target.value); this.buildQuantumOrbital(); });
       document.getElementById('q-autorot-chk').addEventListener('change', (e) => { this.state.qAutoRotate = e.target.checked; });
       document.getElementById('sim-q-reset').addEventListener('click', () => this.buildQuantumOrbital());
       document.getElementById('sim-q-shot').addEventListener('click', () => {

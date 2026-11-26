@@ -26,7 +26,9 @@
             </select>
             <div style="display:flex;gap:6px;">
               <button class="btn btn-sm btn-primary" id="uni-layout-spiral">🌀 Thiên hà Chu kỳ</button>
+              <button class="btn btn-sm btn-secondary" id="uni-layout-cluster">🫧 Cụm Nhóm (11)</button>
             </div>
+            <button class="btn btn-sm btn-secondary" id="uni-reset-view">⟲ Reset View</button>
           </div>
 
           <!-- Collapsible 11-Category Legend -->
@@ -362,11 +364,27 @@
 
       // Layout toggle
       const btnSpiral = document.getElementById('uni-layout-spiral');
+      const btnCluster = document.getElementById('uni-layout-cluster');
       btnSpiral.addEventListener('click', () => {
         this.state.layout = 'spiral';
         btnSpiral.className = 'btn btn-sm btn-primary';
+        btnCluster.className = 'btn btn-sm btn-secondary';
         t.orbitRingsGroup.visible = true;
         t.planets.forEach((p) => p.userData.targetPos.copy(p.userData.spiralPos));
+      });
+      btnCluster.addEventListener('click', () => {
+        this.state.layout = 'cluster';
+        btnCluster.className = 'btn btn-sm btn-primary';
+        btnSpiral.className = 'btn btn-sm btn-secondary';
+        t.orbitRingsGroup.visible = false;
+        t.planets.forEach((p) => p.userData.targetPos.copy(p.userData.clusterPos));
+      });
+
+      // Reset View
+      document.getElementById('uni-reset-view').addEventListener('click', () => {
+        t.flyTarget = new THREE.Vector3(0, 0, 0);
+        t.flyCamPos = new THREE.Vector3(0, 58, 92);
+        this.closeDetailPanel();
       });
 
       // Search & Period Filter
