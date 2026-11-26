@@ -59,27 +59,212 @@
     ]
   };
 
+  const DAILY_PRACTICE_BANK = [
+    {
+      id: 'rust',
+      type: 'situation',
+      topic: 'Gỉ sét đồ sắt',
+      title: '🚲 Tại sao xe đạp để ngoài mưa lâu ngày bị gỉ sét?',
+      prompt: 'Xích và khung xe đạp bằng sắt (Fe) để ngoài trời ẩm ướt xuất hiện lớp gỉ màu nâu đỏ. Nguyên nhân hóa học chính là gì và phòng chống thế nào?',
+      opts: [
+        'Sắt tác dụng với O₂ và hơi nước tạo oxit sắt ngậm nước (Fe₂O₃·nH₂O); phòng bằng sơn phủ, tra dầu mỡ.',
+        'Sắt tự phân hủy dưới ánh nắng mặt trời; phòng bằng cách rửa nước muối.',
+        'Sắt phản ứng với khí Nitơ (N₂) trong không khí; phòng bằng cách phơi nắng.',
+        'Sắt bay hơi dần thành bụi đỏ; phòng bằng cách bọc giấy báo.'
+      ],
+      ans: 0,
+      hint: 'Hãy nhớ lại điều kiện để kim loại Sắt bị ăn mòn điện hóa / hóa học trong không khí ẩm: cần đồng thời khí nào và chất lỏng nào?',
+      solution: 'Trong không khí ẩm, Sắt (Fe) bị oxi hóa chậm bởi khí Oxy (O₂) và hơi nước (H₂O) tạo lớp gỉ xốp Fe₂O₃·nH₂O màu nâu đỏ. Để bảo vệ đồ sắt, ta ngăn không cho Fe tiếp xúc với O₂ và H₂O bằng cách sơn chống gỉ, mạ kẽm hoặc tra dầu nhớt.'
+    },
+    {
+      id: 'fish-odor',
+      type: 'situation',
+      topic: 'Khử mùi tanh cá',
+      title: '🐟 Mẹo vắt chanh hoặc dùng giấm khử mùi tanh cá',
+      prompt: 'Khi sơ chế cá, người ta thường xát chanh hoặc giấm ăn để hết mùi tanh. Cơ sở hóa học của mẹo nhà bếp này là gì?',
+      opts: [
+        'Chanh và giấm có vị ngọt giúp át mùi cá.',
+        'Axit hữu cơ (axit citric, axit axetic) phản ứng trung hòa các amin có tính bazơ gây mùi tanh.',
+        'Axit làm đông tụ toàn bộ nước trong thịt cá.',
+        'Chanh tạo kết tủa bạc trắng trên da cá.'
+      ],
+      ans: 1,
+      hint: 'Mùi tanh của cá chủ yếu do các hợp chất hữu cơ chứa Nitơ (amin như trimetylamin) có tính bazơ yếu gây ra. Chanh/giấm có tính gì?',
+      solution: 'Chất gây mùi tanh của cá là các amin (có tính bazơ nhẹ). Nước cốt chanh (axit citric) và giấm ăn (CH₃COOH) có tính axit nên trung hòa amin thành muối không bay hơi, giúp khử sạch mùi tanh tự nhiên.'
+    },
+    {
+      id: 'soda-fizz',
+      type: 'situation',
+      topic: 'Nước giải khát có gas',
+      title: '🥤 Hiện tượng sủi bọt khi mở nắp chai nước ngọt có gas',
+      prompt: 'Tại sao khi bật nắp chai nước ngọt có gas (Coca, Pepsi, soda), bọt khí lập tức sủi lên mạnh mẽ?',
+      opts: [
+        'Do đường trong nước ngọt tác dụng với không khí tạo khí O₂.',
+        'Áp suất giảm đột ngột làm axit yếu H₂CO₃ phân hủy giải phóng khí CO₂↑.',
+        'Vỏ chai nhựa sinh ra bọt khí khi tiếp xúc ánh sáng.',
+        'Nước ngọt sôi ở nhiệt độ phòng.'
+      ],
+      ans: 1,
+      hint: 'Khí được nén vào nước ngọt dưới áp suất cao là CO₂, hòa tan tạo cân bằng H₂O + CO₂ ⇌ H₂CO₃. Khi mở nắp, áp suất thay đổi thế nào?',
+      solution: 'Trong chai đóng kín ở áp suất cao, khí CO₂ tan nhiều tạo axit cacbonic (H₂CO₃). Khi mở nắp, áp suất giảm đột ngột khiến cân bằng chuyển dịch, H₂CO₃ phân hủy nhanh thành H₂O và khí CO₂↑ thoát ra tạo bọt sủi mát lạnh.'
+    },
+    {
+      id: 'fire-safety',
+      type: 'situation',
+      topic: 'Dập tắt đám cháy an toàn',
+      title: '🔥 Xử lý khi chảo dầu ăn hoặc xăng bị bén lửa nhỏ',
+      prompt: 'Nếu chảo dầu ăn trên bếp không may bùng lửa nhỏ, cách xử lý nào AN TOÀN và đúng hóa học nhất?',
+      opts: [
+        'Dội ngay một ca nước lạnh vào chảo dầu đang cháy.',
+        'Tắt bếp, đậy kín nắp chảo hoặc phủ khăn ẩm/dùng bình khí CO₂ để cách ly khí O₂.',
+        'Thổi mạnh bằng miệng cho lửa tắt.',
+        'Đổ thêm cồn vào để dập lửa.'
+      ],
+      ans: 1,
+      hint: 'Dầu ăn nhẹ hơn nước và không tan trong nước; nếu dội nước, nước sôi bốc hơi kéo theo dầu bắn tung tóe. Để dập cháy cần cắt nguồn gì?',
+      solution: 'Sự cháy cần 3 yếu tố: chất cháy, nhiệt độ và khí Oxy (O₂). Tuyệt đối KHÔNG dùng nước cho cháy dầu/xăng vì dầu nổi trên nước sẽ làm đám cháy lan rộng. Đậy kín nắp chảo hoặc dùng bình CO₂/cát sẽ ngăn nguồn O₂ và dập tắt lửa an toàn.'
+    },
+    {
+      id: 'toothpaste',
+      type: 'situation',
+      topic: 'Kem đánh răng',
+      title: '🪥 Tác dụng bảo vệ men răng của kem đánh răng',
+      prompt: 'Kem đánh răng thường bổ sung Natri florua (NaF) và chất mài mịn CaCO₃ cùng tính kiềm nhẹ. Vai trò chính của chúng là gì?',
+      opts: [
+        'Tăng lượng axit trong miệng để tiêu hóa thức ăn nhanh hơn.',
+        'Trung hòa axit do vi khuẩn tạo ra và ion F⁻ giúp tái khoáng hóa men răng bền vững hơn.',
+        'Tạo lớp kim loại bạc phủ lên bề mặt răng.',
+        'Làm răng nóng lên để diệt khuẩn.'
+      ],
+      ans: 1,
+      hint: 'Vi khuẩn lên men đường dư tạo axit ăn mòn men răng. Kem đánh răng có pH hơi kiềm và chứa ion Florua (F⁻) giúp làm gì?',
+      solution: 'Sau khi ăn, vi khuẩn chuyển đường thành axit làm mòn men răng. Kem đánh răng có tính kiềm nhẹ giúp trung hòa axit, còn ion F⁻ từ NaF thay thế nhóm OH⁻ trong men răng tạo fluorapatit cứng chắc và chống sâu răng.'
+    },
+    {
+      id: 'daily-match-1',
+      type: 'match',
+      topic: 'Ghép đôi hiện tượng đời sống',
+      title: '🔗 Ghép hiện tượng hằng ngày với nguyên nhân hóa học',
+      prompt: 'Kéo thả (hoặc bấm chọn từng cặp) để nối đúng 4 hiện tượng thực tế với chất/phương trình hóa học tương ứng:',
+      pairs: [
+        { left: 'Vôi sống gặp nước tỏa nhiệt mạnh', right: 'CaO + H₂O → Ca(OH)₂' },
+        { left: 'Mưa axit ăn mòn tượng đá vôi', right: 'SO₂, NO₂ tạo H₂SO₄, HNO₃' },
+        { left: 'Ướp muối bảo quản thịt cá lâu hỏng', right: 'NaCl hút ẩm ức chế vi khuẩn' },
+        { left: 'Bón phân đạm giúp lá cây xanh tốt', right: 'NH₄NO₃ / Urê cung cấp Nitơ' }
+      ],
+      hint: 'Chú ý từ khóa: Vôi sống là CaO; mưa axit do khí thải công nghiệp chứa S, N; muối ăn là NaCl; phân đạm giàu nguyên tố N.',
+      solution: '1) Vôi sống CaO + H₂O → Ca(OH)₂ tỏa nhiệt lớn. 2) Khí SO₂, NO₂ gặp nước mưa tạo mưa axit H₂SO₄, HNO₃ ăn mòn đá vôi CaCO₃. 3) Muối ăn NaCl tạo áp suất thẩm thấu cao làm vi khuẩn mất nước. 4) Phân đạm cung cấp Nitơ tổng hợp diệp lục.'
+    },
+    {
+      id: 'lime-fill',
+      type: 'fill',
+      topic: 'Vôi tôi tỏa nhiệt',
+      title: '🧱 Hoàn thành phương trình tôi vôi trong xây dựng',
+      prompt: 'Khi cho vôi sống (CaO) vào nước sẽ sôi sục và tỏa nhiệt rất mạnh tạo vôi tôi. Điền công thức sản phẩm còn thiếu:  CaO + H₂O → ______',
+      accepted: ['Ca(OH)2', 'ca(oh)2', 'Ca(OH)₂'],
+      quickChoices: ['Ca(OH)₂', 'CaCO₃', 'CaCl₂', 'CaO₂'],
+      hint: 'Oxit bazơ CaO tác dụng với nước (H₂O) tạo thành dung dịch bazơ (kiềm) tương ứng của Canxi hóa trị II.',
+      solution: 'Phương trình hoàn chỉnh: CaO + H₂O → Ca(OH)₂ (Canxi hidroxit, hay vôi tôi). Đây là phản ứng tỏa nhiệt mạnh.'
+    },
+    {
+      id: 'acid-rain-tf',
+      type: 'fill',
+      topic: 'Mưa axit',
+      title: '🌧️ Nhận định Đúng / Sai về Mưa axit',
+      prompt: 'Đánh giá nhận định sau: "Khí CO₂ là nguyên nhân chính gây ra mưa axit nặng (pH < 4) phá hủy rừng cây và công trình đá vôi." — Điền Đúng hoặc Sai:',
+      accepted: ['Sai', 'sai', 'S', 'false'],
+      quickChoices: ['Đúng', 'Sai'],
+      hint: 'Nước mưa bình thường hòa tan CO₂ có pH khoảng 5.6 (axit rất yếu). Mưa axit nặng có pH < 4.5 thường do khí thải chứa Lưu huỳnh và Nitơ.',
+      solution: 'Nhận định trên là SAI. Nguyên nhân chính gây mưa axit nặng là khí SO₂ (từ đốt than/dầu) và NOₓ (từ động cơ, nhà máy), tạo ra axit mạnh H₂SO₄ và HNO₃ trong nước mưa.'
+    },
+    {
+      id: 'fertilizer-fill',
+      type: 'fill',
+      topic: 'Phân biệt phân bón hóa học',
+      title: '🌱 Nhận biết phân đạm Amoni bằng nước vôi trong',
+      prompt: 'Để phân biệt phân đạm Amoni clorua (NH₄Cl) với phân Kali (KCl), bà con nông dân cho tác dụng với nước vôi trong Ca(OH)₂ thì thấy phân đạm giải phóng khí mùi khai. Điền công thức khí thoát ra:  ______',
+      accepted: ['NH3', 'nh3', 'NH₃'],
+      quickChoices: ['NH₃', 'CO₂', 'H₂', 'Cl₂'],
+      hint: 'Ion amoni (NH₄⁺) tác dụng với ion kiềm (OH⁻) tạo ra khí có mùi khai đặc trưng của hợp chất Nitơ và Hydro.',
+      solution: '2NH₄Cl + Ca(OH)₂ → CaCl₂ + 2NH₃↑ + 2H₂O. Khí NH₃ (amoniac) có mùi khai đặc trưng giúp nhận biết nhanh phân đạm amoni.'
+    }
+  ];
+
   CV.modules.chemquest = {
     state: {
       score: 0,
       streak: 0,
       highScore: Number(localStorage.getItem('chemverse_highscore') || 0),
-      mode: null, // 'decoder' | 'synth' | 'quiz'
+      mode: null, // 'decoder' | 'synth' | 'quiz' | 'daily' | 'balancer' | 'memory'
       round: 0,
       maxRounds: 5,
-      // Decoder
       targetEl: null,
       hintLevel: 1,
-      // Synth
       targetComp: null,
       basket: {},
-      // Quiz
-      quizDiff: 'basic',
-      quizIndex: 0
+      quizDiff: 'easy',
+      quizIndex: 0,
+      quizTimeLeft: 15,
+      dailyList: [],
+      dailyIndex: 0,
+      dailyMode: 'daily'
+    },
+    quizTimer: null,
+    sfxCtx: null,
+
+    playQuestSfx(type) {
+      try {
+        if (!this.sfxCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) this.sfxCtx = new Ctx();
+        }
+        const ctx = this.sfxCtx;
+        if (!ctx) return;
+        if (ctx.state === 'suspended') ctx.resume();
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        if (type === 'ok') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, t);
+          osc.frequency.exponentialRampToValueAtTime(783.99, t + 0.14);
+          g.gain.setValueAtTime(0.09, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+          osc.connect(g); g.connect(ctx.destination);
+          osc.start(t); osc.stop(t + 0.22);
+        } else if (type === 'err') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(210, t);
+          osc.frequency.exponentialRampToValueAtTime(140, t + 0.18);
+          g.gain.setValueAtTime(0.07, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+          osc.connect(g); g.connect(ctx.destination);
+          osc.start(t); osc.stop(t + 0.24);
+        } else {
+          [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
+            const o = ctx.createOscillator();
+            const gn = ctx.createGain();
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(f, t + idx * 0.08);
+            gn.gain.setValueAtTime(0.08, t + idx * 0.08);
+            gn.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.26);
+            o.connect(gn); gn.connect(ctx.destination);
+            o.start(t + idx * 0.08); o.stop(t + idx * 0.08 + 0.28);
+          });
+        }
+      } catch (_) {}
+    },
+
+    clearQuizTimer() {
+      if (this.quizTimer) {
+        clearInterval(this.quizTimer);
+        this.quizTimer = null;
+      }
     },
 
     init(container) {
       this.container = container;
+      this.clearQuizTimer();
       this.renderHub();
     },
 
@@ -91,77 +276,97 @@
     },
 
     renderHub() {
+      this.clearQuizTimer();
       const st = this.state;
       this.container.innerHTML = `
         <div class="page-container">
-          <div class="section-header">
+          <div class="section-header" style="margin-bottom:20px;">
             <div>
-              <h2 class="section-title">${CV.t('ChemQuest – Trung Tâm Nhiệm Vụ Phi Hành Gia', 'ChemQuest – Astronaut Mission Control')}</h2>
-              <p class="section-subtitle">${CV.t('Vận dụng kiến thức hóa học qua 3 chế độ thử thách tương tác', 'Test your chemistry knowledge across 3 interactive game modes')}</p>
+              <h2 class="section-title">🚀 ${CV.t('ChemQuiz – Luyện Tập & Trắc Nghiệm Hóa Học', 'ChemQuiz – Speed Quiz & Daily Practice')}</h2>
+              <p class="section-subtitle">${CV.t('Chia thành 2 phần độc lập: Quiz tốc độ và Bài tập hằng ngày gắn với đời sống học sinh', 'Two independent sections: Speed Quiz & Everyday Chemistry Practice')}</p>
             </div>
-            <div class="glass-surface" style="padding:10px 16px;border-radius:12px;display:flex;gap:16px;">
-              <span>🏆 Kỷ lục: <strong class="mono" style="color:#FBBF24;">${st.highScore}</strong></span>
-              <span>🔥 Streak: <strong class="mono" style="color:var(--accent-cyan);">${st.streak}</strong></span>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('learning')">← Về Học tập</button>
+              <div class="glass-surface" style="padding:8px 14px;border-radius:12px;display:flex;gap:14px;">
+                <span>🏆 Kỷ lục: <strong class="mono" style="color:#FBBF24;">${st.highScore}</strong></span>
+                <span>🔥 Combo: <strong class="mono" style="color:var(--accent-cyan);">${st.streak}</strong></span>
+              </div>
             </div>
           </div>
 
+          <!-- 2 PHẦN ĐỘC LẬP: PHẦN 1 (QUIZ) & PHẦN 2 (BÀI TẬP HẰNG NGÀY) -->
+          <div class="dual-hub-grid" style="margin-top:0;margin-bottom:26px;">
+            <!-- PHẦN 1: QUIZ -->
+            <section class="dual-branch-card learn glass-surface">
+              <div class="dual-branch-badge">PHẦN 1 • TRẮC NGHIỆM NHANH &amp; ĐỐ VUI</div>
+              <div class="dual-branch-head">
+                <span class="dual-branch-icon">⚡</span>
+                <div>
+                  <h2>1. Quiz Phản Xạ Tốc Độ</h2>
+                  <p>Nhận diện ký hiệu, đoán nguyên tố, số proton/electron, cấu hình e &amp; phân loại nhóm với đồng hồ đếm ngược 15 giây + chuỗi combo + âm thanh.</p>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;">
+                <button class="btn btn-primary btn-sm" onclick="CHEMVERSE.modules.chemquest.startQuiz('easy')">🟢 Dễ</button>
+                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startQuiz('medium')">🟡 Trung bình</button>
+                <button class="btn btn-secondary btn-sm" style="border-color:rgba(248,113,113,0.45);color:#FCA5A5;" onclick="CHEMVERSE.modules.chemquest.startQuiz('hard')">🔴 Khó</button>
+              </div>
+            </section>
+
+            <!-- PHẦN 2: BÀI TẬP HẰNG NGÀY -->
+            <section class="dual-branch-card research glass-surface">
+              <div class="dual-branch-badge">PHẦN 2 • GẦN GŨI ĐỜI SỐNG HỌC SINH</div>
+              <div class="dual-branch-head">
+                <span class="dual-branch-icon">📅</span>
+                <div>
+                  <h2>2. Bài Tập Hằng Ngày</h2>
+                  <p>Tình huống thực tế (gỉ sét, khử mùi tanh cá, nước ngọt có gas, dập cháy, vôi tôi, mưa axit...) dạng trắc nghiệm, kéo-thả ghép đôi &amp; điền khuyết kèm Gợi ý.</p>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+                <button class="btn btn-primary btn-sm" style="flex:1;background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(true)">🌟 Thử thách mỗi ngày (4 bài)</button>
+                <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDailyPractice(false)">📚 Toàn bộ kho (${DAILY_PRACTICE_BANK.length} bài)</button>
+              </div>
+            </section>
+          </div>
+
+          <!-- TRÒ CHƠI TƯƠNG TÁC BỔ TRỢ -->
+          <div style="font-size:0.84rem;color:var(--text-muted);font-weight:700;margin-bottom:10px;letter-spacing:0.04em;">🎮 TRÒ CHƠI HÓA HỌC BỔ TRỢ</div>
           <div class="quest-hub">
             <article class="quest-mode-card glass-surface">
               <div>
-                <div style="font-size:2rem;margin-bottom:8px;">🛸</div>
-                <h3>1. Giải Mã Hành Tinh Nguyên Tố</h3>
-                <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:6px;">
-                  Đọc tối đa 3 gợi ý (cấu hình e, nhóm/chu kỳ, ứng dụng) để tìm ra nguyên tố bí ẩn. Đoán càng sớm điểm càng cao!
-                </p>
+                <div style="font-size:1.8rem;margin-bottom:6px;">🛸</div>
+                <h3>Giải Mã Hành Tinh Nguyên Tố</h3>
+                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Đọc tối đa 3 gợi ý để tìm nguyên tố bí ẩn.</p>
               </div>
-              <button class="btn btn-primary" onclick="CHEMVERSE.modules.chemquest.startDecoder()">Bắt đầu Giải mã</button>
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startDecoder()">Bắt đầu Giải mã</button>
             </article>
 
             <article class="quest-mode-card glass-surface">
               <div>
-                <div style="font-size:2rem;margin-bottom:8px;">⚗️</div>
-                <h3>2. Xưởng Ghép Hợp Chất</h3>
-                <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:6px;">
-                  Chọn đúng các nguyên tố thành phần và tỷ lệ số nguyên tử để tổng hợp phân tử mục tiêu (H₂O, NaCl, H₂SO₄...).
-                </p>
+                <div style="font-size:1.8rem;margin-bottom:6px;">⚗️</div>
+                <h3>Xưởng Ghép Hợp Chất</h3>
+                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Chọn đúng tỷ lệ nguyên tử tổng hợp phân tử (H₂O, NaCl...).</p>
               </div>
-              <button class="btn btn-primary" onclick="CHEMVERSE.modules.chemquest.startSynth()">Vào Xưởng Ghép</button>
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startSynth()">Vào Xưởng Ghép</button>
             </article>
 
             <article class="quest-mode-card glass-surface">
               <div>
-                <div style="font-size:2rem;margin-bottom:8px;">⚡</div>
-                <h3>3. Trắc Nghiệm Tốc Độ (10 Câu)</h3>
-                <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:6px;">
-                  Chinh phục bộ câu hỏi 4 lựa chọn kèm giải thích khoa học ngay lập tức sau mỗi đáp án.
-                </p>
+                <div style="font-size:1.8rem;margin-bottom:6px;">⚖️</div>
+                <h3>Cân Bằng Phương Trình</h3>
+                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Điền hệ số cân bằng nhanh các phương trình SGK.</p>
               </div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn btn-primary" style="flex:1;" onclick="CHEMVERSE.modules.chemquest.startQuiz('basic')">Cơ bản</button>
-                <button class="btn btn-secondary" style="flex:1;" onclick="CHEMVERSE.modules.chemquest.startQuiz('advanced')">Nâng cao</button>
-              </div>
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startBalancer()">Thử thách Cân bằng</button>
             </article>
 
             <article class="quest-mode-card glass-surface">
               <div>
-                <div style="font-size:2rem;margin-bottom:8px;">⚖️</div>
-                <h3>4. Cân Bằng Phương Trình Siêu Tốc</h3>
-                <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:6px;">
-                  Điền hệ số cân bằng đúng cho các phương trình Hóa học quen thuộc trong sách giáo khoa (Fe + O₂, Al + HCl...).
-                </p>
+                <div style="font-size:1.8rem;margin-bottom:6px;">🃏</div>
+                <h3>Lật Thẻ Ghép Đôi</h3>
+                <p style="color:var(--text-secondary);font-size:0.84rem;margin-top:4px;">Ghép ký hiệu hóa học với tên &amp; ứng dụng quen thuộc.</p>
               </div>
-              <button class="btn btn-primary" onclick="CHEMVERSE.modules.chemquest.startBalancer()">Thử thách Cân bằng</button>
-            </article>
-
-            <article class="quest-mode-card glass-surface">
-              <div>
-                <div style="font-size:2rem;margin-bottom:8px;">🃏</div>
-                <h3>5. Lật Thẻ Ghép Đôi Nguyên Tố</h3>
-                <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:6px;">
-                  Trò chơi trí nhớ lật thẻ 4×3: ghép đúng ký hiệu hóa học với tên gọi và ứng dụng đời sống quen thuộc!
-                </p>
-              </div>
-              <button class="btn btn-primary" onclick="CHEMVERSE.modules.chemquest.startMemory()">Chơi Lật Thẻ</button>
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.startMemory()">Chơi Lật Thẻ</button>
             </article>
           </div>
         </div>
@@ -325,38 +530,53 @@
       });
     },
 
-    // --- MODE 3: SPEED QUIZ ---
-    startQuiz(diff) {
+    // --- MODE 3: 3-LEVEL SPEED QUIZ WITH TIMER & COMBO ---
+    startQuiz(diff = 'easy') {
+      this.clearQuizTimer();
       this.state.mode = 'quiz';
       this.state.quizDiff = diff;
       this.state.score = 0;
       this.state.streak = 0;
       this.state.quizIndex = 0;
-      const pool = [...QUIZ_BANK[diff]].sort(() => Math.random() - 0.5);
-      this.state.quizPool = pool.slice(0, 10);
+      const raw = diff === 'easy'
+        ? [...QUIZ_BANK.basic]
+        : diff === 'hard'
+          ? [...QUIZ_BANK.advanced]
+          : [...QUIZ_BANK.basic.slice(0, 10), ...QUIZ_BANK.advanced.slice(0, 10)];
+      this.state.quizPool = raw.sort(() => Math.random() - 0.5).slice(0, 10);
       this.renderQuiz();
     },
 
     renderQuiz() {
+      this.clearQuizTimer();
       const st = this.state;
-      const list = st.quizPool || QUIZ_BANK[st.quizDiff];
+      const list = st.quizPool || QUIZ_BANK.basic;
+      const diffLabels = { easy: 'Dễ', medium: 'Trung bình', hard: 'Khó' };
       if (st.quizIndex >= list.length) {
-        this.renderSummary(`Trắc nghiệm (${st.quizDiff === 'basic' ? 'Cơ bản' : 'Nâng cao'})`);
+        this.playQuestSfx('win');
+        this.renderSummary(`Quiz Tốc Độ (${diffLabels[st.quizDiff] || 'Dễ'})`);
         return;
       }
       const item = list[st.quizIndex];
+      st.quizTimeLeft = 15;
+      let answered = false;
 
       this.container.innerHTML = `
         <div class="page-container">
           <div class="quest-arena glass-surface">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.renderHub()">← Quay lại Hub</button>
-              <div class="mono">Câu ${st.quizIndex + 1}/${list.length} • Điểm: <strong style="color:#FBBF24;">${st.score}</strong> • 🔥 ${st.streak}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.renderHub()">← Quay lại ChemQuiz</button>
+              <div class="mono" style="display:flex;gap:12px;align-items:center;">
+                <span>Câu ${st.quizIndex + 1}/${list.length}</span>
+                <span>Điểm: <strong style="color:#FBBF24;">${st.score}</strong></span>
+                <span>🔥 Combo x${st.streak}</span>
+                <span style="padding:3px 9px;border-radius:8px;background:rgba(0,229,255,0.16);color:#00E5FF;" id="cq-timer-val">⏱ 15s</span>
+              </div>
             </div>
-            <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;margin-bottom:18px;">
-              <div style="width:${((st.quizIndex + 1) / list.length) * 100}%;height:100%;background:linear-gradient(90deg,#00E5FF,#818CF8);"></div>
+            <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;margin-bottom:16px;">
+              <div id="cq-timer-bar" style="width:100%;height:100%;background:linear-gradient(90deg,#00E5FF,#818CF8);transition:width 0.9s linear;"></div>
             </div>
-            <h3 style="font-size:1.25rem;line-height:1.4;">${item.q}</h3>
+            <h3 style="font-size:1.2rem;line-height:1.4;">${item.q}</h3>
             <div class="quiz-options">
               ${item.opts.map((o, idx) => `<button class="quiz-option-btn" data-idx="${idx}">${String.fromCharCode(65 + idx)}. ${o}</button>`).join('')}
             </div>
@@ -365,36 +585,242 @@
         </div>
       `;
 
-      document.querySelectorAll('.quiz-option-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const chosen = Number(btn.getAttribute('data-idx'));
-          document.querySelectorAll('.quiz-option-btn').forEach((b, i) => {
-            b.disabled = true;
-            if (i === item.ans) b.classList.add('correct');
-            else if (i === chosen) b.classList.add('wrong');
-          });
-          if (chosen === item.ans) {
-            st.score += 100 + st.streak * 20;
-            st.streak += 1;
-            this.saveHighScore();
-          } else {
-            st.streak = 0;
-          }
-          document.getElementById('cq-quiz-fb').innerHTML = `
-            <div class="glass-surface" style="padding:14px;border-radius:12px;">
-              <div style="font-weight:700;color:${chosen === item.ans ? '#34D399' : '#F87171'};margin-bottom:4px;">
-                ${chosen === item.ans ? '✅ Chính xác!' : '❌ Chưa chính xác!'}
-              </div>
-              <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:10px;">${item.exp}</p>
-              <button class="btn btn-primary btn-sm" id="cq-quiz-next">${st.quizIndex + 1 < list.length ? 'Câu tiếp theo →' : 'Xem tổng kết 🏆'}</button>
+      const finishQuestion = (chosen) => {
+        if (answered) return;
+        answered = true;
+        this.clearQuizTimer();
+        document.querySelectorAll('.quiz-option-btn').forEach((b, i) => {
+          b.disabled = true;
+          if (i === item.ans) b.classList.add('correct');
+          else if (i === chosen) b.classList.add('wrong');
+        });
+        const isCorrect = chosen === item.ans;
+        if (isCorrect) {
+          st.score += 100 + st.streak * 25 + st.quizTimeLeft * 5;
+          st.streak += 1;
+          this.saveHighScore();
+          this.playQuestSfx('ok');
+        } else {
+          st.streak = 0;
+          this.playQuestSfx('err');
+        }
+        const fb = document.getElementById('cq-quiz-fb');
+        if (!fb) return;
+        fb.innerHTML = `
+          <div class="glass-surface" style="padding:14px;border-radius:12px;">
+            <div style="font-weight:700;color:${isCorrect ? '#34D399' : '#F87171'};margin-bottom:4px;">
+              ${chosen === -1 ? '⏱ Hết giờ!' : isCorrect ? `✅ Chính xác! (Combo x${st.streak})` : '❌ Chưa chính xác!'}
             </div>
-          `;
-          document.getElementById('cq-quiz-next').addEventListener('click', () => {
-            st.quizIndex++;
-            this.renderQuiz();
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:10px;">${item.exp}</p>
+            <button class="btn btn-primary btn-sm" id="cq-quiz-next">${st.quizIndex + 1 < list.length ? 'Câu tiếp theo →' : 'Xem tổng kết 🏆'}</button>
+          </div>
+        `;
+        document.getElementById('cq-quiz-next').addEventListener('click', () => {
+          st.quizIndex++;
+          this.renderQuiz();
+        });
+      };
+
+      this.quizTimer = setInterval(() => {
+        st.quizTimeLeft--;
+        const tEl = document.getElementById('cq-timer-val');
+        const bEl = document.getElementById('cq-timer-bar');
+        if (tEl) {
+          tEl.textContent = `⏱ ${st.quizTimeLeft}s`;
+          if (st.quizTimeLeft <= 5) tEl.style.color = '#F87171';
+        }
+        if (bEl) bEl.style.width = `${Math.max(0, (st.quizTimeLeft / 15) * 100)}%`;
+        if (st.quizTimeLeft <= 0) finishQuestion(-1);
+      }, 1000);
+
+      document.querySelectorAll('.quiz-option-btn').forEach((btn) => {
+        btn.addEventListener('click', () => finishQuestion(Number(btn.getAttribute('data-idx'))));
+      });
+    },
+
+    // --- PART 2: BÀI TẬP HẰNG NGÀY (GẦN GŨI ĐỜI SỐNG HỌC SINH) ---
+    startDailyPractice(dailyOnly = true) {
+      this.clearQuizTimer();
+      const st = this.state;
+      st.mode = 'daily';
+      st.score = 0;
+      st.streak = 0;
+      st.dailyIndex = 0;
+      st.dailyMode = dailyOnly ? 'daily' : 'all';
+      if (dailyOnly) {
+        const daySeed = new Date().getDate();
+        const picked = [];
+        for (let i = 0; i < 4; i++) {
+          picked.push(DAILY_PRACTICE_BANK[(daySeed + i * 2) % DAILY_PRACTICE_BANK.length]);
+        }
+        st.dailyList = picked;
+      } else {
+        st.dailyList = [...DAILY_PRACTICE_BANK];
+      }
+      this.renderDailyPractice();
+    },
+
+    renderDailyPractice() {
+      const st = this.state;
+      const list = st.dailyList;
+      if (st.dailyIndex >= list.length) {
+        this.playQuestSfx('win');
+        this.renderSummary(st.dailyMode === 'daily' ? 'Thử Thách Hằng Ngày' : 'Kho Bài Tập Đời Sống');
+        return;
+      }
+      const ex = list[st.dailyIndex];
+      let bodyHtml = '';
+
+      if (ex.type === 'situation') {
+        bodyHtml = `
+          <div class="quiz-options" id="cq-daily-opts">
+            ${ex.opts.map((o, idx) => `<button class="quiz-option-btn" data-idx="${idx}">${String.fromCharCode(65 + idx)}. ${o}</button>`).join('')}
+          </div>`;
+      } else if (ex.type === 'fill') {
+        bodyHtml = `
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;" id="cq-daily-chips">
+            ${ex.quickChoices.map((c) => `<button class="btn btn-secondary btn-sm cq-fill-chip" data-val="${c}">${c}</button>`).join('')}
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <input type="text" id="cq-daily-input" class="input-field" style="flex:1;min-width:180px;" placeholder="Nhập đáp án hoặc chọn gợi ý phía trên..." />
+            <button class="btn btn-primary" id="cq-daily-submit">Nộp bài ✓</button>
+          </div>`;
+      } else if (ex.type === 'match') {
+        const shuffledRights = [...ex.pairs.map((p) => p.right)].sort(() => Math.random() - 0.5);
+        bodyHtml = `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;" id="cq-match-grid">
+            <div style="display:flex;flex-direction:column;gap:8px;" id="cq-match-lefts">
+              ${ex.pairs.map((p, i) => `
+                <div class="glass-surface cq-match-slot" data-lidx="${i}" data-expected="${p.right.replace(/"/g, '&quot;')}" style="padding:10px;border-radius:10px;font-size:0.84rem;border:1px dashed rgba(56,189,248,0.45);cursor:pointer;">
+                  <div><strong>${i + 1}.</strong> ${p.left}</div>
+                  <div class="mono cq-slot-ans" style="font-size:0.76rem;color:#FBBF24;margin-top:4px;">(Kéo hoặc bấm thẻ bên phải vào đây)</div>
+                </div>`).join('')}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;" id="cq-match-rights">
+              ${shuffledRights.map((r) => `
+                <button class="btn btn-secondary btn-sm cq-match-drag" draggable="true" data-val="${r.replace(/"/g, '&quot;')}" style="justify-content:flex-start;text-align:left;padding:10px;white-space:normal;height:auto;">
+                  🧩 ${r}
+                </button>`).join('')}
+            </div>
+          </div>
+          <button class="btn btn-primary" id="cq-match-check">Kiểm tra ghép đôi ✓</button>`;
+      }
+
+      this.container.innerHTML = `
+        <div class="page-container">
+          <div class="quest-arena glass-surface">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.modules.chemquest.renderHub()">← Quay lại ChemQuiz</button>
+              <div class="mono">Bài ${st.dailyIndex + 1}/${list.length} • <span style="color:#E879F9;">${ex.topic}</span> • Điểm: <strong style="color:#FBBF24;">${st.score}</strong></div>
+            </div>
+
+            <h3 style="font-size:1.18rem;margin-bottom:8px;">${ex.title}</h3>
+            <p style="color:var(--text-secondary);font-size:0.94rem;line-height:1.5;margin-bottom:12px;">${ex.prompt}</p>
+
+            <div style="margin-bottom:10px;">
+              <button class="btn btn-secondary btn-sm" id="cq-daily-hint-btn">💡 Gợi ý tư duy</button>
+              <div id="cq-daily-hint-box" class="glass-surface" style="display:none;margin-top:8px;padding:10px 12px;border-radius:10px;font-size:0.84rem;color:#93C5FD;border-color:rgba(56,189,248,0.4);">
+                💡 <strong>Gợi ý:</strong> ${ex.hint}
+              </div>
+            </div>
+
+            ${bodyHtml}
+            <div id="cq-daily-fb" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('cq-daily-hint-btn').addEventListener('click', () => {
+        const hb = document.getElementById('cq-daily-hint-box');
+        hb.style.display = hb.style.display === 'none' ? 'block' : 'none';
+      });
+
+      const showDailyFeedback = (isOk) => {
+        if (isOk) {
+          st.score += 150;
+          st.streak += 1;
+          this.saveHighScore();
+          this.playQuestSfx('ok');
+        } else {
+          st.streak = 0;
+          this.playQuestSfx('err');
+        }
+        const fb = document.getElementById('cq-daily-fb');
+        fb.innerHTML = `
+          <div class="glass-surface" style="padding:14px;border-radius:12px;border-color:${isOk ? '#10B981' : '#EF4444'};">
+            <div style="font-weight:700;color:${isOk ? '#34D399' : '#F87171'};margin-bottom:6px;">
+              ${isOk ? '✅ Tuyệt vời! Chính xác (+150 điểm)' : '❌ Chưa chuẩn xác — Xem lời giải nhé!'}
+            </div>
+            <div style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:10px;">
+              <strong>📖 Lời giải chi tiết:</strong> ${ex.solution}
+            </div>
+            <button class="btn btn-primary btn-sm" id="cq-daily-next">${st.dailyIndex + 1 < list.length ? 'Bài tiếp theo →' : 'Hoàn thành 🏆'}</button>
+          </div>`;
+        document.getElementById('cq-daily-next').addEventListener('click', () => {
+          st.dailyIndex++;
+          this.renderDailyPractice();
+        });
+      };
+
+      if (ex.type === 'situation') {
+        document.querySelectorAll('#cq-daily-opts button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const chosen = Number(btn.getAttribute('data-idx'));
+            document.querySelectorAll('#cq-daily-opts button').forEach((b, i) => {
+              b.disabled = true;
+              if (i === ex.ans) b.classList.add('correct');
+              else if (i === chosen) b.classList.add('wrong');
+            });
+            showDailyFeedback(chosen === ex.ans);
           });
         });
-      });
+      } else if (ex.type === 'fill') {
+        const inp = document.getElementById('cq-daily-input');
+        document.querySelectorAll('.cq-fill-chip').forEach((c) => {
+          c.addEventListener('click', () => { inp.value = c.getAttribute('data-val'); });
+        });
+        document.getElementById('cq-daily-submit').addEventListener('click', () => {
+          const val = (inp.value || '').trim().replace(/\s+/g, '');
+          const isOk = ex.accepted.some((a) => a.toLowerCase() === val.toLowerCase());
+          document.getElementById('cq-daily-submit').disabled = true;
+          showDailyFeedback(isOk);
+        });
+      } else if (ex.type === 'match') {
+        let selectedRight = null;
+        document.querySelectorAll('.cq-match-drag').forEach((btn) => {
+          btn.addEventListener('dragstart', (e) => {
+            selectedRight = btn.getAttribute('data-val');
+            if (e.dataTransfer) e.dataTransfer.setData('text/plain', selectedRight);
+          });
+          btn.addEventListener('click', () => {
+            selectedRight = btn.getAttribute('data-val');
+            document.querySelectorAll('.cq-match-drag').forEach((b) => {
+              b.className = `btn btn-sm ${b === btn ? 'btn-primary' : 'btn-secondary'} cq-match-drag`;
+            });
+          });
+        });
+        document.querySelectorAll('.cq-match-slot').forEach((slot) => {
+          const assign = (val) => {
+            if (!val) return;
+            slot.setAttribute('data-chosen', val);
+            slot.querySelector('.cq-slot-ans').textContent = `→ ${val}`;
+            slot.style.borderColor = '#00E5FF';
+          };
+          slot.addEventListener('dragover', (e) => e.preventDefault());
+          slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const val = (e.dataTransfer && e.dataTransfer.getData('text/plain')) || selectedRight;
+            assign(val);
+          });
+          slot.addEventListener('click', () => assign(selectedRight));
+        });
+        document.getElementById('cq-match-check').addEventListener('click', () => {
+          const slots = Array.from(document.querySelectorAll('.cq-match-slot'));
+          const allRight = slots.every((s) => s.getAttribute('data-chosen') === s.getAttribute('data-expected'));
+          document.getElementById('cq-match-check').disabled = true;
+          showDailyFeedback(allRight);
+        });
+      }
     },
 
     // --- MODE 4: EQUATION BALANCER ---
