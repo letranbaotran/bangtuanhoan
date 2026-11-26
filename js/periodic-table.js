@@ -45,44 +45,27 @@
           </div>
 
           <!-- 3D PROPERTY HEIGHT-MAP CONTAINER (Hidden by default) -->
-          <div id="pt-3d-section" style="display:none;margin-bottom:20px;">
-            <div class="glass-surface" style="padding:14px 18px;border-radius:var(--radius-md);margin-bottom:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
-              <div>
-                <strong>Biểu Đồ Cột 3D Theo Thuộc Tính (3D Property Height-Map)</strong>
-                <div style="font-size:0.8rem;color:var(--text-muted);">Kéo để xoay, cuộn để zoom, nhấn vào khối hộp 3D để xem hồ sơ chi tiết</div>
+          <div id="pt-3d-section" style="display:none;margin-bottom:16px;">
+            <div class="glass-surface" style="padding:10px 14px;border-radius:var(--radius-md);margin-bottom:10px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <strong>Bảng Tuần Hoàn 3D</strong>
+                <span style="font-size:0.78rem;color:var(--text-muted);">Kéo xoay • Cuộn zoom • Nhấn xem chi tiết</span>
               </div>
               <div style="display:flex;gap:8px;align-items:center;">
-                <select id="pt-3d-prop" class="select-field">
-                  <option value="none">Chiều cao đồng đều (Màu 11 nhóm)</option>
-                  <optgroup label="Độ phổ biến (Abundance)">
-                    <option value="abundanceCrust">Độ phổ biến vỏ Trái Đất (mg/kg)</option>
-                    <option value="abundanceSea">Độ phổ biến nước biển (mg/L)</option>
-                  </optgroup>
-                  <optgroup label="Bán kính (Radius)">
-                    <option value="atomicRadius">Bán kính nguyên tử (pm)</option>
-                    <option value="vanDerWaalsRadius">Bán kính Van der Waals (pm)</option>
-                    <option value="covalentRadius">Bán kính cộng hóa trị (pm)</option>
-                  </optgroup>
-                  <optgroup label="Số lượng hạt (Count)">
-                    <option value="electrons">Số Electron</option>
-                    <option value="valenceElectrons">Electron lớp ngoài cùng</option>
-                    <option value="protons">Số Proton</option>
-                    <option value="neutrons">Số Neutron</option>
-                  </optgroup>
-                  <optgroup label="Tính chất nguyên tử (Atomic Properties)">
-                    <option value="atomicMass">Nguyên tử khối (u)</option>
-                    <option value="density">Khối lượng riêng (g/cm³)</option>
-                    <option value="boil">Điểm sôi (K)</option>
-                    <option value="melt">Điểm nóng chảy (K)</option>
-                    <option value="electronegativity">Độ âm điện (Pauling)</option>
-                    <option value="evaporationHeat">Nhiệt hóa hơi (kJ/mol)</option>
-                    <option value="ionizationEnergy">Năng lượng ion hóa (kJ/mol)</option>
-                  </optgroup>
+                <select id="pt-3d-prop" class="select-field" style="max-width:230px;padding:6px 10px;font-size:0.84rem;">
+                  <option value="none">Chiều cao đồng đều (11 nhóm)</option>
+                  <option value="atomicMass">Nguyên tử khối (u)</option>
+                  <option value="atomicRadius">Bán kính nguyên tử (pm)</option>
+                  <option value="electronegativity">Độ âm điện (Pauling)</option>
+                  <option value="ionizationEnergy">Năng lượng ion hóa (kJ/mol)</option>
+                  <option value="melt">Điểm nóng chảy (K)</option>
+                  <option value="boil">Điểm sôi (K)</option>
+                  <option value="density">Khối lượng riêng (g/cm³)</option>
                 </select>
                 <button class="btn btn-secondary btn-sm" id="pt-3d-reset">⟲ Reset 3D</button>
               </div>
             </div>
-            <div id="pt-3d-canvas-wrap" class="glass-surface" style="height:520px;border-radius:var(--radius-lg);overflow:hidden;position:relative;background:radial-gradient(circle at center,#0d1538 0%,#050814 85%);">
+            <div id="pt-3d-canvas-wrap" class="glass-surface" style="height:440px;border-radius:var(--radius-lg);overflow:hidden;position:relative;background:radial-gradient(circle at center,#0d1538 0%,#050814 85%);">
               <div id="pt-3d-tooltip" class="glass-surface" style="display:none;position:absolute;pointer-events:none;z-index:60;padding:10px 14px;border-radius:12px;font-size:0.84rem;min-width:190px;max-width:250px;"></div>
             </div>
           </div>
@@ -95,18 +78,11 @@
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
                 <span class="control-label">🌡️ Nhiệt độ vũ trụ: <strong id="pt-temp-display" class="mono" style="color:var(--accent-cyan);">298 K</strong></span>
                 <div style="display:flex;gap:4px;">
-                  <button class="btn btn-sm btn-primary pt-unit-btn" data-unit="K">K</button>
                   <button class="btn btn-sm btn-secondary pt-unit-btn" data-unit="C">°C</button>
                   <button class="btn btn-sm btn-secondary pt-unit-btn" data-unit="F">°F</button>
                 </div>
               </div>
               <input type="range" id="pt-temp-slider" min="0" max="6000" step="1" value="298" style="width:100%;accent-color:var(--accent-cyan);" />
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-                <button class="btn btn-secondary btn-sm pt-preset-temp" data-k="3">🌌 Không gian (3 K)</button>
-                <button class="btn btn-secondary btn-sm pt-preset-temp" data-k="298">🏠 Phòng (298 K)</button>
-                <button class="btn btn-secondary btn-sm pt-preset-temp" data-k="1500">🌋 Núi lửa (1500 K)</button>
-                <button class="btn btn-secondary btn-sm pt-preset-temp" data-k="4500">☀️ Sao (4500 K)</button>
-              </div>
             </div>
 
             <div>
@@ -122,9 +98,6 @@
                 <span class="mono" id="pt-hm-min">Min</span>
                 <div class="heatmap-gradient"></div>
                 <span class="mono" id="pt-hm-max">Max</span>
-              </div>
-              <div style="display:flex;gap:12px;margin-top:10px;font-size:0.78rem;color:var(--text-secondary);">
-                <span>🧊 Rắn</span><span>💧 Lỏng</span><span>💨 Khí</span><span>❓ Dự đoán</span>
               </div>
             </div>
           </div>
