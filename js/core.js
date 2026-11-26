@@ -21,7 +21,7 @@
     return CV.state.lang === 'en' ? cat.nameEn : cat.nameVi;
   };
 
-  CV.routes = ['home', 'learning', 'universe', 'simulator', 'periodic-table', 'virtual-lab', 'research', 'tutor', 'chemquest', 'profile', 'about'];
+  CV.routes = ['home', 'learning', 'research-hub', 'universe', 'simulator', 'periodic-table', 'virtual-lab', 'research', 'tutor', 'chemquest', 'profile', 'about'];
 
   CV.getElement = function (num) {
     return CV.ELEMENTS.find((e) => e.number === Number(num));
@@ -654,7 +654,7 @@
   CV.switchBranch = function (branch) {
     CV.state.activeBranch = branch;
     if (branch === 'research') {
-      CV.navigate('virtual-lab');
+      CV.navigate('research-hub');
     } else if (branch === 'learn') {
       CV.navigate('learning');
     } else {
@@ -663,10 +663,14 @@
   };
 
   CV.updateBranchSwitcher = function (route) {
-    const isLearnSub = ['learning', 'periodic-table', 'universe', 'simulator', 'chemquest'].includes(route);
-    CV.state.activeBranch = route === 'virtual-lab' ? 'research' : isLearnSub ? 'learn' : 'home';
+    const isLearnSub = ['learning', 'periodic-table', 'universe', 'simulator', 'chemquest', 'tutor'].includes(route);
+    const isResearchSub = ['research-hub', 'virtual-lab', 'research'].includes(route);
+    CV.state.activeBranch = isResearchSub ? 'research' : isLearnSub ? 'learn' : 'home';
     document.querySelectorAll('#desktop-nav [data-route="learning"]').forEach((el) => {
       el.classList.toggle('active', isLearnSub);
+    });
+    document.querySelectorAll('#desktop-nav [data-route="research-hub"]').forEach((el) => {
+      el.classList.toggle('active', isResearchSub);
     });
   };
 

@@ -51,9 +51,8 @@
                   <li>🤖 <strong>AI Prediction (ML):</strong> Dự đoán tính chất (Train/Test, MAE, RMSE, R²)</li>
                   <li>🧪 <strong>Hypothesis &amp; Report:</strong> Kiểm chứng giả thuyết Pearson r &amp; xuất báo cáo</li>
                 </ul>
-                <div class="dual-branch-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;">
-                  <button class="btn btn-primary" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.switchBranch('research')">🔬 Phòng Lab 3D</button>
-                  <button class="btn btn-secondary" onclick="event.stopPropagation();CHEMVERSE.navigate('research')">📊 Research Lab</button>
+                <div class="dual-branch-actions">
+                  <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.switchBranch('research')">🔬 ${t('Vào Nghiên Cứu Chuyên Sâu →', 'Enter Research & Lab →')}</button>
                 </div>
               </article>
             </div>
@@ -117,6 +116,44 @@
               <h3>5. AI Chemistry Tutor (Trợ lý Hóa học Kiểm chứng)</h3>
               <p>${t('Giải thích kiến thức, hướng dẫn cân bằng phương trình từng bước, giải thích hiện tượng và gợi ý bài tập dựa trên dữ liệu IUPAC.', 'Explains concepts, guides equation balancing, and provides verified practice from IUPAC data.')}</p>
               <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('tutor')">${t('Mở AI Tutor →', 'Open AI Tutor →')}</button>
+            </article>
+          </div>
+        </div>
+      `;
+    }
+  };
+
+  /* --- KHÔNG GIAN NGHIÊN CỨU CHUYÊN SÂU (PHÒNG LAB 3D & RESEARCH CORE) --- */
+  CV.modules['research-hub'] = {
+    init(container) {
+      const t = CV.t;
+      container.innerHTML = `
+        <div class="page-container">
+          <div class="section-header" style="margin-bottom:24px;">
+            <div>
+              <div class="hero-pill" style="margin-bottom:8px;">🔬 ${t('NHÁNH 2 • NGHIÊN CỨU CHUYÊN SÂU', 'BRANCH 2 • IN-DEPTH RESEARCH & LAB')}</div>
+              <h2 class="section-title">${t('Không Gian Nghiên Cứu Chuyên Sâu & Phòng Lab 3D', 'In-Depth Research & 3D Lab')}</h2>
+              <p class="section-subtitle">${t('Chọn Phòng thí nghiệm ảo 3D để thực hành phản ứng hoặc Không gian Nghiên cứu để phân tích dữ liệu, ML & xuất báo cáo', 'Choose 3D Virtual Lab for experiments or Research Core for Data, ML & Reports')}</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="CHEMVERSE.navigate('home')">🏠 ${t('Trang chủ', 'Home')}</button>
+              <button class="btn btn-primary btn-sm" onclick="CHEMVERSE.switchBranch('learn')">🎓 ${t('Chuyển sang Học tập →', 'Switch to Learning →')}</button>
+            </div>
+          </div>
+
+          <div class="learning-hub-grid">
+            <article class="learning-hub-card glass-surface" style="border-color:rgba(168,85,247,0.4);" onclick="CHEMVERSE.navigate('virtual-lab')" role="button" tabindex="0">
+              <div class="lh-icon" style="color:#E879F9;">🧪</div>
+              <h3>1. ${t('Phòng Lab 3D (Virtual Lab)', '3D Virtual Chemistry Lab')}</h3>
+              <p>${t('Bàn thí nghiệm 3D với tủ hóa chất, dụng cụ đun/đo, 3 mức độ (Cơ bản, Nâng cao, Tự do), cảnh báo an toàn GHS và đồ thị pH/Nhiệt độ thời gian thực.', '3D lab bench with reagents, heating/sensors, 3 levels, GHS safety alerts, and real-time pH/Temp charts.')}</p>
+              <button class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#8B5CF6,#EC4899);" onclick="event.stopPropagation();CHEMVERSE.navigate('virtual-lab')">🔬 ${t('Mở Phòng Lab 3D →', 'Open 3D Lab →')}</button>
+            </article>
+
+            <article class="learning-hub-card glass-surface" style="border-color:rgba(0,229,255,0.4);" onclick="CHEMVERSE.navigate('research')" role="button" tabindex="0">
+              <div class="lh-icon" style="color:#00E5FF;">📊</div>
+              <h3>2. ${t('Nghiên Cứu Khoa Học (Research Core)', 'Scientific Research Core')}</h3>
+              <p>${t('Chemical Data Lab (+CSV), Periodic Trend Explorer & Analyzer, AI Periodic Prediction (Train/Test + MAE/RMSE/R²), Hypothesis Lab (Pearson r) và Báo cáo 10 mục.', 'Data Lab (+CSV), Trends, Ridge ML Prediction (Train/Test + metrics), Hypothesis Lab (Pearson r), and 10-part Report.')}</p>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();CHEMVERSE.navigate('research')">📊 ${t('Mở Không Gian Nghiên Cứu →', 'Open Research Core →')}</button>
             </article>
           </div>
         </div>
